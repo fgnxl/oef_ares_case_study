@@ -29,9 +29,9 @@
         --rule:   #e2e8f0;
         --panel:  #f8fafc;
         --code:   #f1f5f9;
-        --link:   #0d9488;
-        --neg:    #b4442c;
-        --pos:    #0f766e;
+        --link:   #2563eb;
+        --neg:    #dc2626;
+        --pos:    #059669;
       }
       * { box-sizing: border-box; }
       body {
@@ -53,8 +53,8 @@
                 border-top: 1px solid var(--rule); margin-bottom: .5rem; }
       .count b { display: block; font-size: 1.5rem; color: var(--ink); font-weight: 700;
                  line-height: 1.15; }
-      .count span { font-size: .72rem; color: var(--faint); text-transform: uppercase;
-                    letter-spacing: .07em; }
+      .count span { font-size: .68rem; color: var(--faint); text-transform: uppercase;
+                    letter-spacing: .16em; }
       .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(244px, 1fr));
               gap: .75rem; }
       .partner { background: #fff; border: 1px solid var(--rule); border-radius: 8px;
@@ -63,8 +63,8 @@
       .partner .role { color: var(--faint); font-size: .72rem; margin: .1rem 0 .7rem;
                        text-transform: uppercase; letter-spacing: .06em; }
       .surface { margin-top: .65rem; }
-      .surface > span { font-size: .68rem; text-transform: uppercase;
-                        letter-spacing: .09em; color: var(--faint); }
+      .surface > span { font-size: .66rem; text-transform: uppercase;
+                        letter-spacing: .18em; color: var(--faint); }
       .chip { display: block; width: 100%; text-align: left; cursor: pointer;
               font: inherit; font-size: .82rem; margin-top: .3rem; padding: .3rem .5rem;
               background: var(--panel); color: var(--ink); border-radius: 4px;
@@ -87,11 +87,15 @@
       .controls button[aria-pressed="true"] { background: var(--ink); color: #fff;
                                               border-color: var(--ink); }
       table { border-collapse: collapse; width: 100%; font-size: .82rem; }
+      .scroller { overflow-x: auto; border: 1px solid var(--rule); border-radius: 8px; }
       th { text-align: left; font-size: .68rem; text-transform: uppercase;
-           letter-spacing: .08em; color: var(--faint); font-weight: 600;
-           padding: 0 .7rem .45rem 0; border-bottom: 1px solid var(--rule); }
-      td { padding: .45rem .7rem .45rem 0; border-bottom: 1px solid var(--rule);
+           letter-spacing: .16em; color: var(--head); font-weight: 600;
+           background: var(--panel); padding: .5rem .7rem;
+           border-bottom: 1px solid var(--rule); position: sticky; top: 0; }
+      td { padding: .45rem .7rem; border-bottom: 1px solid var(--rule);
            vertical-align: top; color: var(--body); }
+      tbody tr:hover td { background: var(--panel); }
+      tbody tr:last-child td { border-bottom: 0; }
       td.rule { white-space: nowrap; font-size: .7rem; letter-spacing: .04em;
                 font-weight: 600; }
       tr.blocking td.rule { color: var(--neg); }

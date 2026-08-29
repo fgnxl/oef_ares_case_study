@@ -175,9 +175,9 @@ def page(partners: list[Partner], findings: list[Finding]) -> str:
         '<button data-severity="reported" aria-pressed="false">reported</button>'
         '<button data-severity="advisory" aria-pressed="false">advisory</button>'
         "</div>"
-        '<table id="findings"><thead><tr><th>Rule</th><th>Subject</th>'
+        '<div class="scroller"><table id="findings"><thead><tr><th>Rule</th><th>Subject</th>'
         f'<th>Finding (<span id="shown">{len(findings)}</span> shown)</th>'
-        f"</tr></thead><tbody>{_rows(findings, partners)}</tbody></table>"
+        f"</tr></thead><tbody>{_rows(findings, partners)}</tbody></table></div>"
         "<footer>Generated from the four partner declarations in "
         "<code>data/</code>. No rule in the checker names a partner, an item or "
         "a finding: applied to a boundary where every object has an owner and "
