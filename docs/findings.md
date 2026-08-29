@@ -38,6 +38,15 @@ coupling question the same question rather than two.
 There is a second argument for the same conclusion and it is the one that
 decides the matter, because it does not depend on the statistics at all.
 
+This is the credibility threshold, and it is not a principle invented for this
+exercise. Li et al. (2019) put it as a line on a spectrum: below it a model is a
+substitute, disconnected from the world and useful as a test bed, and above it a
+model becomes a surrogate, close enough to the real system that a decision maker
+can use it to act. The paper's own words: "there is a credibility threshold
+beyond which models resemble reality well enough to be used by decision makers
+as surrogate systems, useful for productively informing real world decisions."
+The limiting case at the far end is a digital twin.
+
 A settlement model exists so that somebody can commit to a design that has to
 keep people alive. That purpose sets a floor on fidelity. Below some level of resolution and
 coupling, a model is not a less useful version of the same tool.
@@ -108,8 +117,10 @@ placeholder.
 
 ## GAP-3. The service level threshold set
 
-- **Missing object.** A routed, versioned set of thresholds that defines what
-counts as a shortfall.
+- **Missing object.** Two things travelling the same absent route. A versioned
+  set of thresholds defining what counts as a shortfall, and the stress
+  scenarios themselves, meaning the environmental state that drives both models
+  at once.
 
 - **Evidence.** Meridian "defines component failures, compound events and
 acceptable service levels" and produces "stress scenarios, reliability metrics
@@ -128,9 +139,17 @@ cannot represent failure conditions or uncertainty well enough to support
 credible mission-risk claims", which is what a body says when its criteria are
 not reaching the thing being judged.
 
-- **Owner question.** How do Meridian's acceptable service levels reach Tharsis,
-in what form, and what happens to results computed against the previous set when
-they change.
+- **Owner question.** How do Meridian's acceptable service levels and stress
+  scenarios reach Solis and Tharsis, in what form, and what happens to results
+  computed against a previous set when it changes.
+
+This is why the interface asserts independence. Both models need the dust state
+over time. Solis needs it to derate generation, Tharsis needs it to drive
+sheltering, activity and thermal load. Neither consumes it, and the partner who
+produces it is the one with no route to either. The common cause exists, it has
+an owner, and it reaches nobody, so each model treats its own half of a
+correlated event as an independent input. Restoring that one route is the single
+highest-value edge in the whole consortium.
 
 ## GAP-4. Population schedules
 
@@ -151,6 +170,28 @@ that they did.
 
 - **Owner question.** Who owns the population schedule, at what cadence is it
 revised, and is it versioned such that a demand result can be traced to one.
+
+## GAP-5. The load taxonomy
+
+- **Missing object.** A split of demand into loads that can be shed under
+  stress and loads that cannot.
+- **Evidence.** Tharsis produces `time-series demand`, which is one number per
+  commodity per hour. Solis consumes `demand envelopes` and sizes against them.
+  Neither document distinguishes a load that can be interrupted from one that
+  cannot.
+- **Why it is unowned.** In nominal operation the distinction does not matter,
+  because everything is met. It only matters in the case the whole exercise is
+  about.
+- **What it costs today.** Life support is not a system running alongside the
+  power system, it is a load on it. Oxygen generation, carbon dioxide removal,
+  water recovery, thermal control and crop lighting are all kilowatts. Under a
+  long dust event crop lighting can go dark and hygiene water can wait, while
+  carbon dioxide removal cannot stop, and shortening its cycle costs more power
+  rather than less. Sizing against an undifferentiated total hides the only
+  distinction that decides whether the settlement survives.
+- **Owner question.** Who classifies each load as non-deferrable, deferrable or
+  droppable, on what authority, and how does that classification reach the
+  partner sizing the generation.
 
 ## Six families of interface clause
 
@@ -226,6 +267,17 @@ a checker that is told what to find demonstrates nothing.
 Each rule is general. None of them names a partner, a variable or a gap. Applied
 to a boundary where all four objects were owned, all four rules would return
 nothing, which is the condition the recommendation is aiming at.
+
+## Reference
+
+Li, F.G.N., Bataille, C., Pye, S., and O'Sullivan, A. (2019). Prospects for
+energy economy modelling with big data: hype, eliminating blind spots, or
+revolutionising the state of the art? *Applied Energy*, 239, pages 991 to 1002.
+https://doi.org/10.1016/j.apenergy.2019.02.002
+
+One reference, for one idea. The credibility threshold is the only concept here
+taken from outside the brief, and it is named rather than paraphrased so that a
+reader can check whether it has been used as the source intends.
 
 ## What this does not claim
 
