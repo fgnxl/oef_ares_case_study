@@ -24,7 +24,11 @@ wrong, it does not belong in this file.
 
 ## About the demonstration
 
-To be filled as the six-week demonstration is specified.
+| Assumed | Why it is reasonable | What changes if it is false |
+|---|---|---|
+| The settlement configuration under test can be a stated given rather than an optimised result | The brief asks whether the system can be evaluated, not whether a particular configuration is best, and it permits assumed inputs | The demonstration becomes a Solis optimisation run first, which is a second deliverable and does not fit six weeks |
+| One material stress event is sufficient, and Meridian chooses it | The brief says one, and Meridian is the partner that defines stress scenarios and acceptable service levels | If ARES chooses it instead, the demonstration proves less, because the evidence requirement was set by the party being convinced |
+| Traceable means the four explain-requirements can be answered from the record, rather than a full audit trail | The brief defines traceability by what the consortium must explain, not by a standard | A heavier provenance mechanism is needed and the six weeks does not carry it |
 
 ## Deliberately not assumed
 

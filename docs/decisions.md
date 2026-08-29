@@ -40,6 +40,33 @@ necessary. A fully specified boundary makes the interior of each model
 irrelevant to the other, which is what permits loose coupling. Where the boundary is vague, tight coupling is the only remaining way to
 keep the two consistent.
 
+## What the six-week demonstration is
+
+The brief specifies it and it does not need inventing: one repeatable
+end-to-end demonstration of a proposed settlement configuration under a normal
+operating case and one material stress event, with results traceable across the
+relevant models. The configuration and the stress event are inputs, and the
+brief permits assumed ones.
+
+The requirement that shapes the work is the sentence after it. The consortium
+must be able to explain what information was exchanged, how inconsistencies and
+uncertainty were handled, what was validated, and what the demonstration does
+and does not establish.
+
+Those four are the evidence specification, and each one is a thing the contract
+already records.
+
+| The review asks | The contract holds |
+|---|---|
+| What information was exchanged | Which quantities crossed which boundary, in what units, at what temporal and spatial resolution |
+| How inconsistencies and uncertainty were handled | The disputed cells, and the uncertainty field on each exchanged quantity |
+| What was validated | The checker's output against the declared contract |
+| What it does and does not establish | The scope statement, and every cell still empty |
+
+So specifying the boundary is not a step toward the review. It is the thing the
+review asks the consortium to be able to explain, and a demonstration that runs
+without it can show a result but cannot account for one.
+
 ## The artifact
 
 A constraint model with two renderings, over a validator alone. The
