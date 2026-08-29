@@ -1,0 +1,8 @@
+{
+  "_placeholder": "Synthetic partner declaration, format 4 of 4: a JSON schema. Fully specified types, no units, no cadence, no semantics. Replace with the real synthetic content and keep the filename: parse.py dispatches on it.",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Partner D interface",
+  "type": "object",
+  "properties": {},
+  "required": []
+}

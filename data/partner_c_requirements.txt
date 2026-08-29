@@ -1,0 +1,9 @@
+PLACEHOLDER. Synthetic partner declaration, format 3 of 4: clause-numbered
+requirements. Legal-adjacent register, "shall" and "must", numbered clauses,
+cross-references between clauses. Precise about obligation, vague about payload.
+
+Replace with the real synthetic content. Keep the filename: parse.py dispatches
+on it.
+
+1. Scope
+1.1 [placeholder]

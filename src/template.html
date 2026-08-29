@@ -1,0 +1,33 @@
+<!doctype html>
+<!--
+  Page shell for the generated artifact. render.py fills the $placeholders using
+  string.Template from the standard library, so every literal dollar sign in the
+  CSS or JavaScript below must be written $$.
+
+  This file stays a real .html file rather than a triple-quoted string in
+  render.py so that the markup, the styles and the script are editable and
+  diffable as what they are.
+
+  Placeholders:
+    $title      page title
+    $generated  ISO date the page was built
+    $data       the model, serialised to JSON, embedded in a script tag
+    $body       the server-free rendered content
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>$title</title>
+    <style>
+      /* Inlined stylesheet. No external references. */
+    </style>
+  </head>
+  <body>
+    $body
+    <script type="application/json" id="model">$data</script>
+    <script>
+      // Inlined script. No external references, no network calls.
+    </script>
+  </body>
+</html>
