@@ -66,19 +66,30 @@ Publishing it is not a negotiation.
 
 ## Where Helix sits
 
-Assumption, and it materially shapes the plan: Helix joins Track A from the
-start rather than implementing afterwards. The brief says the ownership dispute
-is between Tharsis and Helix, so a Solis to Tharsis bilateral that excludes
-Helix resolves the wrong pair, and Helix has already built tooling against a
-provisional reading of exactly the variables in question. Excluding it risks
-agreeing a contract that contradicts working code.
+The demonstration needs three things: a proposed configuration, a model that
+says what happens under it, and a material stress event. Solis and Tharsis
+supply the first two. Meridian supplies the third. Helix's translation layer
+supplies none of them, and the brief is explicit that a finished platform is not
+what six weeks is for.
 
-The alternative is Helix as implementer at weeks 3 to 4, taking the agreed
-contract and building the translation. That is cleaner to run and it defers the
-disagreement rather than resolving it.
+So Helix is in the room and off the critical path, which are different
+positions rather than a compromise between two.
 
-Either way Helix's existing tooling is an asset in the demonstration rather than
-rework, because it is the only translation layer that exists.
+In the room, because the disagreement the brief names is between Tharsis and
+Helix and it is about the meaning and ownership of interface variables, which is
+precisely what track A declares. Helix gets its answer as a by-product, and its
+provisional tooling is validated or corrected against the contract in week three
+rather than found to be wrong in month twelve. The cost of this is an
+invitation.
+
+Off the critical path, because building the translation layer is the platform
+work the brief sets aside, and nothing in the demonstration waits on it.
+
+This also leaves the plan robust to a real gap in the brief. Helix is described
+as developing a schema translation and compatibility layer, with no consumes
+clause and no produces clause, so what it exchanges with anyone is unstated.
+Rather than assume a role for it, the plan is arranged so that the demonstration
+does not depend on which role it turns out to hold.
 
 ## Weeks 4 to 6: run it
 
