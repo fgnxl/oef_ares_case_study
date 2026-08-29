@@ -1,8 +1,111 @@
 {
-  "_placeholder": "Synthetic partner declaration, format 4 of 4: a JSON schema. Fully specified types, no units, no cadence, no semantics. Replace with the real synthetic content and keep the filename: parse.py dispatches on it.",
+  "_note": [
+    "Synthetic partner declaration, format 4 of 4: a JSON schema.",
+    "Fully specified types carrying no units, no cadence and no semantics.",
+    "The partner whose job is translation declares no meaning.",
+    "Written to exhibit a third vocabulary: Helix needed names for variables",
+    "that neither Solis nor Tharsis had named, so it invented them, and its",
+    "tooling is built against those. Keep the filename, parse.py dispatches on it."
+  ],
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Helix interface",
+  "$id": "https://helix.example/ares/interface/v0.4.1-provisional.json",
+  "title": "ARES model interchange, provisional",
+  "$comment": "v0.4.1. Field names and structure are Helix's working interpretation pending confirmation from Tharsis. Adapters in helix-ares-adapters are built against this revision.",
   "type": "object",
-  "properties": {},
-  "required": []
+  "required": ["configuration", "availability", "demand", "limits"],
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "type": "object",
+      "properties": {
+        "revision": { "type": "string" },
+        "producedBy": { "type": "string" },
+        "producedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "configuration": {
+      "$comment": "Assumed to correspond to what Solis calls capacity choices.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "pvPeak": { "type": "number", "minimum": 0 },
+        "fissionUnits": { "type": "integer", "minimum": 0 },
+        "fissionUnitRating": { "type": "number", "minimum": 0 },
+        "batteryCapacity": { "type": "number", "minimum": 0 },
+        "electrolyserRating": { "type": "number", "minimum": 0 },
+        "waterLoopThroughput": { "type": "number", "minimum": 0 },
+        "oxygenGeneration": { "type": "number", "minimum": 0 },
+        "cropArea": { "type": "number", "minimum": 0 }
+      }
+    },
+    "availability": {
+      "$comment": "Not present in either partner's documentation. Added because the adapters needed something to carry it. Populated by Helix from Tharsis output.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "t": { "type": "integer", "minimum": 0 },
+          "capacityAvailable": { "type": "number", "minimum": 0 },
+          "derateApplied": { "type": "number", "minimum": 0, "maximum": 1 }
+        }
+      }
+    },
+    "demand": {
+      "$comment": "Provisional. Tharsis emits per-commodity traces, Solis reads a single bound. This schema carries both and the consumer decides, which is known to be unsatisfactory.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "series": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "t": { "type": "integer", "minimum": 0 },
+              "power": { "type": "number", "minimum": 0 },
+              "water": { "type": "number", "minimum": 0 },
+              "oxygen": { "type": "number", "minimum": 0 },
+              "thermal": { "type": "number" },
+              "co2Removal": { "type": "number", "minimum": 0 }
+            }
+          }
+        },
+        "envelope": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "power": { "type": "number", "minimum": 0 },
+            "water": { "type": "number", "minimum": 0 },
+            "oxygen": { "type": "number", "minimum": 0 }
+          }
+        }
+      }
+    },
+    "limits": {
+      "$comment": "Assumed to correspond to what Solis calls operating envelopes and what Tharsis calls operating constraints. Treated as the same object.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "socFloor": { "type": "number", "minimum": 0, "maximum": 1 },
+        "reactorMinimum": { "type": "number", "minimum": 0, "maximum": 1 },
+        "electrolyserMin": { "type": "number", "minimum": 0 },
+        "electrolyserMax": { "type": "number", "minimum": 0 },
+        "rideThrough": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "shortfalls": {
+      "$comment": "Emitted by Tharsis. No consumer identified. Carried so nothing is lost in translation.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "t": { "type": "integer", "minimum": 0 },
+          "commodity": { "type": "string" },
+          "magnitude": { "type": "number" }
+        }
+      }
+    }
+  }
 }

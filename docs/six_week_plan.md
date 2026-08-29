@@ -28,6 +28,39 @@ the contract gets agreed twice, because the first version will not carry
 uncertainty and Meridian will say so. Running them together means Track A knows
 by week two what Track B will require of it.
 
+## The test every item has to pass
+
+Second-year funding depends on this demonstration, so the six weeks are not an
+engineering plan with a demo at the end. They are a plan to get one
+demonstration onto a board table, and each item is there because it passes that
+test rather than because it is good practice.
+
+Applied honestly, the test removes one item and adds two.
+
+Removed. Implementing uncertainty propagation does not pass. A demonstration can
+be traceable and deterministic at the same time, and Meridian's requirement is
+for a credible mission-risk claim rather than for this demonstration. What the
+six weeks produce is Meridian's evidence requirement written down, which is
+cheap and shapes everything built afterwards. The implementation is deferred
+with Meridian's agreement and a stated reason, which is a different thing from
+being quietly descoped.
+
+Added, because the test found them missing. Somebody has to propose the
+configuration being evaluated, and nothing else in the plan produces one. Solis
+does, in week two, and the brief permits an assumed configuration. And somebody
+has to define what the normal operating case is, meaning which season, which
+point in the dust cycle and which population state count as normal. That is a
+decision rather than a default, and half the demonstration rests on it.
+
+Everything else survives the test. Without a fixed calendar the two models produce numbers that
+cannot be lined up. Without the aggregation operator Solis cannot consume what
+Tharsis emits, so there is no end-to-end run. Without an owned derate the stress
+case is Tharsis's private assumption, which fails the traceability requirement
+precisely when it matters most, since the stress event is a derate event.
+Without a versioned population schedule the run is not repeatable, and the brief
+asks for repeatable. Without Meridian's thresholds the question of whether the
+settlement met service levels has no answer any partner agrees with.
+
 ## Track A: resolve the Solis to Tharsis interface
 
 Weeks 1 to 3. The objective is a declared, written contract covering the two
