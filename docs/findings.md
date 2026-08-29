@@ -118,6 +118,64 @@ that they did.
 - **Owner question.** Who owns the population schedule, at what cadence is it
 revised, and is it versioned such that a demand result can be traced to one.
 
+## Six families of interface clause
+
+The four gaps above are the worst class of defect, where an object that has to
+exist is produced by nobody. There is a second and more common class, where the
+object exists but a property the consumer needs is never declared. An interface
+contract has clauses. This consortium has stated almost none of them.
+
+| Family | Clauses | What the brief states |
+|---|---|---|
+| What it is | name, semantic kind, boundary convention | no interface variable is named anywhere, in any direction, for any partner |
+| What it is measured in | unit, uncertainty representation | no units appear anywhere, and Meridian's objection is that uncertainty cannot be represented |
+| When and where it applies | temporal resolution, spatial resolution, epoch | the brief names the scale mismatch and no partner names a conversion |
+| Which run it belongs to | scenario identity, version | nothing, and GAP-4 means the largest demand driver is unversioned |
+| How it arrives | cadence, latency, encoding | nothing, which is why an exchange can be late and in the wrong format without any contract having been broken |
+| Who may change it | ownership, change protocol | nothing, which is the dispute between Tharsis and Helix |
+
+Three of these deserve their evidence stated, because they are the ones a
+consortium meeting would not surface.
+
+- **Boundary convention.** Whether Tharsis's demand includes life support
+parasitic load, or whether that sits inside Solis's own accounting, changes the
+number by a large fraction. Both readings are reasonable. Neither is written
+down.
+
+- **Epoch.** Tharsis simulates hour by hour and Solis plans over multi-year
+horizons. A Mars sol is 24 hours 39 minutes and 35 seconds. If one partner
+indexes on sols and the other on Earth years, the two calendars drift apart by
+about two and a half percent, systematically and permanently. Neither partner
+states which clock it is on, and the error this produces is small enough per
+step to survive review and large enough over a horizon to invalidate a capacity
+decision.
+
+- **Uncertainty representation.** Meridian judges whether a proposed system is
+sufficiently resilient. If what reaches it is a point estimate, it cannot make
+that judgement at all, regardless of how well the models are built. Its stated
+objection is not a complaint about quality. It is a statement that the interface
+lacks a clause its function requires.
+
+## The four symptoms are one artifact
+
+The brief lists four things that have gone wrong at month 8. They present as four
+separate problems and they are four views of one missing artifact.
+
+| Symptom in the brief | Family |
+|---|---|
+| an exchange is two months late and not in the planned format | how it arrives |
+| Tharsis and Helix disagree about meaning and ownership | what it is, and who may change it |
+| Meridian cannot represent failure conditions or uncertainty | what it is measured in |
+| nobody has shown tight bidirectional coupling is necessary | when and where it applies |
+
+None of the four is a failure of effort or goodwill, and treating them
+separately produces four workstreams that each address a symptom. An exchange
+cannot be late against a deadline that was never a contract term. Two partners
+cannot agree on the meaning of a variable that has no declared owner. A risk
+body cannot judge resilience from a value carrying no uncertainty. A consortium
+cannot know whether tight coupling is necessary while the operators that bridge
+its scales are unowned.
+
 ## What the checker must find
 
 These four are the acceptance test for the artifact. The checker reads the four
