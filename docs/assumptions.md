@@ -7,6 +7,26 @@ when the recommendation depends on it.
 The third column is the useful one. If nothing changes when an assumption is
 wrong, it does not belong in this file.
 
+## About the judgements that shape the recommendation
+
+These four came later than the rest and each of them changes what the
+recommendation is, rather than only what it costs.
+
+| Assumed | Why it is reasonable | What changes if it is false |
+|---|---|---|
+| Tight bidirectional coupling is scientifically necessary | The stress case is a correlated-failure case. Generation falls and demand rises together because both answer to the same weather, and exchanging bounds once destroys that correlation by construction | The contract is still needed, but a single pass would suffice and the recommendation over-invests in the exchange. The four gaps stand either way |
+| The coordinator can convene the partners and they will attend | Coordination is the role, and an exercise assuming partners would not come to meetings would not be an exercise | No plan of any shape works, and the problem is governance rather than interfaces |
+| This is an acute crisis, and partners will accept direction they would decline in business as usual | Month 8, an exchange two months late, a live dispute over meaning, a risk laboratory saying the interface cannot carry its claims, and second-year funding in question | Week 1 cannot land four decisions, the sequencing lengthens, and the six weeks probably does not reach a stress case |
+| Second-year funding depends on this demonstration | The brief frames the six weeks around what the foundation needs to see, and treats the demonstration as the thing being judged | The plan is too aggressive. With no funding cliff there is no reason to run a crude end-to-end in week 2 rather than build properly and demonstrate later |
+
+## About the plan
+
+| Assumed | Why it is reasonable | What changes if it is false |
+|---|---|---|
+| An end-to-end run on crude inputs is achievable in week 2 | It requires no correctness, no polish and one sol of data. Its only job is to make format, encoding and calendar mismatches fail early | Week 5's buffer absorbs one week of slip. Beyond that the stress case is dropped and week 6 shows the normal case, which is the review point at end of week 5 |
+| Helix's existing adapter is of unknown usability | The brief says Helix built tooling against a provisional interpretation and says nothing about whether it works | Nothing, by construction. The plan is arranged to gain if the adapter helps and to lose nothing if it does not, which is why this assumption is safe to hold |
+| Moving the derate into the contract is the expensive decision, not the expensive work | Implementing a derate is small. Getting a commercial partner to state publicly how its capacity degrades is not | The week 2 to 3 allocation is wrong in one direction or the other, and the review point at end of week 3 catches it |
+
 ## About the scenario
 
 | Assumed | Why it is reasonable | What changes if it is false |
