@@ -69,6 +69,62 @@ So specifying the boundary is not a step toward the review. It is the thing the
 review asks the consortium to be able to explain, and a demonstration that runs
 without it can show a result but cannot account for one.
 
+## Leadership without direct control
+
+The coordinator convenes. Calling the workshop where units get declared is the
+job, and an exercise that assumed partners would not attend would not be an
+exercise. The room is available.
+
+What "without direct control" means is narrower and more useful than an
+attendance problem. The four partners are a commercial firm, a university team,
+a public institute and a translation contractor. Each has its own institutional
+incentives and its own deliverables, and none of them reports to ARES. They will
+attend. What cannot be done by fiat is make the coordinator's ask outrank their
+own priorities once the meeting ends.
+
+So the question is not how to compel the declaration. It is what to put on the
+table so that the declaration is the thing each partner already wants. The brief supplies the answer: every partner is worse off under the status
+quo, and three of them do not yet know how.
+
+- **Helix is the most exposed and has the most to gain.** It has already built
+  tooling against a provisional interpretation. If a contract is later declared
+  and differs, that work is wasted. If no contract is ever declared, the work
+  stays unsafe indefinitely. A declared contract is the only outcome in which
+  Helix's existing investment survives, which makes Helix the first ally rather
+  than the first problem.
+- **Meridian's objection is the ask.** It states that the interface cannot
+  represent failure conditions or uncertainty well enough for credible
+  mission-risk claims. That is a request for the uncertainty clause. Nobody has
+  to persuade Meridian of anything, only to agree with it in public and route
+  its thresholds to the model that applies them, which is GAP-3.
+- **Solis is being judged on assumptions it did not set.** Tharsis derates its
+  capacity choices using a function Solis never saw, which is GAP-2. Declaring
+  units, envelopes and the derate is how Solis takes back control of how its own
+  design is evaluated. That is a gain rather than a concession, and Solis is the
+  partner who benefits most from hearing it framed that way.
+- **Tharsis carries blame for numbers it had to invent.** It reports shortfalls
+  against thresholds it was never sent, and runs on a population schedule nobody
+  owns. Declaring the routes moves that liability off Tharsis and onto the
+  partners who should hold it.
+
+The move is therefore neither compulsion nor consensus-building. It is showing
+each partner the specific way the missing contract already costs them, and
+letting the contract become what they ask for. The coordinator's authority is
+convening plus the diagnosis, and the diagnosis is the part that does the work.
+
+That is also why the artifact matters beyond being a demonstration. A checker
+that reports "Solis publishes capacity choices and Tharsis consumes available
+capacity, and neither declares a contract linking them" is a neutral third
+party. It makes the gap a property of the interface rather than an accusation
+against a partner, which is what lets four institutions look at the same finding
+without anyone having to concede anything first.
+
+Sequencing follows from the incentives. Helix and Meridian are aligned with the
+contract from the start, so they are approached first and the workshop opens
+with two partners already asking for it. Solis and Tharsis are then joined by a
+question about a specific unowned object rather than by a request to adopt a
+process.
+
 ## The artifact
 
 A constraint model with two renderings, over a validator alone. The
