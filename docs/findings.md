@@ -19,12 +19,26 @@ agreed to produce, and that each therefore produces privately.
 A private object is invisible in a status meeting and lethal in an integration.
 Two teams each fill the same gap with a reasonable assumption, neither writes it
 down, and the models disagree for a reason that appears nowhere in either
-specification. The only way to keep two privately filled gaps consistent is to
-run the models against each other continuously, which is to say tightly coupled.
-That is the honest answer to the question the brief leaves open. Tight
-bidirectional coupling has not been shown to be scientifically necessary because
-it is not. It is what a consortium is forced into when the boundary has unowned
-objects on it.
+specification.
+
+The brief leaves open whether tight bidirectional coupling is scientifically
+necessary. It is, and the reason is the stress case. Supply and demand on Mars
+are not independent variables, they are driven by the same state. A dust storm
+cuts generation, and it simultaneously drives crew indoors, changes activity
+schedules, raises thermal load and alters life support duty cycles. Battery
+state of charge at any hour depends on generation and demand at every hour
+before it, and those two were correlated by a common cause throughout.
+
+Exchange bounds once and that correlation is destroyed by construction. What
+comes back is a worst-case supply and a worst-case demand as two separate
+numbers, when the thing that ends a settlement is their coincidence. That is
+what Meridian means by compound events, which makes its objection and the
+coupling question the same question rather than two.
+
+The contract is therefore the precondition for tight coupling and not an
+alternative to it. Coupling two models tightly across three vocabularies, two
+clocks and a derate nobody owns does not fail loudly. It produces fast,
+confident, wrong answers, and it produces them every timestep.
 
 ## GAP-1. The aggregation operator
 
@@ -172,9 +186,9 @@ None of the four is a failure of effort or goodwill, and treating them
 separately produces four workstreams that each address a symptom. An exchange
 cannot be late against a deadline that was never a contract term. Two partners
 cannot agree on the meaning of a variable that has no declared owner. A risk
-body cannot judge resilience from a value carrying no uncertainty. A consortium
-cannot know whether tight coupling is necessary while the operators that bridge
-its scales are unowned.
+body cannot judge resilience from a value carrying no uncertainty. And a
+consortium cannot couple two models tightly, which the stress case requires,
+while the operators that bridge their scales are unowned.
 
 ## What the checker must find
 

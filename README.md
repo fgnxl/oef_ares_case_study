@@ -7,8 +7,9 @@ Prepared 29 August 2026. The commit history of this repository spans the work.
 
 ## The argument in one line
 
-The interface is the boundary, and tight coupling is necessary exactly to the
-extent that the boundary is underspecified.
+Tight bidirectional coupling is scientifically necessary, and a declared
+interface contract is the precondition for building it rather than an
+alternative to it.
 
 ## What is here
 

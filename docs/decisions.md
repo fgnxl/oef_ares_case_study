@@ -34,13 +34,19 @@ reason rather than one blanket excuse. Meridian because compliance is not
 coupling. Helix because it is the mechanism. Any second model-to-model
 coupling because partner capacity will not carry two contracts at once.
 
-**Tight coupling is necessary exactly to the extent that the boundary is
-underspecified.** This is the argument, and it answers the question the brief
-leaves open about whether tight bidirectional coupling is scientifically
-necessary. A fully specified boundary makes the interior of each model
-irrelevant to the other, which is what permits loose coupling. Where the
-boundary is vague, tight coupling is the only remaining way to keep the two
-consistent.
+The brief leaves open whether tight bidirectional coupling is scientifically
+necessary, and the answer taken here is that it is. A settlement model exists to
+show what a settlement will actually endure, and what ends a settlement is a
+compound event in which generation falls and demand rises together because both
+respond to the same weather. A one-directional pass, or a single exchange of
+bounds, cannot represent that coincidence at all. It returns a worst case for
+each side separately, which is the wrong quantity.
+
+So the argument is not that a declared boundary permits loose coupling. It is
+that a declared boundary is what makes tight coupling safe to build. Two models
+coupled tightly across three vocabularies, two clocks and an unowned derate do
+not fail loudly, they agree quickly and wrongly, once per timestep. The contract
+is the precondition, not the alternative.
 
 ## What the six-week demonstration is
 
