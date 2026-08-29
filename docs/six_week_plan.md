@@ -166,12 +166,29 @@ normal case and says so, rather than compressing the traceability pass.
 
 ## What would show this recommendation was wrong
 
-The headline claim here is that tight bidirectional coupling is necessary. A
-claim that cannot fail is not a finding, and this one can be tested by the
-demonstration itself at no extra cost.
+The headline claim here is that tight bidirectional coupling is necessary, and
+it rests on two arguments that fail in different ways. Both belong in the plan
+because only one of them can be settled by a run.
 
-Week 5 runs the stress case iterated. Solis proposes a configuration, Tharsis
-simulates it, and Solis revises. The test is the size of that revision.
+The first is empirical. Generation and demand answer to the same weather, so
+exchanging bounds once destroys the correlation that the stress case exists to
+examine. A run can overturn this, and the test is below.
+
+The second is about what the model is for, and no run can overturn it. A
+settlement model exists so that somebody can commit to a habitat design that has
+to keep people alive. That purpose sets a floor on fidelity, and below the floor
+the model is not a coarser version of the same instrument, it is inadmissible as
+evidence for the decision it was built to inform. What can be settled is where
+the floor sits, and the consortium already has the body that decides: Meridian
+states what makes a resilience claim credible, and track B elicits exactly that
+in weeks 1 to 3. If Meridian's requirement turns out to be satisfiable by a
+single-pass exchange, the floor is lower than assumed here and the second
+argument weakens with it. That is the honest test for a claim of this shape, and
+it is already scheduled.
+
+The empirical test runs in week 5. The stress case is iterated: Solis proposes a
+configuration, Tharsis simulates it, and Solis revises. The test is the size of
+that revision.
 
 If Solis's revised configuration comes back within tolerance of its first, then
 seeing the hourly trace under stress did not change what it would build, the

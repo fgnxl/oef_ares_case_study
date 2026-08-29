@@ -237,16 +237,29 @@ class TestSchedule(unittest.TestCase):
         import schedule
         self.s = schedule
 
-    def test_helix_attends_no_authority_session(self):
+    def test_helix_never_holds_a_ruling(self):
         """A translator converts between vocabularies. It cannot rule on meaning.
 
-        Stating that in prose and then inviting Helix to the session that settles
-        ownership would be the same class of drift this repository is about, so
-        the seating plan is checked instead.
+        Note what this does NOT assert. Helix attends the sessions that settle
+        meaning, and it must, because the contract being settled is the one its
+        existing tooling was built against. Excluding it from the room would
+        agree a contract against working code nobody consulted. What it never
+        holds is the decision.
         """
-        offending = [s.name for s in self.s.SESSIONS
-                     if s.authority and "Helix" in s.attendees]
+        offending = [s.name for s in self.s.SESSIONS if "Helix" in s.decides]
         self.assertEqual([], offending)
+
+    def test_helix_is_in_the_room_where_meaning_is_settled(self):
+        """The companion to the rule above, and the half that is easy to lose."""
+        rooms = [s for s in self.s.SESSIONS if s.authority and "Helix" in s.attendees]
+        self.assertGreaterEqual(len(rooms), 2)
+
+    def test_every_ruling_names_a_partner_who_owns_the_thing_ruled_on(self):
+        """A session that settles something without a named decider is a meeting."""
+        for s in self.s.SESSIONS:
+            if s.authority:
+                with self.subTest(session=s.name):
+                    self.assertTrue(set(s.decides) <= set(self.s.PARTNERS))
 
     def test_every_session_falls_inside_six_weeks(self):
         self.assertTrue(all(1 <= s.week <= 6 for s in self.s.SESSIONS))
@@ -262,3 +275,13 @@ class TestSchedule(unittest.TestCase):
         skeleton = [m for m in self.s.MILESTONES if m.kind == "skeleton"]
         self.assertEqual(1, len(skeleton))
         self.assertLessEqual(skeleton[0].week, 2)
+
+    def test_capability_covers_every_week_once_and_in_order(self):
+        """The ratchet only holds if each week has exactly one rung."""
+        weeks = [w for w, _, _ in self.s.CAPABILITY]
+        self.assertEqual(list(range(1, 7)), weeks)
+
+    def test_the_first_week_does_not_claim_a_running_demonstration(self):
+        """Week 1 is contract work. Claiming otherwise would be the plan
+        flattering itself, and the honest start is what makes the rest credible."""
+        self.assertIn("nothing runs", self.s.CAPABILITY[0][1])

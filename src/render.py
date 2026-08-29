@@ -159,7 +159,7 @@ def model_json(partners: list[Partner], findings: list[Finding]) -> str:
 _INITIAL = {"Solis": "S", "Tharsis": "T", "Meridian": "M", "Helix": "H"}
 
 
-def _who(attendees: tuple) -> str:
+def _who(attendees: tuple, decides: tuple = ()) -> str:
     """Four markers, filled where the partner is in the room.
 
     The seating plan carries an argument, so it is drawn rather than described.
@@ -168,7 +168,7 @@ def _who(attendees: tuple) -> str:
     """
     dots = []
     for name, ch in _INITIAL.items():
-        on = "on" if name in attendees else "off"
+        on = "rules" if name in decides else ("on" if name in attendees else "off")
         dots.append(f'<i class="dot {on}" title="{_e(name)}">{ch}</i>')
     return f'<span class="who">{"".join(dots)}</span>'
 
@@ -184,8 +184,10 @@ def _calendar() -> str:
             f"<span>{_e(m.detail)}</span></div>" for m in ms)
         sess = "".join(
             f'<div class="sess{" auth" if s.authority else ""}">'
-            f'<b>{_e(s.name)}</b>{_who(s.attendees)}'
-            f'<span>{_e(s.length)}. {_e(s.purpose)}</span></div>' for s in ss)
+            f'<b>{_e(s.name)}</b>{_who(s.attendees, s.decides)}'
+            f'<span>{_e(s.length)}. {_e(s.purpose)}'
+            + (f' <b>Ruling: {_e(", ".join(s.decides))}.</b>' if s.decides else "")
+            + '</span></div>' for s in ss)
         gate = schedule.REVIEW_POINTS.get(w)
         gatehtml = f'<div class="gate">{_e(gate)}</div>' if gate else ""
         cols.append(
@@ -205,9 +207,11 @@ def _calendar() -> str:
         '<i class="dot on">S</i> Solis, <i class="dot on">T</i> Tharsis, '
         '<i class="dot on">M</i> Meridian, <i class="dot on">H</i> Helix. '
         'A session with a <b>blue rule</b> settles what a variable means or who '
-        'owns it. Helix attends every technical session and no authority session, '
-        'because a translation layer converts between vocabularies and cannot '
-        'rule on meaning. A test asserts it.</p>')
+        'owns it, and names who holds the ruling. Helix is in the room for both '
+        'contract sessions, because the contract being settled is the one its '
+        'existing tooling was built against, and holds no ruling in any session, '
+        'because converting between two vocabularies confers no standing to rule '
+        'on what either one means. A test asserts both halves.</p>')
 
 def page(partners: list[Partner], findings: list[Finding]) -> str:
     """The whole artifact, as one string. No I/O, so it is testable."""

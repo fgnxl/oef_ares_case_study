@@ -42,13 +42,24 @@ class Session:
     length: str
     attendees: tuple[str, ...]
     purpose: str
-    authority: bool = False
-    """True where the session settles what a variable means or who owns it.
+    decides: tuple[str, ...] = ()
+    """Who holds the ruling in this session, which is not who is in the room.
 
-    Helix attends every technical session and no authority session. A
-    translation layer converts between vocabularies. It cannot decide what a
-    variable means, and nobody in the consortium could give it that standing.
+    The distinction matters and an earlier version of this file got it wrong by
+    collapsing the two. A translation layer has to be present when the contract
+    it has already built against is settled, or the contract is agreed against
+    working code nobody consulted. What it cannot hold is the decision, because
+    converting between two vocabularies confers no standing to rule on what
+    either one means.
+
+    So Helix attends the sessions that settle meaning and appears in no
+    decides tuple. A test asserts it.
     """
+
+    @property
+    def authority(self) -> bool:
+        """A session that settles something, as opposed to reporting on it."""
+        return bool(self.decides)
 
 
 @dataclass(frozen=True)
@@ -70,27 +81,30 @@ class Track:
 SESSIONS = [
     Session(1, "Kickoff", "90 min", tuple(PARTNERS),
             "State the diagnosis. Agree the contract is the object, not the vocabulary. "
-            "Settles the frame rather than any variable, so it is not an authority session."),
+            "Settles the frame rather than any variable, so nobody rules here."),
     Session(1, "Interface working session", "half day",
             ("Solis", "Tharsis", "Helix"),
-            "Calendar and epoch, units, encoding. Contract v0 leaves this room."),
+            "Calendar and epoch, units, encoding. Contract v0 leaves this room.",
+            decides=("Solis", "Tharsis")),
     Session(1, "Evidence elicitation", "90 min", ("Meridian",),
             "What makes a resilience claim credible, written down.",
-            authority=True),
+            decides=("Meridian",)),
     Session(2, "Derate session", "90 min", ("Solis", "Meridian"),
             "Solis cannot declare how capacity degrades without Meridian's failure "
             "definitions. The expensive decision in the whole plan.",
-            authority=True),
+            decides=("Solis", "Meridian")),
     Session(2, "Contract v1 sign-off", "half day",
             ("Solis", "Tharsis", "Helix"),
             "Every cell filled, or visibly empty. Helix re-points its existing "
             "adapter to the ruling, which is a diff rather than a rewrite, and that "
-            "adapter carries the walking skeleton."),
+            "adapter carries the walking skeleton.",
+            decides=("Solis", "Tharsis")),
     Session(2, "Walking skeleton review", "60 min", tuple(PARTNERS),
             "What broke when it ran end to end on crude inputs. This is the point "
             "of week 2."),
     Session(3, "Stress case selection", "60 min", ("Meridian",),
-            "One material stress event, named, with its duration.", authority=True),
+            "One material stress event, named, with its duration.",
+            decides=("Meridian",)),
     Session(3, "Integration standup", "30 min weekly",
             ("Solis", "Tharsis", "Helix"),
             "Runs weekly through week 5. Blockers only."),
@@ -123,6 +137,22 @@ TRACKS = [
           "The re-pointed adapter runs on every exchange from week 2. The only role "
           "the brief supports, since it names no input and no output for Helix."),
 ]
+
+CAPABILITY = [
+    (1, "nothing runs yet", "Contract v0 exists on paper."),
+    (2, "it runs end to end", "Crude inputs, one sol, no correctness claimed."),
+    (3, "it runs on the real contract", "Contract v1, units and calendar fixed."),
+    (4, "normal case, traceable", "One configuration, every number attributable."),
+    (5, "stress case, iterated", "The correlation survives the exchange."),
+    (6, "rehearsed", "Same demonstration, four days of polish."),
+]
+"""What the demonstration can do at the end of each week.
+
+Held as data because it is the plan's central claim rather than a caption. Each
+entry is a superset of the one before it, and a test asserts the list never
+shortens, because the moment a week removes a capability the always-demonstrable
+principle has been broken and the plan needs redrawing rather than relabelling.
+"""
 
 REVIEW_POINTS = {
     1: "Calendar fixed and thresholds published, or week 2 carries an unowned assumption.",

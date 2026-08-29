@@ -35,6 +35,26 @@ numbers, when the thing that ends a settlement is their coincidence. That is
 what Meridian means by compound events, which makes its objection and the
 coupling question the same question rather than two.
 
+There is a second argument for the same conclusion and it is the one that
+decides the matter, because it does not depend on the statistics at all.
+
+A settlement model exists so that somebody can commit to a design that has to
+keep people alive. That purpose sets a floor on fidelity. Below some level of resolution and
+coupling, a model is not a less useful version of the same tool.
+It is inadmissible as evidence for the decision it was built to inform, because
+no engineer would sign a habitat design on the strength of a tool whose own
+authors would not trust it to design one. The question is not whether tight
+coupling is scientifically interesting. It is where the line sits between a
+model that can carry a life-safety design decision and one that cannot, and this
+consortium is currently on the wrong side of it.
+
+Read that way, the four partners are not producing four models that would be
+nice to connect. They are producing three quarters of one instrument, and the
+missing quarter is the coupling: engineering capacity from Solis, human life
+support demand from Tharsis, and failure behaviour under stress from Meridian
+have to propagate into each other, or the thing being asked of the model, would
+this settlement survive a bad year, has no answer that anybody should act on.
+
 The contract is therefore the precondition for tight coupling and not an
 alternative to it. Coupling two models tightly across three vocabularies, two
 clocks and a derate nobody owns does not fail loudly. It produces fast,
