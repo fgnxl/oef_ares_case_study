@@ -15,6 +15,7 @@ error table, it is a hole in the boundary, which is what it actually is.
 
 from __future__ import annotations
 
+import base64
 import html
 import json
 from pathlib import Path
@@ -25,6 +26,18 @@ from check import Finding, Severity, candidate_pairs
 from model import Declaration, Direction, Partner, Provenance, all_declarations
 
 TEMPLATE = Path(__file__).resolve().parent / "template.html"
+ASSETS = Path(__file__).resolve().parent.parent / "assets"
+
+
+def _data_uri(name: str) -> str:
+    """A figure inlined as base64, because the page must open with no network.
+
+    An <img src> pointing at a file beside the page would work locally and break
+    the moment the page is mailed to somebody, which is the failure the
+    self-contained rule exists to prevent.
+    """
+    raw = (ASSETS / name).read_bytes()
+    return "data:image/png;base64," + base64.b64encode(raw).decode("ascii")
 
 TITLE = "ARES interface map"
 LEDE = ("Every partner declaration in the consortium, read as an interface "
@@ -229,6 +242,21 @@ def page(partners: list[Partner], findings: list[Finding]) -> str:
         'filter the findings to it.</p>'
         "<h2>The six weeks</h2>"
         + _calendar() +
+        "<h2>What an unowned load costs</h2>"
+        '<p class="legend">GAP-5 is the split between load that can be shed under '
+        'stress and load that cannot, and no partner declares it. This is what '
+        'that costs. A settlement has to ride out a planet-encircling dust '
+        'event, and the reference mission sizes for 120 sols, which is 2,959 '
+        'hours. So every kilowatt that cannot be switched off needs 2,959 kWh '
+        'of stored energy. The figure is the mass that implies. The multiplier '
+        'is fixed. How many kilowatts it applies to is the number neither '
+        'partner can compute alone.</p>'
+        f'<figure class="fig"><img alt="Mass of stored energy required per '
+        f'kilowatt of non-sheddable load through a 120 sol dust storm, by '
+        f'storage technology" src="{_data_uri("storage_mass.png")}">'
+        '<figcaption>Reactant mass only for the fuel cell cases, so the real '
+        'system mass is higher. Comparators are illustrative and not tied to '
+        'any mission cargo budget.</figcaption></figure>'
         "<h2>Findings</h2>"
         '<div class="controls">'
         '<button data-severity="all" aria-pressed="true">all</button>'
