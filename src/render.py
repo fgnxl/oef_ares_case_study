@@ -20,6 +20,7 @@ import json
 from pathlib import Path
 from string import Template
 
+import schedule
 from check import Finding, Severity, candidate_pairs
 from model import Declaration, Direction, Partner, Provenance, all_declarations
 
@@ -154,6 +155,60 @@ def model_json(partners: list[Partner], findings: list[Finding]) -> str:
     return json.dumps(payload, indent=1, sort_keys=True)
 
 
+
+_INITIAL = {"Solis": "S", "Tharsis": "T", "Meridian": "M", "Helix": "H"}
+
+
+def _who(attendees: tuple) -> str:
+    """Four markers, filled where the partner is in the room.
+
+    The seating plan carries an argument, so it is drawn rather than described.
+    Helix is present for every technical session and absent from every session
+    that settles what a variable means.
+    """
+    dots = []
+    for name, ch in _INITIAL.items():
+        on = "on" if name in attendees else "off"
+        dots.append(f'<i class="dot {on}" title="{_e(name)}">{ch}</i>')
+    return f'<span class="who">{"".join(dots)}</span>'
+
+
+def _calendar() -> str:
+    weeks = range(1, 7)
+    cols = []
+    for w in weeks:
+        ms = [m for m in schedule.MILESTONES if m.week == w]
+        ss = [s for s in schedule.SESSIONS if s.week == w]
+        mile = "".join(
+            f'<div class="mile {_e(m.kind)}"><b>{_e(m.name)}</b>'
+            f"<span>{_e(m.detail)}</span></div>" for m in ms)
+        sess = "".join(
+            f'<div class="sess{" auth" if s.authority else ""}">'
+            f'<b>{_e(s.name)}</b>{_who(s.attendees)}'
+            f'<span>{_e(s.length)}. {_e(s.purpose)}</span></div>' for s in ss)
+        gate = schedule.REVIEW_POINTS.get(w)
+        gatehtml = f'<div class="gate">{_e(gate)}</div>' if gate else ""
+        cols.append(
+            f'<div class="week"><h4>Week {w}</h4>{mile}{sess}{gatehtml}</div>')
+
+    bars = "".join(
+        f'<div class="bar{" crit" if t.critical else ""}" '
+        f'style="grid-column: {min(t.weeks)} / {max(t.weeks) + 1}">'
+        f"<b>{_e(t.name)}</b><span>{_e(t.detail)}</span></div>"
+        for t in schedule.TRACKS)
+
+    return (
+        f'<div class="callout">{_e(schedule.ALWAYS_DEMONSTRABLE)}</div>'
+        f'<div class="bars">{bars}</div>'
+        f'<div class="cal">{"".join(cols)}</div>'
+        '<p class="legend">Markers show who is in the room: '
+        '<i class="dot on">S</i> Solis, <i class="dot on">T</i> Tharsis, '
+        '<i class="dot on">M</i> Meridian, <i class="dot on">H</i> Helix. '
+        'A session with a <b>blue rule</b> settles what a variable means or who '
+        'owns it. Helix attends every technical session and no authority session, '
+        'because a translation layer converts between vocabularies and cannot '
+        'rule on meaning. A test asserts it.</p>')
+
 def page(partners: list[Partner], findings: list[Finding]) -> str:
     """The whole artifact, as one string. No I/O, so it is testable."""
     matched = _matched(partners)
@@ -168,6 +223,8 @@ def page(partners: list[Partner], findings: list[Finding]) -> str:
         'this tool could identify. <b>Broken</b> means it is not: an input no '
         'partner produces, or an output no partner consumes. Select any item to '
         'filter the findings to it.</p>'
+        "<h2>The six weeks</h2>"
+        + _calendar() +
         "<h2>Findings</h2>"
         '<div class="controls">'
         '<button data-severity="all" aria-pressed="true">all</button>'

@@ -228,3 +228,37 @@ class TestTheFourGapsFallOut(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestSchedule(unittest.TestCase):
+    """The seating plan carries a rule, so the rule is asserted rather than stated."""
+
+    def setUp(self):
+        import schedule
+        self.s = schedule
+
+    def test_helix_attends_no_authority_session(self):
+        """A translator converts between vocabularies. It cannot rule on meaning.
+
+        Stating that in prose and then inviting Helix to the session that settles
+        ownership would be the same class of drift this repository is about, so
+        the seating plan is checked instead.
+        """
+        offending = [s.name for s in self.s.SESSIONS
+                     if s.authority and "Helix" in s.attendees]
+        self.assertEqual([], offending)
+
+    def test_every_session_falls_inside_six_weeks(self):
+        self.assertTrue(all(1 <= s.week <= 6 for s in self.s.SESSIONS))
+
+    def test_week_five_is_buffer_and_carries_no_new_commitment(self):
+        """Slack that gets scheduled into is not slack."""
+        new_work = [s.name for s in self.s.SESSIONS
+                    if s.week == 5 and "review" not in s.name.lower()]
+        self.assertEqual([], new_work)
+
+    def test_the_skeleton_runs_before_the_halfway_point(self):
+        """Integration failures have to surface with time left to fix them."""
+        skeleton = [m for m in self.s.MILESTONES if m.kind == "skeleton"]
+        self.assertEqual(1, len(skeleton))
+        self.assertLessEqual(skeleton[0].week, 2)

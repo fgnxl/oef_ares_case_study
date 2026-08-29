@@ -1,5 +1,24 @@
 # The next six weeks
 
+## This is triage
+
+Month 8. An exchange between the two central models is two months late and
+arrived in a format the receiver did not plan for. Two partners disagree about
+what several interface variables mean and who owns them, and one of them has
+already built against its own reading. The risk laboratory says the interface
+cannot carry the claims it exists to make. Nobody has demonstrated that the
+coupling everyone assumed is either necessary or achievable. Second-year funding
+is in question.
+
+That is an acute crisis rather than a programme that needs improving, and the
+plan below is shaped accordingly. A consortium in this position does not run six
+weeks of discovery and present findings. It gets one thing running in two weeks,
+however crudely, and improves it every week after that.
+
+The framing also changes what can be asked for. Partners accept direction in an
+acute crisis that they would decline in business as usual, and the window for
+that closes as soon as the crisis is declared over. Week 1 uses it.
+
 ## What has to be true at the end
 
 The brief fixes the target. One repeatable end-to-end demonstration of a
@@ -99,30 +118,31 @@ Publishing it is not a negotiation.
 
 ## Where Helix sits
 
-The demonstration needs three things: a proposed configuration, a model that
-says what happens under it, and a material stress event. Solis and Tharsis
-supply the first two. Meridian supplies the third. Helix's translation layer
-supplies none of them, and the brief is explicit that a finished platform is not
-what six weeks is for.
+The brief gives Helix no consumes clause and no produces clause. It says only
+that Helix is developing a schema translation and compatibility layer, and that
+it has already built tooling against a provisional interpretation of an
+interface. Nothing else about it is stated, and nothing else is assumed here.
 
-So Helix is in the room and off the critical path, which are different
-positions rather than a compromise between two.
+Helix stays in every technical session because it has working code sitting on the
+one exchange that has already failed, and nobody else does. That is the reason,
+rather than any deliverable the plan has given it. If the week-2 skeleton
+needs something to move data between Solis and Tharsis, the fastest available
+answer is the adapter Helix has already built, re-pointed to whatever the week-one
+ruling says, which is a diff rather than a rewrite. That would turn its existing
+work from the cause of a dispute into the thing that gets the consortium to an
+end-to-end run weeks earlier.
 
-In the room, because the disagreement the brief names is between Tharsis and
-Helix and it is about the meaning and ownership of interface variables, which is
-precisely what track A declares. Helix gets its answer as a by-product, and its
-provisional tooling is validated or corrected against the contract in week three
-rather than found to be wrong in month twelve. The cost of this is an
-invitation.
+Whether it plays out that way is not knowable from the brief, so the plan does
+not depend on it. Helix is in the room because it might have something to bring,
+and because the variables under dispute are the ones it has already interpreted.
+Keeping it out would mean settling a contract that contradicts working code.
 
-Off the critical path, because building the translation layer is the platform
-work the brief sets aside, and nothing in the demonstration waits on it.
-
-This also leaves the plan robust to a real gap in the brief. Helix is described
-as developing a schema translation and compatibility layer, with no consumes
-clause and no produces clause, so what it exchanges with anyone is unstated.
-Rather than assume a role for it, the plan is arranged so that the demonstration
-does not depend on which role it turns out to hold.
+One thing Helix is deliberately not given, and this part is not a judgement about
+Helix. A translation layer converts between vocabularies and cannot rule on what
+a variable means, and nobody in the consortium could confer that standing on it.
+So it attends every technical session and no session that settles meaning or
+ownership. A test in `tests/test_check.py` asserts the seating plan honours that,
+rather than leaving it as an intention.
 
 ## Weeks 4 to 6: run it
 

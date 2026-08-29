@@ -104,6 +104,44 @@
       td.subject { white-space: nowrap; color: var(--mute); font-size: .78rem; }
       code { background: var(--code); border-radius: 3px; padding: .05rem .3rem;
              font-size: .9em; }
+      .bars { display: grid; grid-template-columns: repeat(6, 1fr); gap: .3rem;
+              margin: .9rem 0 .3rem; }
+      .bar { grid-row: auto; background: var(--panel); border: 1px solid var(--rule);
+             border-radius: 6px; padding: .35rem .6rem; }
+      .bar.crit { border-color: var(--link); background: #eff6ff; }
+      .bar b { display: block; font-size: .76rem; color: var(--ink); font-weight: 600; }
+      .bar span { font-size: .68rem; color: var(--mute); }
+      .cal { display: grid; grid-template-columns: repeat(6, 1fr); gap: .45rem;
+             margin-top: .45rem; }
+      .week { border: 1px solid var(--rule); border-radius: 8px; padding: .5rem .55rem;
+              display: flex; flex-direction: column; gap: .35rem; }
+      .week h4 { margin: 0; font-size: .66rem; text-transform: uppercase;
+                 letter-spacing: .18em; color: var(--faint); font-weight: 600; }
+      .mile { border-left: 3px solid var(--rule); padding-left: .45rem; }
+      .mile.skeleton { border-left-color: var(--pos); }
+      .mile.buffer   { border-left-color: #f59e0b; }
+      .mile.demo     { border-left-color: var(--ink); }
+      .mile.gate     { border-left-color: var(--link); }
+      .mile b { display: block; font-size: .78rem; color: var(--ink); font-weight: 600; }
+      .mile span, .sess span { display: block; font-size: .67rem; color: var(--mute);
+                               line-height: 1.4; }
+      .sess { background: var(--panel); border-radius: 5px; padding: .35rem .45rem;
+              border-left: 3px solid transparent; }
+      .sess.auth { border-left-color: var(--link); }
+      .sess b { font-size: .74rem; color: var(--ink); font-weight: 600; }
+      .who { float: right; letter-spacing: .04em; }
+      .dot { font-style: normal; display: inline-block; width: 1.05em; height: 1.05em;
+             line-height: 1.05em; text-align: center; border-radius: 50%;
+             font-size: .58rem; font-weight: 700; margin-left: .1em; }
+      .dot.on  { background: var(--ink); color: #fff; }
+      .dot.off { background: transparent; color: var(--rule);
+                 box-shadow: inset 0 0 0 1px var(--rule); }
+      .gate { margin-top: auto; padding-top: .35rem; border-top: 1px dashed var(--rule);
+              font-size: .65rem; color: var(--head); }
+      @media (max-width: 900px) {
+        .cal, .bars { grid-template-columns: repeat(2, 1fr); }
+        .bar { grid-column: auto !important; }
+      }
       footer { margin-top: 2.6rem; padding-top: .8rem; border-top: 1px solid var(--rule);
                font-size: .78rem; color: var(--faint); max-width: 76ch; }
     </style>
