@@ -164,6 +164,37 @@ visibly empty. An empty cell is an acceptable outcome. An unnoticed one is not.
 End of week 5: the stress case has run. If it has not, week 6 reports on the
 normal case and says so, rather than compressing the traceability pass.
 
+## What would show this recommendation was wrong
+
+The headline claim here is that tight bidirectional coupling is necessary. A
+claim that cannot fail is not a finding, and this one can be tested by the
+demonstration itself at no extra cost.
+
+Week 5 runs the stress case iterated. Solis proposes a configuration, Tharsis
+simulates it, and Solis revises. The test is the size of that revision.
+
+If Solis's revised configuration comes back within tolerance of its first, then
+seeing the hourly trace under stress did not change what it would build, the
+feedback between the two models is weak, one pass suffices, and the
+recommendation is wrong. The four gaps stand either way, because an unowned
+object is unowned regardless of how the models are coupled, but the coupling
+argument does not survive.
+
+If the revision is large, the consortium's own numbers support the necessity
+claim, rather than an argument about correlated failure supporting it.
+
+The tolerance is set in week 1, before anyone has seen a result. A threshold
+chosen after the fact is not a test, it is a description. Setting it early also
+means the partners agree what would change the recommendation before they have
+any stake in the answer.
+
+This is deliberate for a second reason. The AI-use disclosure records that a
+fluent, well-argued and wrong recommendation survived most of a working session
+and had to be overruled by a person. The honest response to being asked how the
+current position differs is not to claim better reasoning. It is to state in
+advance what result would overturn it, and to put that result inside the
+demonstration.
+
 ## What is deliberately not in the six weeks
 
 No second model-to-model coupling. Partner capacity will not carry two contracts
