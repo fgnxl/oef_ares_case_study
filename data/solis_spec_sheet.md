@@ -1,4 +1,3 @@
-<!-- lint-role: specimen-document: synthetic partner declaration written in another organisation's voice. House style governs this repository's own prose, not a document it is quoting as evidence. -->
 <!-- Synthetic partner declaration, format 1 of 4: a spec sheet.
 
 Tabular, terse, units in the header row, no prose. The format that looks most

@@ -1,4 +1,3 @@
-<!-- lint-role: specimen-document: synthetic partner declaration written in another organisation's voice. House style governs this repository's own prose, not a document it is quoting as evidence. -->
 <!-- Synthetic partner declaration, format 2 of 4: a README paragraph.
 
 Prose. States the interface in passing, in a section about something else, with
