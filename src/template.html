@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Page shell for the generated artifact. render.py fills the $placeholders using
+  Page shell for the generated artifact. render.py fills the $$placeholders using
   string.Template from the standard library, so every literal dollar sign in the
   CSS or JavaScript below must be written $$.
 
@@ -9,9 +9,9 @@
   diffable as what they are.
 
   Placeholders:
-    $title      page title
-    $data       the model, serialised to JSON, embedded in a script tag
-    $body       the server-free rendered content
+    $$title      page title
+    $$data       the model, serialised to JSON, embedded in a script tag
+    $$body       the server-free rendered content
 -->
 <html lang="en">
   <head>
@@ -19,7 +19,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>$title</title>
     <style>
-      /* Inlined stylesheet. No external references. */
+      /* Inlined stylesheet. No external references, no web fonts. */
+      :root {
+        --ink:    #0f172a;
+        --head:   #334155;
+        --body:   #475569;
+        --mute:   #64748b;
+        --faint:  #94a3b8;
+        --rule:   #e2e8f0;
+        --panel:  #f8fafc;
+        --code:   #f1f5f9;
+        --link:   #0d9488;
+        --neg:    #b4442c;
+        --pos:    #0f766e;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; background: #fff; color: var(--body);
+        font: 0.95rem/1.55 Inter, -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-variant-numeric: tabular-nums;
+      }
+      .wrap { max-width: 1060px; margin: 2.2rem auto; padding: 0 1.1rem 4rem; }
+      h1 { font-size: 1.45rem; color: var(--ink); margin: 0 0 .35rem;
+           letter-spacing: -0.01em; font-weight: 700; }
+      .lede { font-size: .95rem; color: var(--mute); margin: 0 0 1.4rem; max-width: 68ch; }
+      h2 { font-size: 1.02rem; color: var(--head); font-weight: 600;
+           margin: 2.2rem 0 .4rem; }
+      .callout { background: var(--panel); border-left: 3px solid var(--ink);
+                 border-radius: 0 8px 8px 0; padding: .85rem 1.1rem; margin: 0 0 1.4rem;
+                 color: var(--ink); font-size: 1.0rem; max-width: 74ch; }
+      .callout b { font-weight: 700; }
+      .counts { display: flex; gap: 2rem; flex-wrap: wrap; padding: .9rem 0 0;
+                border-top: 1px solid var(--rule); margin-bottom: .5rem; }
+      .count b { display: block; font-size: 1.5rem; color: var(--ink); font-weight: 700;
+                 line-height: 1.15; }
+      .count span { font-size: .72rem; color: var(--faint); text-transform: uppercase;
+                    letter-spacing: .07em; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(244px, 1fr));
+              gap: .75rem; }
+      .partner { background: #fff; border: 1px solid var(--rule); border-radius: 8px;
+                 padding: .9rem .9rem .8rem; }
+      .partner h3 { margin: 0; font-size: 1rem; color: var(--ink); font-weight: 600; }
+      .partner .role { color: var(--faint); font-size: .72rem; margin: .1rem 0 .7rem;
+                       text-transform: uppercase; letter-spacing: .06em; }
+      .surface { margin-top: .65rem; }
+      .surface > span { font-size: .68rem; text-transform: uppercase;
+                        letter-spacing: .09em; color: var(--faint); }
+      .chip { display: block; width: 100%; text-align: left; cursor: pointer;
+              font: inherit; font-size: .82rem; margin-top: .3rem; padding: .3rem .5rem;
+              background: var(--panel); color: var(--ink); border-radius: 4px;
+              border: 1px solid var(--rule); border-left-width: 3px; }
+      .chip.matched { border-left-color: var(--pos); }
+      .chip.orphan  { border-left-color: var(--neg); background: #fff; }
+      .chip:hover { border-color: var(--link); border-left-color: var(--link); }
+      .chip[aria-pressed="true"] { background: var(--ink); color: #fff;
+                                   border-color: var(--ink); border-left-color: var(--link); }
+      .chip em { font-style: normal; color: var(--faint); font-size: .7rem;
+                 display: block; margin-top: .05rem; }
+      .chip[aria-pressed="true"] em { color: var(--faint); }
+      .empty { color: var(--neg); font-size: .8rem; margin-top: .3rem; }
+      .legend { font-size: .8rem; color: var(--mute); margin: .7rem 0 0; max-width: 78ch; }
+      .legend b { color: var(--ink); font-weight: 600; }
+      .controls { display: flex; gap: .4rem; flex-wrap: wrap; margin: .5rem 0 .7rem; }
+      .controls button { font: inherit; font-size: .78rem; padding: .2rem .7rem;
+                         border: 1px solid var(--rule); background: #fff;
+                         border-radius: 4px; cursor: pointer; color: var(--mute); }
+      .controls button[aria-pressed="true"] { background: var(--ink); color: #fff;
+                                              border-color: var(--ink); }
+      table { border-collapse: collapse; width: 100%; font-size: .82rem; }
+      th { text-align: left; font-size: .68rem; text-transform: uppercase;
+           letter-spacing: .08em; color: var(--faint); font-weight: 600;
+           padding: 0 .7rem .45rem 0; border-bottom: 1px solid var(--rule); }
+      td { padding: .45rem .7rem .45rem 0; border-bottom: 1px solid var(--rule);
+           vertical-align: top; color: var(--body); }
+      td.rule { white-space: nowrap; font-size: .7rem; letter-spacing: .04em;
+                font-weight: 600; }
+      tr.blocking td.rule { color: var(--neg); }
+      tr.reported td.rule { color: var(--mute); }
+      tr.advisory td.rule { color: var(--faint); }
+      td.subject { white-space: nowrap; color: var(--mute); font-size: .78rem; }
+      code { background: var(--code); border-radius: 3px; padding: .05rem .3rem;
+             font-size: .9em; }
+      footer { margin-top: 2.6rem; padding-top: .8rem; border-top: 1px solid var(--rule);
+               font-size: .78rem; color: var(--faint); max-width: 76ch; }
     </style>
   </head>
   <body>
@@ -27,6 +109,51 @@
     <script type="application/json" id="model">$data</script>
     <script>
       // Inlined script. No external references, no network calls.
+      (function () {
+        var model = JSON.parse(document.getElementById("model").textContent);
+        var rows = Array.prototype.slice.call(
+          document.querySelectorAll("#findings tbody tr"));
+        var chips = Array.prototype.slice.call(document.querySelectorAll(".chip"));
+        var buttons = Array.prototype.slice.call(
+          document.querySelectorAll(".controls button"));
+        var item = null, severity = "all";
+
+        function apply() {
+          var shown = 0;
+          rows.forEach(function (tr) {
+            var okSev = severity === "all" || tr.className === severity;
+            var okItem = !item || (tr.dataset.items || "").split("|").indexOf(item) > -1;
+            var on = okSev && okItem;
+            tr.hidden = !on;
+            if (on) { shown += 1; }
+          });
+          var c = document.getElementById("shown");
+          if (c) { c.textContent = shown; }
+        }
+
+        chips.forEach(function (chip) {
+          chip.addEventListener("click", function () {
+            var key = chip.dataset.key;
+            item = (item === key) ? null : key;
+            chips.forEach(function (c) {
+              c.setAttribute("aria-pressed", String(c.dataset.key === item));
+            });
+            apply();
+          });
+        });
+
+        buttons.forEach(function (b) {
+          b.addEventListener("click", function () {
+            severity = b.dataset.severity;
+            buttons.forEach(function (o) {
+              o.setAttribute("aria-pressed", String(o === b));
+            });
+            apply();
+          });
+        });
+
+        apply();
+      })();
     </script>
   </body>
 </html>

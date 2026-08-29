@@ -1,0 +1,3312 @@
+<!doctype html>
+<!--
+  Page shell for the generated artifact. render.py fills the $placeholders using
+  string.Template from the standard library, so every literal dollar sign in the
+  CSS or JavaScript below must be written $.
+
+  This file stays a real .html file rather than a triple-quoted string in
+  render.py so that the markup, the styles and the script are editable and
+  diffable as what they are.
+
+  Placeholders:
+    $title      page title
+    $data       the model, serialised to JSON, embedded in a script tag
+    $body       the server-free rendered content
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ARES interface map</title>
+    <style>
+      /* Inlined stylesheet. No external references, no web fonts. */
+      :root {
+        --ink:    #0f172a;
+        --head:   #334155;
+        --body:   #475569;
+        --mute:   #64748b;
+        --faint:  #94a3b8;
+        --rule:   #e2e8f0;
+        --panel:  #f8fafc;
+        --code:   #f1f5f9;
+        --link:   #0d9488;
+        --neg:    #b4442c;
+        --pos:    #0f766e;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; background: #fff; color: var(--body);
+        font: 0.95rem/1.55 Inter, -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-variant-numeric: tabular-nums;
+      }
+      .wrap { max-width: 1060px; margin: 2.2rem auto; padding: 0 1.1rem 4rem; }
+      h1 { font-size: 1.45rem; color: var(--ink); margin: 0 0 .35rem;
+           letter-spacing: -0.01em; font-weight: 700; }
+      .lede { font-size: .95rem; color: var(--mute); margin: 0 0 1.4rem; max-width: 68ch; }
+      h2 { font-size: 1.02rem; color: var(--head); font-weight: 600;
+           margin: 2.2rem 0 .4rem; }
+      .callout { background: var(--panel); border-left: 3px solid var(--ink);
+                 border-radius: 0 8px 8px 0; padding: .85rem 1.1rem; margin: 0 0 1.4rem;
+                 color: var(--ink); font-size: 1.0rem; max-width: 74ch; }
+      .callout b { font-weight: 700; }
+      .counts { display: flex; gap: 2rem; flex-wrap: wrap; padding: .9rem 0 0;
+                border-top: 1px solid var(--rule); margin-bottom: .5rem; }
+      .count b { display: block; font-size: 1.5rem; color: var(--ink); font-weight: 700;
+                 line-height: 1.15; }
+      .count span { font-size: .72rem; color: var(--faint); text-transform: uppercase;
+                    letter-spacing: .07em; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(244px, 1fr));
+              gap: .75rem; }
+      .partner { background: #fff; border: 1px solid var(--rule); border-radius: 8px;
+                 padding: .9rem .9rem .8rem; }
+      .partner h3 { margin: 0; font-size: 1rem; color: var(--ink); font-weight: 600; }
+      .partner .role { color: var(--faint); font-size: .72rem; margin: .1rem 0 .7rem;
+                       text-transform: uppercase; letter-spacing: .06em; }
+      .surface { margin-top: .65rem; }
+      .surface > span { font-size: .68rem; text-transform: uppercase;
+                        letter-spacing: .09em; color: var(--faint); }
+      .chip { display: block; width: 100%; text-align: left; cursor: pointer;
+              font: inherit; font-size: .82rem; margin-top: .3rem; padding: .3rem .5rem;
+              background: var(--panel); color: var(--ink); border-radius: 4px;
+              border: 1px solid var(--rule); border-left-width: 3px; }
+      .chip.matched { border-left-color: var(--pos); }
+      .chip.orphan  { border-left-color: var(--neg); background: #fff; }
+      .chip:hover { border-color: var(--link); border-left-color: var(--link); }
+      .chip[aria-pressed="true"] { background: var(--ink); color: #fff;
+                                   border-color: var(--ink); border-left-color: var(--link); }
+      .chip em { font-style: normal; color: var(--faint); font-size: .7rem;
+                 display: block; margin-top: .05rem; }
+      .chip[aria-pressed="true"] em { color: var(--faint); }
+      .empty { color: var(--neg); font-size: .8rem; margin-top: .3rem; }
+      .legend { font-size: .8rem; color: var(--mute); margin: .7rem 0 0; max-width: 78ch; }
+      .legend b { color: var(--ink); font-weight: 600; }
+      .controls { display: flex; gap: .4rem; flex-wrap: wrap; margin: .5rem 0 .7rem; }
+      .controls button { font: inherit; font-size: .78rem; padding: .2rem .7rem;
+                         border: 1px solid var(--rule); background: #fff;
+                         border-radius: 4px; cursor: pointer; color: var(--mute); }
+      .controls button[aria-pressed="true"] { background: var(--ink); color: #fff;
+                                              border-color: var(--ink); }
+      table { border-collapse: collapse; width: 100%; font-size: .82rem; }
+      th { text-align: left; font-size: .68rem; text-transform: uppercase;
+           letter-spacing: .08em; color: var(--faint); font-weight: 600;
+           padding: 0 .7rem .45rem 0; border-bottom: 1px solid var(--rule); }
+      td { padding: .45rem .7rem .45rem 0; border-bottom: 1px solid var(--rule);
+           vertical-align: top; color: var(--body); }
+      td.rule { white-space: nowrap; font-size: .7rem; letter-spacing: .04em;
+                font-weight: 600; }
+      tr.blocking td.rule { color: var(--neg); }
+      tr.reported td.rule { color: var(--mute); }
+      tr.advisory td.rule { color: var(--faint); }
+      td.subject { white-space: nowrap; color: var(--mute); font-size: .78rem; }
+      code { background: var(--code); border-radius: 3px; padding: .05rem .3rem;
+             font-size: .9em; }
+      footer { margin-top: 2.6rem; padding-top: .8rem; border-top: 1px solid var(--rule);
+               font-size: .78rem; color: var(--faint); max-width: 76ch; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap"><h1>ARES interface map</h1><p class="lede">Every partner declaration in the consortium, read as an interface contract. Solid where an exchange has an owner on both sides, broken where it does not.</p><div class="counts"><div class="count"><b>4</b><span>partners</span></div><div class="count"><b>43</b><span>declarations</span></div><div class="count"><b>35/430</b><span>clauses stated</span></div><div class="count"><b>1</b><span>exchanges identifiable</span></div><div class="count"><b>44</b><span>blocking findings</span></div></div><h2>The boundary</h2><div class="grid"><article class="partner"><h3>Helix</h3><p class="role">schema translation and compatibility layer</p><div class="surface"><span>consumes</span><button class="chip orphan" data-key="Helix:configuration" aria-pressed="false">configuration<em>10 clauses unstated</em></button><button class="chip orphan" data-key="Helix:demand" aria-pressed="false">demand<em>10 clauses unstated</em></button><button class="chip orphan" data-key="Helix:limits" aria-pressed="false">limits<em>10 clauses unstated</em></button></div><div class="surface"><span>produces</span><button class="chip orphan" data-key="Helix:availability" aria-pressed="false">availability<em>10 clauses unstated</em></button><button class="chip orphan" data-key="Helix:shortfalls" aria-pressed="false">shortfalls<em>10 clauses unstated</em></button></div></article><article class="partner"><h3>Meridian</h3><p class="role">public mission-risk institute</p><div class="surface"><span>consumes</span><p class="empty">nothing declared</p></div><div class="surface"><span>produces</span><button class="chip orphan" data-key="Meridian:acceptable service levels" aria-pressed="false">acceptable service levels<em>kPa, mmHg, percent, sols &middot; threshold &middot; 9 clauses unstated</em></button><button class="chip orphan" data-key="Meridian:stress scenarios" aria-pressed="false">stress scenarios<em>sols &middot; 9 clauses unstated</em></button><button class="chip orphan" data-key="Meridian:evidence requirements" aria-pressed="false">evidence requirements<em>10 clauses unstated</em></button></div></article><article class="partner"><h3>Solis</h3><p class="role">commercial infrastructure modeller</p><div class="surface"><span>consumes</span><button class="chip orphan" data-key="Solis:specific mass by generation technology" aria-pressed="false">specific mass by generation technology<em>kg/kWe &middot; annual &middot; 8 clauses unstated</em></button><button class="chip orphan" data-key="Solis:specific energy by storage technology" aria-pressed="false">specific energy by storage technology<em>Wh/kg &middot; annual &middot; 8 clauses unstated</em></button><button class="chip orphan" data-key="Solis:round-trip efficiency by storage technology" aria-pressed="false">round-trip efficiency by storage technology<em>percent &middot; annual &middot; 8 clauses unstated</em></button><button class="chip orphan" data-key="Solis:pv conversion efficiency at reference conditions" aria-pressed="false">pv conversion efficiency at reference conditions<em>percent &middot; annual &middot; 8 clauses unstated</em></button><button class="chip orphan" data-key="Solis:launch mass available per cargo window" aria-pressed="false">launch mass available per cargo window<em>kg per synodic period &middot; annual &middot; 8 clauses unstated</em></button><button class="chip orphan" data-key="Solis:in-situ water availability at site" aria-pressed="false">in-situ water availability at site<em>kg/sol extractable &middot; annual &middot; 8 clauses unstated</em></button><button class="chip orphan" data-key="Solis:crew maintenance hours available" aria-pressed="false">crew maintenance hours available<em>crew-hours/week &middot; annual &middot; 8 clauses unstated</em></button><button class="chip orphan" data-key="Solis:demand envelope, electrical" aria-pressed="false">demand envelope, electrical<em>kWe &middot; annual &middot; bound &middot; 9 clauses unstated</em></button><button class="chip orphan" data-key="Solis:demand envelope, potable and hygiene water" aria-pressed="false">demand envelope, potable and hygiene water<em>kg/day &middot; annual &middot; bound &middot; 9 clauses unstated</em></button><button class="chip orphan" data-key="Solis:demand envelope, oxygen" aria-pressed="false">demand envelope, oxygen<em>kg/day &middot; annual &middot; bound &middot; 9 clauses unstated</em></button></div><div class="surface"><span>produces</span><button class="chip matched" data-key="Solis:capacity choices" aria-pressed="false">capacity choices<em>annual &middot; decision &middot; 10 clauses unstated</em></button><button class="chip orphan" data-key="Solis:operating envelopes" aria-pressed="false">operating envelopes<em>annual &middot; bound &middot; 10 clauses unstated</em></button><button class="chip orphan" data-key="Solis:resource allocations" aria-pressed="false">resource allocations<em>annual &middot; 10 clauses unstated</em></button><button class="chip orphan" data-key="Solis:system trade-offs" aria-pressed="false">system trade-offs<em>annual &middot; 10 clauses unstated</em></button><button class="chip orphan" data-key="Solis:installed pv array peak rating" aria-pressed="false">installed pv array peak rating<em>kWe, AM0, 28 C, beginning of life &middot; annual &middot; decision &middot; 9 clauses unstated</em></button><button class="chip orphan" data-key="Solis:fission surface power units installed" aria-pressed="false">fission surface power units installed<em>count x kWe per unit &middot; annual &middot; decision &middot; 9 clauses unstated</em></button><button class="chip orphan" data-key="Solis:battery bank capacity" aria-pressed="false">battery bank capacity<em>kWh &middot; annual &middot; decision &middot; 9 clauses unstated</em></button><button class="chip orphan" data-key="Solis:regenerative fuel cell reactant storage" aria-pressed="false">regenerative fuel cell reactant storage<em>kg H2, kg O2 &middot; annual &middot; decision &middot; 9 clauses unstated</em></button><button class="chip orphan" data-key="Solis:electrolyser rated power" aria-pressed="false">electrolyser rated power<em>kW &middot; annual &middot; decision &middot; 9 clauses unstated</em></button><button class="chip orphan" data-key="Solis:water recovery loop throughput" aria-pressed="false">water recovery loop throughput<em>kg/day &middot; annual &middot; decision &middot; 9 clauses unstated</em></button><button class="chip orphan" data-key="Solis:oxygen generation rated capacity" aria-pressed="false">oxygen generation rated capacity<em>kg/day &middot; annual &middot; decision &middot; 9 clauses unstated</em></button><button class="chip orphan" data-key="Solis:crop growing area under cultivation" aria-pressed="false">crop growing area under cultivation<em>m2 &middot; annual &middot; decision &middot; 9 clauses unstated</em></button><button class="chip orphan" data-key="Solis:battery state of charge floor" aria-pressed="false">battery state of charge floor<em>percent &middot; annual &middot; bound &middot; 9 clauses unstated</em></button><button class="chip orphan" data-key="Solis:reactor minimum stable output" aria-pressed="false">reactor minimum stable output<em>fraction of rated &middot; annual &middot; bound &middot; 9 clauses unstated</em></button><button class="chip orphan" data-key="Solis:electrolyser turndown band" aria-pressed="false">electrolyser turndown band<em>kW min to kW max &middot; annual &middot; bound &middot; 9 clauses unstated</em></button><button class="chip orphan" data-key="Solis:dust storm ride-through target" aria-pressed="false">dust storm ride-through target<em>sols at reduced insolation &middot; annual &middot; bound &middot; 9 clauses unstated</em></button><button class="chip orphan" data-key="Solis:power apportioned by consumer" aria-pressed="false">power apportioned by consumer<em>kWe per consumer class &middot; annual &middot; 9 clauses unstated</em></button><button class="chip orphan" data-key="Solis:water apportioned by consumer" aria-pressed="false">water apportioned by consumer<em>kg/day per consumer class &middot; annual &middot; 9 clauses unstated</em></button><button class="chip orphan" data-key="Solis:landed mass per guaranteed kwe" aria-pressed="false">landed mass per guaranteed kwe<em>kg/kWe &middot; annual &middot; 9 clauses unstated</em></button></div></article><article class="partner"><h3>Tharsis</h3><p class="role">university simulation team</p><div class="surface"><span>consumes</span><button class="chip matched" data-key="Tharsis:available capacity" aria-pressed="false">available capacity<em>hourly on the sol axis &middot; state &middot; 10 clauses unstated</em></button><button class="chip orphan" data-key="Tharsis:operating constraints" aria-pressed="false">operating constraints<em>hourly on the sol axis &middot; bound &middot; 10 clauses unstated</em></button><button class="chip orphan" data-key="Tharsis:population schedules" aria-pressed="false">population schedules<em>schedule &middot; 9 clauses unstated</em></button></div><div class="surface"><span>produces</span><button class="chip orphan" data-key="Tharsis:time-series demand" aria-pressed="false">time-series demand<em>per commodity, unit unstated &middot; hourly on the sol axis &middot; series &middot; 10 clauses unstated</em></button><button class="chip orphan" data-key="Tharsis:service shortfalls" aria-pressed="false">service shortfalls<em>hourly on the sol axis &middot; series &middot; 10 clauses unstated</em></button><button class="chip orphan" data-key="Tharsis:operational responses" aria-pressed="false">operational responses<em>hourly on the sol axis &middot; 10 clauses unstated</em></button></div></article></div><p class="legend"><b>Solid</b> means the item is part of an exchange this tool could identify. <b>Broken</b> means it is not: an input no partner produces, or an output no partner consumes. Select any item to filter the findings to it.</p><h2>Findings</h2><div class="controls"><button data-severity="all" aria-pressed="true">all</button><button data-severity="blocking" aria-pressed="false">blocking</button><button data-severity="reported" aria-pressed="false">reported</button><button data-severity="advisory" aria-pressed="false">advisory</button></div><table id="findings"><thead><tr><th>Rule</th><th>Subject</th><th>Finding (<span id="shown">105</span> shown)</th></tr></thead><tbody><tr class="blocking" data-items="Helix:configuration"><td class="rule">UNMATCHED_CONSUMPTION</td><td class="subject">Helix consumes &#x27;configuration&#x27;</td><td>Helix requires &#x27;configuration&#x27; and no partner produces anything resembling it. The input has no owner.</td></tr><tr class="blocking" data-items="Helix:demand"><td class="rule">UNMATCHED_CONSUMPTION</td><td class="subject">Helix consumes &#x27;demand&#x27;</td><td>Helix requires &#x27;demand&#x27; and no partner produces anything resembling it. The input has no owner.</td></tr><tr class="blocking" data-items="Helix:limits"><td class="rule">UNMATCHED_CONSUMPTION</td><td class="subject">Helix consumes &#x27;limits&#x27;</td><td>Helix requires &#x27;limits&#x27; and no partner produces anything resembling it. The input has no owner.</td></tr><tr class="blocking" data-items="Solis:crew maintenance hours available"><td class="rule">UNMATCHED_CONSUMPTION</td><td class="subject">Solis consumes &#x27;crew maintenance hours available&#x27;</td><td>Solis requires &#x27;crew maintenance hours available&#x27; and no partner produces anything resembling it. The input has no owner.</td></tr><tr class="blocking" data-items="Helix:demand|Solis:demand envelope, electrical"><td class="rule">UNMATCHED_CONSUMPTION</td><td class="subject">Solis consumes &#x27;demand envelope, electrical&#x27;</td><td>Solis requires &#x27;demand envelope, electrical&#x27; and no partner produces anything resembling it. The input has no owner.</td></tr><tr class="blocking" data-items="Helix:demand|Solis:demand envelope, oxygen"><td class="rule">UNMATCHED_CONSUMPTION</td><td class="subject">Solis consumes &#x27;demand envelope, oxygen&#x27;</td><td>Solis requires &#x27;demand envelope, oxygen&#x27; and no partner produces anything resembling it. The input has no owner.</td></tr><tr class="blocking" data-items="Helix:demand|Solis:demand envelope, potable and hygiene water"><td class="rule">UNMATCHED_CONSUMPTION</td><td class="subject">Solis consumes &#x27;demand envelope, potable and hygiene water&#x27;</td><td>Solis requires &#x27;demand envelope, potable and hygiene water&#x27; and no partner produces anything resembling it. The input has no owner.</td></tr><tr class="blocking" data-items="Helix:availability|Solis:in-situ water availability at site"><td class="rule">UNMATCHED_CONSUMPTION</td><td class="subject">Solis consumes &#x27;in-situ water availability at site&#x27;</td><td>Solis requires &#x27;in-situ water availability at site&#x27; and no partner produces anything resembling it. The input has no owner.</td></tr><tr class="blocking" data-items="Solis:launch mass available per cargo window"><td class="rule">UNMATCHED_CONSUMPTION</td><td class="subject">Solis consumes &#x27;launch mass available per cargo window&#x27;</td><td>Solis requires &#x27;launch mass available per cargo window&#x27; and no partner produces anything resembling it. The input has no owner.</td></tr><tr class="blocking" data-items="Solis:pv conversion efficiency at reference conditions"><td class="rule">UNMATCHED_CONSUMPTION</td><td class="subject">Solis consumes &#x27;pv conversion efficiency at reference conditions&#x27;</td><td>Solis requires &#x27;pv conversion efficiency at reference conditions&#x27; and no partner produces anything resembling it. The input has no owner.</td></tr><tr class="blocking" data-items="Solis:round-trip efficiency by storage technology"><td class="rule">UNMATCHED_CONSUMPTION</td><td class="subject">Solis consumes &#x27;round-trip efficiency by storage technology&#x27;</td><td>Solis requires &#x27;round-trip efficiency by storage technology&#x27; and no partner produces anything resembling it. The input has no owner.</td></tr><tr class="blocking" data-items="Solis:specific energy by storage technology"><td class="rule">UNMATCHED_CONSUMPTION</td><td class="subject">Solis consumes &#x27;specific energy by storage technology&#x27;</td><td>Solis requires &#x27;specific energy by storage technology&#x27; and no partner produces anything resembling it. The input has no owner.</td></tr><tr class="blocking" data-items="Solis:specific mass by generation technology"><td class="rule">UNMATCHED_CONSUMPTION</td><td class="subject">Solis consumes &#x27;specific mass by generation technology&#x27;</td><td>Solis requires &#x27;specific mass by generation technology&#x27; and no partner produces anything resembling it. The input has no owner.</td></tr><tr class="blocking" data-items="Tharsis:operating constraints"><td class="rule">UNMATCHED_CONSUMPTION</td><td class="subject">Tharsis consumes &#x27;operating constraints&#x27;</td><td>Tharsis requires &#x27;operating constraints&#x27; and no partner produces anything resembling it. The input has no owner.</td></tr><tr class="blocking" data-items="Tharsis:population schedules"><td class="rule">UNMATCHED_CONSUMPTION</td><td class="subject">Tharsis consumes &#x27;population schedules&#x27;</td><td>Tharsis requires &#x27;population schedules&#x27; and no partner produces anything resembling it. The input has no owner.</td></tr><tr class="blocking" data-items="Helix:availability"><td class="rule">UNROUTED_PRODUCTION</td><td class="subject">Helix produces &#x27;availability&#x27;</td><td>Helix publishes &#x27;availability&#x27; and no partner consumes anything resembling it. The output has no route.</td></tr><tr class="blocking" data-items="Helix:shortfalls"><td class="rule">UNROUTED_PRODUCTION</td><td class="subject">Helix produces &#x27;shortfalls&#x27;</td><td>Helix publishes &#x27;shortfalls&#x27; and no partner consumes anything resembling it. The output has no route.</td></tr><tr class="blocking" data-items="Meridian:acceptable service levels"><td class="rule">UNROUTED_PRODUCTION</td><td class="subject">Meridian produces &#x27;acceptable service levels&#x27;</td><td>Meridian publishes &#x27;acceptable service levels&#x27; and no partner consumes anything resembling it. The output has no route.</td></tr><tr class="blocking" data-items="Meridian:evidence requirements"><td class="rule">UNROUTED_PRODUCTION</td><td class="subject">Meridian produces &#x27;evidence requirements&#x27;</td><td>Meridian publishes &#x27;evidence requirements&#x27; and no partner consumes anything resembling it. The output has no route.</td></tr><tr class="blocking" data-items="Meridian:stress scenarios"><td class="rule">UNROUTED_PRODUCTION</td><td class="subject">Meridian produces &#x27;stress scenarios&#x27;</td><td>Meridian publishes &#x27;stress scenarios&#x27; and no partner consumes anything resembling it. The output has no route.</td></tr><tr class="blocking" data-items="Solis:battery bank capacity"><td class="rule">UNROUTED_PRODUCTION</td><td class="subject">Solis produces &#x27;battery bank capacity&#x27;</td><td>Solis publishes &#x27;battery bank capacity&#x27; and no partner consumes anything resembling it. The output has no route.</td></tr><tr class="blocking" data-items="Solis:battery state of charge floor"><td class="rule">UNROUTED_PRODUCTION</td><td class="subject">Solis produces &#x27;battery state of charge floor&#x27;</td><td>Solis publishes &#x27;battery state of charge floor&#x27; and no partner consumes anything resembling it. The output has no route.</td></tr><tr class="blocking" data-items="Solis:crop growing area under cultivation"><td class="rule">UNROUTED_PRODUCTION</td><td class="subject">Solis produces &#x27;crop growing area under cultivation&#x27;</td><td>Solis publishes &#x27;crop growing area under cultivation&#x27; and no partner consumes anything resembling it. The output has no route.</td></tr><tr class="blocking" data-items="Solis:dust storm ride-through target"><td class="rule">UNROUTED_PRODUCTION</td><td class="subject">Solis produces &#x27;dust storm ride-through target&#x27;</td><td>Solis publishes &#x27;dust storm ride-through target&#x27; and no partner consumes anything resembling it. The output has no route.</td></tr><tr class="blocking" data-items="Solis:electrolyser rated power"><td class="rule">UNROUTED_PRODUCTION</td><td class="subject">Solis produces &#x27;electrolyser rated power&#x27;</td><td>Solis publishes &#x27;electrolyser rated power&#x27; and no partner consumes anything resembling it. The output has no route.</td></tr><tr class="blocking" data-items="Solis:electrolyser turndown band"><td class="rule">UNROUTED_PRODUCTION</td><td class="subject">Solis produces &#x27;electrolyser turndown band&#x27;</td><td>Solis publishes &#x27;electrolyser turndown band&#x27; and no partner consumes anything resembling it. The output has no route.</td></tr><tr class="blocking" data-items="Solis:fission surface power units installed"><td class="rule">UNROUTED_PRODUCTION</td><td class="subject">Solis produces &#x27;fission surface power units installed&#x27;</td><td>Solis publishes &#x27;fission surface power units installed&#x27; and no partner consumes anything resembling it. The output has no route.</td></tr><tr class="blocking" data-items="Solis:installed pv array peak rating"><td class="rule">UNROUTED_PRODUCTION</td><td class="subject">Solis produces &#x27;installed pv array peak rating&#x27;</td><td>Solis publishes &#x27;installed pv array peak rating&#x27; and no partner consumes anything resembling it. The output has no route.</td></tr><tr class="blocking" data-items="Solis:landed mass per guaranteed kwe"><td class="rule">UNROUTED_PRODUCTION</td><td class="subject">Solis produces &#x27;landed mass per guaranteed kwe&#x27;</td><td>Solis publishes &#x27;landed mass per guaranteed kwe&#x27; and no partner consumes anything resembling it. The output has no route.</td></tr><tr class="blocking" data-items="Solis:operating envelopes"><td class="rule">UNROUTED_PRODUCTION</td><td class="subject">Solis produces &#x27;operating envelopes&#x27;</td><td>Solis publishes &#x27;operating envelopes&#x27; and no partner consumes anything resembling it. The output has no route.</td></tr><tr class="blocking" data-items="Solis:oxygen generation rated capacity"><td class="rule">UNROUTED_PRODUCTION</td><td class="subject">Solis produces &#x27;oxygen generation rated capacity&#x27;</td><td>Solis publishes &#x27;oxygen generation rated capacity&#x27; and no partner consumes anything resembling it. The output has no route.</td></tr><tr class="blocking" data-items="Solis:power apportioned by consumer"><td class="rule">UNROUTED_PRODUCTION</td><td class="subject">Solis produces &#x27;power apportioned by consumer&#x27;</td><td>Solis publishes &#x27;power apportioned by consumer&#x27; and no partner consumes anything resembling it. The output has no route.</td></tr><tr class="blocking" data-items="Solis:reactor minimum stable output"><td class="rule">UNROUTED_PRODUCTION</td><td class="subject">Solis produces &#x27;reactor minimum stable output&#x27;</td><td>Solis publishes &#x27;reactor minimum stable output&#x27; and no partner consumes anything resembling it. The output has no route.</td></tr><tr class="blocking" data-items="Solis:regenerative fuel cell reactant storage"><td class="rule">UNROUTED_PRODUCTION</td><td class="subject">Solis produces &#x27;regenerative fuel cell reactant storage&#x27;</td><td>Solis publishes &#x27;regenerative fuel cell reactant storage&#x27; and no partner consumes anything resembling it. The output has no route.</td></tr><tr class="blocking" data-items="Solis:resource allocations"><td class="rule">UNROUTED_PRODUCTION</td><td class="subject">Solis produces &#x27;resource allocations&#x27;</td><td>Solis publishes &#x27;resource allocations&#x27; and no partner consumes anything resembling it. The output has no route.</td></tr><tr class="blocking" data-items="Solis:system trade-offs"><td class="rule">UNROUTED_PRODUCTION</td><td class="subject">Solis produces &#x27;system trade-offs&#x27;</td><td>Solis publishes &#x27;system trade-offs&#x27; and no partner consumes anything resembling it. The output has no route.</td></tr><tr class="blocking" data-items="Solis:water apportioned by consumer"><td class="rule">UNROUTED_PRODUCTION</td><td class="subject">Solis produces &#x27;water apportioned by consumer&#x27;</td><td>Solis publishes &#x27;water apportioned by consumer&#x27; and no partner consumes anything resembling it. The output has no route.</td></tr><tr class="blocking" data-items="Solis:water recovery loop throughput"><td class="rule">UNROUTED_PRODUCTION</td><td class="subject">Solis produces &#x27;water recovery loop throughput&#x27;</td><td>Solis publishes &#x27;water recovery loop throughput&#x27; and no partner consumes anything resembling it. The output has no route.</td></tr><tr class="blocking" data-items="Tharsis:operational responses"><td class="rule">UNROUTED_PRODUCTION</td><td class="subject">Tharsis produces &#x27;operational responses&#x27;</td><td>Tharsis publishes &#x27;operational responses&#x27; and no partner consumes anything resembling it. The output has no route.</td></tr><tr class="blocking" data-items="Helix:shortfalls|Tharsis:service shortfalls"><td class="rule">UNROUTED_PRODUCTION</td><td class="subject">Tharsis produces &#x27;service shortfalls&#x27;</td><td>Tharsis publishes &#x27;service shortfalls&#x27; and no partner consumes anything resembling it. The output has no route.</td></tr><tr class="blocking" data-items="Helix:demand|Tharsis:time-series demand"><td class="rule">UNROUTED_PRODUCTION</td><td class="subject">Tharsis produces &#x27;time-series demand&#x27;</td><td>Tharsis publishes &#x27;time-series demand&#x27; and no partner consumes anything resembling it. The output has no route.</td></tr><tr class="blocking" data-items="Solis:capacity choices|Tharsis:available capacity"><td class="rule">UNLINKED_PAIR</td><td class="subject">Solis -&gt; Tharsis</td><td>&#x27;capacity choices&#x27; and &#x27;available capacity&#x27; overlap 50% and neither declares a contract linking them. The exchange is real and undeclared.</td></tr><tr class="blocking" data-items="Solis:capacity choices|Tharsis:available capacity"><td class="rule">KIND_MISMATCH</td><td class="subject">Solis -&gt; Tharsis</td><td>&#x27;capacity choices&#x27; is a decision and &#x27;available capacity&#x27; is a state. Converting one to the other is real work and no partner claims it.</td></tr><tr class="blocking" data-items="Solis:capacity choices|Tharsis:available capacity"><td class="rule">RESOLUTION_MISMATCH</td><td class="subject">Solis -&gt; Tharsis</td><td>&#x27;capacity choices&#x27; is temporal annual and &#x27;available capacity&#x27; is temporal hourly on the sol axis. The conversion between them is unowned.</td></tr><tr class="reported" data-items=""><td class="rule">UNDECLARED_CLAUSE</td><td class="subject">Solis: capacity choices</td><td>boundary is unstated (what it is). Tharsis must assume it, and its assumption is invisible.</td></tr><tr class="reported" data-items=""><td class="rule">UNDECLARED_CLAUSE</td><td class="subject">Solis: capacity choices</td><td>cadence is unstated (how it arrives). Tharsis must assume it, and its assumption is invisible.</td></tr><tr class="reported" data-items=""><td class="rule">UNDECLARED_CLAUSE</td><td class="subject">Solis: capacity choices</td><td>encoding is unstated (how it arrives). Tharsis must assume it, and its assumption is invisible.</td></tr><tr class="reported" data-items=""><td class="rule">UNDECLARED_CLAUSE</td><td class="subject">Solis: capacity choices</td><td>epoch is unstated (when and where it applies). Tharsis must assume it, and its assumption is invisible.</td></tr><tr class="reported" data-items=""><td class="rule">UNDECLARED_CLAUSE</td><td class="subject">Solis: capacity choices</td><td>owner is unstated (who may change it). Tharsis must assume it, and its assumption is invisible.</td></tr><tr class="reported" data-items=""><td class="rule">UNDECLARED_CLAUSE</td><td class="subject">Solis: capacity choices</td><td>scenario is unstated (which run it belongs to). Tharsis must assume it, and its assumption is invisible.</td></tr><tr class="reported" data-items=""><td class="rule">UNDECLARED_CLAUSE</td><td class="subject">Solis: capacity choices</td><td>spatial is unstated (when and where it applies). Tharsis must assume it, and its assumption is invisible.</td></tr><tr class="reported" data-items=""><td class="rule">UNDECLARED_CLAUSE</td><td class="subject">Solis: capacity choices</td><td>temporal is unstated (when and where it applies). Tharsis must assume it, and its assumption is invisible.</td></tr><tr class="reported" data-items=""><td class="rule">UNDECLARED_CLAUSE</td><td class="subject">Solis: capacity choices</td><td>uncertainty is unstated (what it is measured in). Tharsis must assume it, and its assumption is invisible.</td></tr><tr class="reported" data-items=""><td class="rule">UNDECLARED_CLAUSE</td><td class="subject">Solis: capacity choices</td><td>unit is unstated (what it is measured in). Tharsis must assume it, and its assumption is invisible.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Helix: availability</td><td>boundary was inferred, not stated: &quot;Not present in either partner&#x27;s documentation. Added because the adapters needed something to carry it. Populated by Hel&quot;.</td></tr><tr class="advisory" data-items="Solis:capacity choices"><td class="rule">INFERRED_CLAUSE</td><td class="subject">Helix: configuration</td><td>boundary was inferred, not stated: &#x27;Assumed to correspond to what Solis calls capacity choices.&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Helix: demand</td><td>boundary was inferred, not stated: &#x27;Provisional. Tharsis emits per-commodity traces, Solis reads a single bound. This schema carries both and the consumer d&#x27;.</td></tr><tr class="advisory" data-items="Solis:operating envelopes|Tharsis:operating constraints"><td class="rule">INFERRED_CLAUSE</td><td class="subject">Helix: limits</td><td>boundary was inferred, not stated: &#x27;Assumed to correspond to what Solis calls operating envelopes and what Tharsis calls operating constraints. Treated as t&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Helix: shortfalls</td><td>boundary was inferred, not stated: &#x27;Emitted by Tharsis. No consumer identified. Carried so nothing is lost in translation.&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: battery bank capacity</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: battery state of charge floor</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: capacity choices</td><td>boundary was inferred, not stated: &#x27;comprises OUT-01 through OUT-08&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: capacity choices</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: crew maintenance hours available</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: crop growing area under cultivation</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: demand envelope, electrical</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: demand envelope, oxygen</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: demand envelope, potable and hygiene water</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: dust storm ride-through target</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: electrolyser rated power</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: electrolyser turndown band</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: fission surface power units installed</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: in-situ water availability at site</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: installed pv array peak rating</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: landed mass per guaranteed kwe</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: launch mass available per cargo window</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: operating envelopes</td><td>boundary was inferred, not stated: &#x27;comprises OUT-09 through OUT-12&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: operating envelopes</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: oxygen generation rated capacity</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: power apportioned by consumer</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: pv conversion efficiency at reference conditions</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: reactor minimum stable output</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: regenerative fuel cell reactant storage</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: resource allocations</td><td>boundary was inferred, not stated: &#x27;comprises OUT-13, OUT-14&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: resource allocations</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: round-trip efficiency by storage technology</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: specific energy by storage technology</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: specific mass by generation technology</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: system trade-offs</td><td>boundary was inferred, not stated: &#x27;comprises OUT-15&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: system trade-offs</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: water apportioned by consumer</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Solis: water recovery loop throughput</td><td>temporal was inferred, not stated: &#x27;annual&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Tharsis: available capacity</td><td>epoch was inferred, not stated: &#x27;sols from arrival, 668-sol year, 24h39m35s sol&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Tharsis: available capacity</td><td>owner was inferred, not stated: &#x27;Solis&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Tharsis: available capacity</td><td>temporal was inferred, not stated: &#x27;hourly on the sol axis&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Tharsis: operating constraints</td><td>epoch was inferred, not stated: &#x27;sols from arrival, 668-sol year, 24h39m35s sol&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Tharsis: operating constraints</td><td>owner was inferred, not stated: &#x27;Solis&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Tharsis: operating constraints</td><td>temporal was inferred, not stated: &#x27;hourly on the sol axis&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Tharsis: operational responses</td><td>epoch was inferred, not stated: &#x27;sols from arrival, 668-sol year, 24h39m35s sol&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Tharsis: operational responses</td><td>temporal was inferred, not stated: &#x27;hourly on the sol axis&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Tharsis: service shortfalls</td><td>epoch was inferred, not stated: &#x27;sols from arrival, 668-sol year, 24h39m35s sol&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Tharsis: service shortfalls</td><td>temporal was inferred, not stated: &#x27;hourly on the sol axis&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Tharsis: time-series demand</td><td>epoch was inferred, not stated: &#x27;sols from arrival, 668-sol year, 24h39m35s sol&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Tharsis: time-series demand</td><td>temporal was inferred, not stated: &#x27;hourly on the sol axis&#x27;.</td></tr><tr class="advisory" data-items=""><td class="rule">INFERRED_CLAUSE</td><td class="subject">Tharsis: time-series demand</td><td>unit was inferred, not stated: &#x27;per commodity, unit unstated&#x27;.</td></tr></tbody></table><footer>Generated from the four partner declarations in <code>data/</code>. No rule in the checker names a partner, an item or a finding: applied to a boundary where every object has an owner and every clause is stated, it returns nothing. The declarations are synthetic and were written for this exercise.</footer></div>
+    <script type="application/json" id="model">{
+ "findings": [
+  {
+   "message": "Helix requires 'configuration' and no partner produces anything resembling it. The input has no owner.",
+   "rule": "UNMATCHED_CONSUMPTION",
+   "severity": "blocking",
+   "subject": "Helix consumes 'configuration'"
+  },
+  {
+   "message": "Helix requires 'demand' and no partner produces anything resembling it. The input has no owner.",
+   "rule": "UNMATCHED_CONSUMPTION",
+   "severity": "blocking",
+   "subject": "Helix consumes 'demand'"
+  },
+  {
+   "message": "Helix requires 'limits' and no partner produces anything resembling it. The input has no owner.",
+   "rule": "UNMATCHED_CONSUMPTION",
+   "severity": "blocking",
+   "subject": "Helix consumes 'limits'"
+  },
+  {
+   "message": "Solis requires 'crew maintenance hours available' and no partner produces anything resembling it. The input has no owner.",
+   "rule": "UNMATCHED_CONSUMPTION",
+   "severity": "blocking",
+   "subject": "Solis consumes 'crew maintenance hours available'"
+  },
+  {
+   "message": "Solis requires 'demand envelope, electrical' and no partner produces anything resembling it. The input has no owner.",
+   "rule": "UNMATCHED_CONSUMPTION",
+   "severity": "blocking",
+   "subject": "Solis consumes 'demand envelope, electrical'"
+  },
+  {
+   "message": "Solis requires 'demand envelope, oxygen' and no partner produces anything resembling it. The input has no owner.",
+   "rule": "UNMATCHED_CONSUMPTION",
+   "severity": "blocking",
+   "subject": "Solis consumes 'demand envelope, oxygen'"
+  },
+  {
+   "message": "Solis requires 'demand envelope, potable and hygiene water' and no partner produces anything resembling it. The input has no owner.",
+   "rule": "UNMATCHED_CONSUMPTION",
+   "severity": "blocking",
+   "subject": "Solis consumes 'demand envelope, potable and hygiene water'"
+  },
+  {
+   "message": "Solis requires 'in-situ water availability at site' and no partner produces anything resembling it. The input has no owner.",
+   "rule": "UNMATCHED_CONSUMPTION",
+   "severity": "blocking",
+   "subject": "Solis consumes 'in-situ water availability at site'"
+  },
+  {
+   "message": "Solis requires 'launch mass available per cargo window' and no partner produces anything resembling it. The input has no owner.",
+   "rule": "UNMATCHED_CONSUMPTION",
+   "severity": "blocking",
+   "subject": "Solis consumes 'launch mass available per cargo window'"
+  },
+  {
+   "message": "Solis requires 'pv conversion efficiency at reference conditions' and no partner produces anything resembling it. The input has no owner.",
+   "rule": "UNMATCHED_CONSUMPTION",
+   "severity": "blocking",
+   "subject": "Solis consumes 'pv conversion efficiency at reference conditions'"
+  },
+  {
+   "message": "Solis requires 'round-trip efficiency by storage technology' and no partner produces anything resembling it. The input has no owner.",
+   "rule": "UNMATCHED_CONSUMPTION",
+   "severity": "blocking",
+   "subject": "Solis consumes 'round-trip efficiency by storage technology'"
+  },
+  {
+   "message": "Solis requires 'specific energy by storage technology' and no partner produces anything resembling it. The input has no owner.",
+   "rule": "UNMATCHED_CONSUMPTION",
+   "severity": "blocking",
+   "subject": "Solis consumes 'specific energy by storage technology'"
+  },
+  {
+   "message": "Solis requires 'specific mass by generation technology' and no partner produces anything resembling it. The input has no owner.",
+   "rule": "UNMATCHED_CONSUMPTION",
+   "severity": "blocking",
+   "subject": "Solis consumes 'specific mass by generation technology'"
+  },
+  {
+   "message": "Tharsis requires 'operating constraints' and no partner produces anything resembling it. The input has no owner.",
+   "rule": "UNMATCHED_CONSUMPTION",
+   "severity": "blocking",
+   "subject": "Tharsis consumes 'operating constraints'"
+  },
+  {
+   "message": "Tharsis requires 'population schedules' and no partner produces anything resembling it. The input has no owner.",
+   "rule": "UNMATCHED_CONSUMPTION",
+   "severity": "blocking",
+   "subject": "Tharsis consumes 'population schedules'"
+  },
+  {
+   "message": "Helix publishes 'availability' and no partner consumes anything resembling it. The output has no route.",
+   "rule": "UNROUTED_PRODUCTION",
+   "severity": "blocking",
+   "subject": "Helix produces 'availability'"
+  },
+  {
+   "message": "Helix publishes 'shortfalls' and no partner consumes anything resembling it. The output has no route.",
+   "rule": "UNROUTED_PRODUCTION",
+   "severity": "blocking",
+   "subject": "Helix produces 'shortfalls'"
+  },
+  {
+   "message": "Meridian publishes 'acceptable service levels' and no partner consumes anything resembling it. The output has no route.",
+   "rule": "UNROUTED_PRODUCTION",
+   "severity": "blocking",
+   "subject": "Meridian produces 'acceptable service levels'"
+  },
+  {
+   "message": "Meridian publishes 'evidence requirements' and no partner consumes anything resembling it. The output has no route.",
+   "rule": "UNROUTED_PRODUCTION",
+   "severity": "blocking",
+   "subject": "Meridian produces 'evidence requirements'"
+  },
+  {
+   "message": "Meridian publishes 'stress scenarios' and no partner consumes anything resembling it. The output has no route.",
+   "rule": "UNROUTED_PRODUCTION",
+   "severity": "blocking",
+   "subject": "Meridian produces 'stress scenarios'"
+  },
+  {
+   "message": "Solis publishes 'battery bank capacity' and no partner consumes anything resembling it. The output has no route.",
+   "rule": "UNROUTED_PRODUCTION",
+   "severity": "blocking",
+   "subject": "Solis produces 'battery bank capacity'"
+  },
+  {
+   "message": "Solis publishes 'battery state of charge floor' and no partner consumes anything resembling it. The output has no route.",
+   "rule": "UNROUTED_PRODUCTION",
+   "severity": "blocking",
+   "subject": "Solis produces 'battery state of charge floor'"
+  },
+  {
+   "message": "Solis publishes 'crop growing area under cultivation' and no partner consumes anything resembling it. The output has no route.",
+   "rule": "UNROUTED_PRODUCTION",
+   "severity": "blocking",
+   "subject": "Solis produces 'crop growing area under cultivation'"
+  },
+  {
+   "message": "Solis publishes 'dust storm ride-through target' and no partner consumes anything resembling it. The output has no route.",
+   "rule": "UNROUTED_PRODUCTION",
+   "severity": "blocking",
+   "subject": "Solis produces 'dust storm ride-through target'"
+  },
+  {
+   "message": "Solis publishes 'electrolyser rated power' and no partner consumes anything resembling it. The output has no route.",
+   "rule": "UNROUTED_PRODUCTION",
+   "severity": "blocking",
+   "subject": "Solis produces 'electrolyser rated power'"
+  },
+  {
+   "message": "Solis publishes 'electrolyser turndown band' and no partner consumes anything resembling it. The output has no route.",
+   "rule": "UNROUTED_PRODUCTION",
+   "severity": "blocking",
+   "subject": "Solis produces 'electrolyser turndown band'"
+  },
+  {
+   "message": "Solis publishes 'fission surface power units installed' and no partner consumes anything resembling it. The output has no route.",
+   "rule": "UNROUTED_PRODUCTION",
+   "severity": "blocking",
+   "subject": "Solis produces 'fission surface power units installed'"
+  },
+  {
+   "message": "Solis publishes 'installed pv array peak rating' and no partner consumes anything resembling it. The output has no route.",
+   "rule": "UNROUTED_PRODUCTION",
+   "severity": "blocking",
+   "subject": "Solis produces 'installed pv array peak rating'"
+  },
+  {
+   "message": "Solis publishes 'landed mass per guaranteed kwe' and no partner consumes anything resembling it. The output has no route.",
+   "rule": "UNROUTED_PRODUCTION",
+   "severity": "blocking",
+   "subject": "Solis produces 'landed mass per guaranteed kwe'"
+  },
+  {
+   "message": "Solis publishes 'operating envelopes' and no partner consumes anything resembling it. The output has no route.",
+   "rule": "UNROUTED_PRODUCTION",
+   "severity": "blocking",
+   "subject": "Solis produces 'operating envelopes'"
+  },
+  {
+   "message": "Solis publishes 'oxygen generation rated capacity' and no partner consumes anything resembling it. The output has no route.",
+   "rule": "UNROUTED_PRODUCTION",
+   "severity": "blocking",
+   "subject": "Solis produces 'oxygen generation rated capacity'"
+  },
+  {
+   "message": "Solis publishes 'power apportioned by consumer' and no partner consumes anything resembling it. The output has no route.",
+   "rule": "UNROUTED_PRODUCTION",
+   "severity": "blocking",
+   "subject": "Solis produces 'power apportioned by consumer'"
+  },
+  {
+   "message": "Solis publishes 'reactor minimum stable output' and no partner consumes anything resembling it. The output has no route.",
+   "rule": "UNROUTED_PRODUCTION",
+   "severity": "blocking",
+   "subject": "Solis produces 'reactor minimum stable output'"
+  },
+  {
+   "message": "Solis publishes 'regenerative fuel cell reactant storage' and no partner consumes anything resembling it. The output has no route.",
+   "rule": "UNROUTED_PRODUCTION",
+   "severity": "blocking",
+   "subject": "Solis produces 'regenerative fuel cell reactant storage'"
+  },
+  {
+   "message": "Solis publishes 'resource allocations' and no partner consumes anything resembling it. The output has no route.",
+   "rule": "UNROUTED_PRODUCTION",
+   "severity": "blocking",
+   "subject": "Solis produces 'resource allocations'"
+  },
+  {
+   "message": "Solis publishes 'system trade-offs' and no partner consumes anything resembling it. The output has no route.",
+   "rule": "UNROUTED_PRODUCTION",
+   "severity": "blocking",
+   "subject": "Solis produces 'system trade-offs'"
+  },
+  {
+   "message": "Solis publishes 'water apportioned by consumer' and no partner consumes anything resembling it. The output has no route.",
+   "rule": "UNROUTED_PRODUCTION",
+   "severity": "blocking",
+   "subject": "Solis produces 'water apportioned by consumer'"
+  },
+  {
+   "message": "Solis publishes 'water recovery loop throughput' and no partner consumes anything resembling it. The output has no route.",
+   "rule": "UNROUTED_PRODUCTION",
+   "severity": "blocking",
+   "subject": "Solis produces 'water recovery loop throughput'"
+  },
+  {
+   "message": "Tharsis publishes 'operational responses' and no partner consumes anything resembling it. The output has no route.",
+   "rule": "UNROUTED_PRODUCTION",
+   "severity": "blocking",
+   "subject": "Tharsis produces 'operational responses'"
+  },
+  {
+   "message": "Tharsis publishes 'service shortfalls' and no partner consumes anything resembling it. The output has no route.",
+   "rule": "UNROUTED_PRODUCTION",
+   "severity": "blocking",
+   "subject": "Tharsis produces 'service shortfalls'"
+  },
+  {
+   "message": "Tharsis publishes 'time-series demand' and no partner consumes anything resembling it. The output has no route.",
+   "rule": "UNROUTED_PRODUCTION",
+   "severity": "blocking",
+   "subject": "Tharsis produces 'time-series demand'"
+  },
+  {
+   "message": "'capacity choices' and 'available capacity' overlap 50% and neither declares a contract linking them. The exchange is real and undeclared.",
+   "rule": "UNLINKED_PAIR",
+   "severity": "blocking",
+   "subject": "Solis -> Tharsis"
+  },
+  {
+   "message": "'capacity choices' is a decision and 'available capacity' is a state. Converting one to the other is real work and no partner claims it.",
+   "rule": "KIND_MISMATCH",
+   "severity": "blocking",
+   "subject": "Solis -> Tharsis"
+  },
+  {
+   "message": "'capacity choices' is temporal annual and 'available capacity' is temporal hourly on the sol axis. The conversion between them is unowned.",
+   "rule": "RESOLUTION_MISMATCH",
+   "severity": "blocking",
+   "subject": "Solis -> Tharsis"
+  },
+  {
+   "message": "boundary is unstated (what it is). Tharsis must assume it, and its assumption is invisible.",
+   "rule": "UNDECLARED_CLAUSE",
+   "severity": "reported",
+   "subject": "Solis: capacity choices"
+  },
+  {
+   "message": "cadence is unstated (how it arrives). Tharsis must assume it, and its assumption is invisible.",
+   "rule": "UNDECLARED_CLAUSE",
+   "severity": "reported",
+   "subject": "Solis: capacity choices"
+  },
+  {
+   "message": "encoding is unstated (how it arrives). Tharsis must assume it, and its assumption is invisible.",
+   "rule": "UNDECLARED_CLAUSE",
+   "severity": "reported",
+   "subject": "Solis: capacity choices"
+  },
+  {
+   "message": "epoch is unstated (when and where it applies). Tharsis must assume it, and its assumption is invisible.",
+   "rule": "UNDECLARED_CLAUSE",
+   "severity": "reported",
+   "subject": "Solis: capacity choices"
+  },
+  {
+   "message": "owner is unstated (who may change it). Tharsis must assume it, and its assumption is invisible.",
+   "rule": "UNDECLARED_CLAUSE",
+   "severity": "reported",
+   "subject": "Solis: capacity choices"
+  },
+  {
+   "message": "scenario is unstated (which run it belongs to). Tharsis must assume it, and its assumption is invisible.",
+   "rule": "UNDECLARED_CLAUSE",
+   "severity": "reported",
+   "subject": "Solis: capacity choices"
+  },
+  {
+   "message": "spatial is unstated (when and where it applies). Tharsis must assume it, and its assumption is invisible.",
+   "rule": "UNDECLARED_CLAUSE",
+   "severity": "reported",
+   "subject": "Solis: capacity choices"
+  },
+  {
+   "message": "temporal is unstated (when and where it applies). Tharsis must assume it, and its assumption is invisible.",
+   "rule": "UNDECLARED_CLAUSE",
+   "severity": "reported",
+   "subject": "Solis: capacity choices"
+  },
+  {
+   "message": "uncertainty is unstated (what it is measured in). Tharsis must assume it, and its assumption is invisible.",
+   "rule": "UNDECLARED_CLAUSE",
+   "severity": "reported",
+   "subject": "Solis: capacity choices"
+  },
+  {
+   "message": "unit is unstated (what it is measured in). Tharsis must assume it, and its assumption is invisible.",
+   "rule": "UNDECLARED_CLAUSE",
+   "severity": "reported",
+   "subject": "Solis: capacity choices"
+  },
+  {
+   "message": "boundary was inferred, not stated: \"Not present in either partner's documentation. Added because the adapters needed something to carry it. Populated by Hel\".",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Helix: availability"
+  },
+  {
+   "message": "boundary was inferred, not stated: 'Assumed to correspond to what Solis calls capacity choices.'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Helix: configuration"
+  },
+  {
+   "message": "boundary was inferred, not stated: 'Provisional. Tharsis emits per-commodity traces, Solis reads a single bound. This schema carries both and the consumer d'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Helix: demand"
+  },
+  {
+   "message": "boundary was inferred, not stated: 'Assumed to correspond to what Solis calls operating envelopes and what Tharsis calls operating constraints. Treated as t'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Helix: limits"
+  },
+  {
+   "message": "boundary was inferred, not stated: 'Emitted by Tharsis. No consumer identified. Carried so nothing is lost in translation.'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Helix: shortfalls"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: battery bank capacity"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: battery state of charge floor"
+  },
+  {
+   "message": "boundary was inferred, not stated: 'comprises OUT-01 through OUT-08'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: capacity choices"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: capacity choices"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: crew maintenance hours available"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: crop growing area under cultivation"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: demand envelope, electrical"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: demand envelope, oxygen"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: demand envelope, potable and hygiene water"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: dust storm ride-through target"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: electrolyser rated power"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: electrolyser turndown band"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: fission surface power units installed"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: in-situ water availability at site"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: installed pv array peak rating"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: landed mass per guaranteed kwe"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: launch mass available per cargo window"
+  },
+  {
+   "message": "boundary was inferred, not stated: 'comprises OUT-09 through OUT-12'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: operating envelopes"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: operating envelopes"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: oxygen generation rated capacity"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: power apportioned by consumer"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: pv conversion efficiency at reference conditions"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: reactor minimum stable output"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: regenerative fuel cell reactant storage"
+  },
+  {
+   "message": "boundary was inferred, not stated: 'comprises OUT-13, OUT-14'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: resource allocations"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: resource allocations"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: round-trip efficiency by storage technology"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: specific energy by storage technology"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: specific mass by generation technology"
+  },
+  {
+   "message": "boundary was inferred, not stated: 'comprises OUT-15'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: system trade-offs"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: system trade-offs"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: water apportioned by consumer"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'annual'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Solis: water recovery loop throughput"
+  },
+  {
+   "message": "epoch was inferred, not stated: 'sols from arrival, 668-sol year, 24h39m35s sol'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Tharsis: available capacity"
+  },
+  {
+   "message": "owner was inferred, not stated: 'Solis'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Tharsis: available capacity"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'hourly on the sol axis'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Tharsis: available capacity"
+  },
+  {
+   "message": "epoch was inferred, not stated: 'sols from arrival, 668-sol year, 24h39m35s sol'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Tharsis: operating constraints"
+  },
+  {
+   "message": "owner was inferred, not stated: 'Solis'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Tharsis: operating constraints"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'hourly on the sol axis'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Tharsis: operating constraints"
+  },
+  {
+   "message": "epoch was inferred, not stated: 'sols from arrival, 668-sol year, 24h39m35s sol'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Tharsis: operational responses"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'hourly on the sol axis'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Tharsis: operational responses"
+  },
+  {
+   "message": "epoch was inferred, not stated: 'sols from arrival, 668-sol year, 24h39m35s sol'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Tharsis: service shortfalls"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'hourly on the sol axis'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Tharsis: service shortfalls"
+  },
+  {
+   "message": "epoch was inferred, not stated: 'sols from arrival, 668-sol year, 24h39m35s sol'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Tharsis: time-series demand"
+  },
+  {
+   "message": "temporal was inferred, not stated: 'hourly on the sol axis'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Tharsis: time-series demand"
+  },
+  {
+   "message": "unit was inferred, not stated: 'per commodity, unit unstated'.",
+   "rule": "INFERRED_CLAUSE",
+   "severity": "advisory",
+   "subject": "Tharsis: time-series demand"
+  }
+ ],
+ "partners": [
+  {
+   "declarations": [
+    {
+     "clauses": {
+      "boundary": {
+       "note": "$comment on the schema property",
+       "provenance": "inferred",
+       "value": "Assumed to correspond to what Solis calls capacity choices."
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      }
+     },
+     "direction": "consumes",
+     "item": "configuration",
+     "kind": "unknown",
+     "source": "helix_schema.json"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "$comment on the schema property",
+       "provenance": "inferred",
+       "value": "Not present in either partner's documentation. Added because the adapters needed something to carry it. Populated by Hel"
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      }
+     },
+     "direction": "produces",
+     "item": "availability",
+     "kind": "unknown",
+     "source": "helix_schema.json"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "$comment on the schema property",
+       "provenance": "inferred",
+       "value": "Provisional. Tharsis emits per-commodity traces, Solis reads a single bound. This schema carries both and the consumer d"
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      }
+     },
+     "direction": "consumes",
+     "item": "demand",
+     "kind": "unknown",
+     "source": "helix_schema.json"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "$comment on the schema property",
+       "provenance": "inferred",
+       "value": "Assumed to correspond to what Solis calls operating envelopes and what Tharsis calls operating constraints. Treated as t"
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      }
+     },
+     "direction": "consumes",
+     "item": "limits",
+     "kind": "unknown",
+     "source": "helix_schema.json"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "$comment on the schema property",
+       "provenance": "inferred",
+       "value": "Emitted by Tharsis. No consumer identified. Carried so nothing is lost in translation."
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      }
+     },
+     "direction": "produces",
+     "item": "shortfalls",
+     "kind": "unknown",
+     "source": "helix_schema.json"
+    }
+   ],
+   "name": "Helix",
+   "role": "schema translation and compatibility layer"
+  },
+  {
+   "declarations": [
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "units appearing in section 2",
+       "provenance": "stated",
+       "value": "kPa, mmHg, percent, sols"
+      }
+     },
+     "direction": "produces",
+     "item": "acceptable service levels",
+     "kind": "threshold",
+     "source": "meridian_requirements.txt"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "units appearing in section 3",
+       "provenance": "stated",
+       "value": "sols"
+      }
+     },
+     "direction": "produces",
+     "item": "stress scenarios",
+     "kind": "unknown",
+     "source": "meridian_requirements.txt"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      }
+     },
+     "direction": "produces",
+     "item": "evidence requirements",
+     "kind": "unknown",
+     "source": "meridian_requirements.txt"
+    }
+   ],
+   "name": "Meridian",
+   "role": "public mission-risk institute"
+  },
+  {
+   "declarations": [
+    {
+     "clauses": {
+      "boundary": {
+       "note": "section 0, deliverables to the consortium",
+       "provenance": "inferred",
+       "value": "comprises OUT-01 through OUT-08"
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      }
+     },
+     "direction": "produces",
+     "item": "capacity choices",
+     "kind": "decision",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "section 0, deliverables to the consortium",
+       "provenance": "inferred",
+       "value": "comprises OUT-09 through OUT-12"
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      }
+     },
+     "direction": "produces",
+     "item": "operating envelopes",
+     "kind": "bound",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "section 0, deliverables to the consortium",
+       "provenance": "inferred",
+       "value": "comprises OUT-13, OUT-14"
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      }
+     },
+     "direction": "produces",
+     "item": "resource allocations",
+     "kind": "unknown",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "section 0, deliverables to the consortium",
+       "provenance": "inferred",
+       "value": "comprises OUT-15"
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      }
+     },
+     "direction": "produces",
+     "item": "system trade-offs",
+     "kind": "unknown",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "stated",
+       "value": "kWe, AM0, 28 C, beginning of life"
+      }
+     },
+     "direction": "produces",
+     "item": "installed pv array peak rating",
+     "kind": "decision",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "stated",
+       "value": "count x kWe per unit"
+      }
+     },
+     "direction": "produces",
+     "item": "fission surface power units installed",
+     "kind": "decision",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "stated",
+       "value": "kWh"
+      }
+     },
+     "direction": "produces",
+     "item": "battery bank capacity",
+     "kind": "decision",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "stated",
+       "value": "kg H2, kg O2"
+      }
+     },
+     "direction": "produces",
+     "item": "regenerative fuel cell reactant storage",
+     "kind": "decision",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "stated",
+       "value": "kW"
+      }
+     },
+     "direction": "produces",
+     "item": "electrolyser rated power",
+     "kind": "decision",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "stated",
+       "value": "kg/day"
+      }
+     },
+     "direction": "produces",
+     "item": "water recovery loop throughput",
+     "kind": "decision",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "stated",
+       "value": "kg/day"
+      }
+     },
+     "direction": "produces",
+     "item": "oxygen generation rated capacity",
+     "kind": "decision",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "stated",
+       "value": "m2"
+      }
+     },
+     "direction": "produces",
+     "item": "crop growing area under cultivation",
+     "kind": "decision",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "stated",
+       "value": "percent"
+      }
+     },
+     "direction": "produces",
+     "item": "battery state of charge floor",
+     "kind": "bound",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "stated",
+       "value": "fraction of rated"
+      }
+     },
+     "direction": "produces",
+     "item": "reactor minimum stable output",
+     "kind": "bound",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "stated",
+       "value": "kW min to kW max"
+      }
+     },
+     "direction": "produces",
+     "item": "electrolyser turndown band",
+     "kind": "bound",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "stated",
+       "value": "sols at reduced insolation"
+      }
+     },
+     "direction": "produces",
+     "item": "dust storm ride-through target",
+     "kind": "bound",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "stated",
+       "value": "kWe per consumer class"
+      }
+     },
+     "direction": "produces",
+     "item": "power apportioned by consumer",
+     "kind": "unknown",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "stated",
+       "value": "kg/day per consumer class"
+      }
+     },
+     "direction": "produces",
+     "item": "water apportioned by consumer",
+     "kind": "unknown",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "stated",
+       "value": "kg/kWe"
+      }
+     },
+     "direction": "produces",
+     "item": "landed mass per guaranteed kwe",
+     "kind": "unknown",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "stated",
+       "value": "technology baseline"
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "stated",
+       "value": "kg/kWe"
+      }
+     },
+     "direction": "consumes",
+     "item": "specific mass by generation technology",
+     "kind": "unknown",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "stated",
+       "value": "technology baseline"
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "stated",
+       "value": "Wh/kg"
+      }
+     },
+     "direction": "consumes",
+     "item": "specific energy by storage technology",
+     "kind": "unknown",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "stated",
+       "value": "technology baseline"
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "stated",
+       "value": "percent"
+      }
+     },
+     "direction": "consumes",
+     "item": "round-trip efficiency by storage technology",
+     "kind": "unknown",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "stated",
+       "value": "technology baseline"
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "stated",
+       "value": "percent"
+      }
+     },
+     "direction": "consumes",
+     "item": "pv conversion efficiency at reference conditions",
+     "kind": "unknown",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "stated",
+       "value": "mission programme"
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "stated",
+       "value": "kg per synodic period"
+      }
+     },
+     "direction": "consumes",
+     "item": "launch mass available per cargo window",
+     "kind": "unknown",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "stated",
+       "value": "site survey"
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "stated",
+       "value": "kg/sol extractable"
+      }
+     },
+     "direction": "consumes",
+     "item": "in-situ water availability at site",
+     "kind": "unknown",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "stated",
+       "value": "mission programme"
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "stated",
+       "value": "crew-hours/week"
+      }
+     },
+     "direction": "consumes",
+     "item": "crew maintenance hours available",
+     "kind": "unknown",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "stated",
+       "value": "kWe"
+      }
+     },
+     "direction": "consumes",
+     "item": "demand envelope, electrical",
+     "kind": "bound",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "stated",
+       "value": "kg/day"
+      }
+     },
+     "direction": "consumes",
+     "item": "demand envelope, potable and hygiene water",
+     "kind": "bound",
+     "source": "solis_spec_sheet.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "document header: 'Planning horizon 10 years, annual resolution'",
+       "provenance": "inferred",
+       "value": "annual"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "stated",
+       "value": "kg/day"
+      }
+     },
+     "direction": "consumes",
+     "item": "demand envelope, oxygen",
+     "kind": "bound",
+     "source": "solis_spec_sheet.md"
+    }
+   ],
+   "name": "Solis",
+   "role": "commercial infrastructure modeller"
+  },
+  {
+   "declarations": [
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "section 'Running the model': 'Time is indexed in sols from arrival'",
+       "provenance": "inferred",
+       "value": "sols from arrival, 668-sol year, 24h39m35s sol"
+      },
+      "owner": {
+       "note": "'Configuration and limits come from Solis'",
+       "provenance": "inferred",
+       "value": "Solis"
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "section 'habsim': 'hourly steps across a full Mars year'",
+       "provenance": "inferred",
+       "value": "hourly on the sol axis"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      }
+     },
+     "direction": "consumes",
+     "item": "available capacity",
+     "kind": "state",
+     "source": "tharsis_readme.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "section 'Running the model': 'Time is indexed in sols from arrival'",
+       "provenance": "inferred",
+       "value": "sols from arrival, 668-sol year, 24h39m35s sol"
+      },
+      "owner": {
+       "note": "'Configuration and limits come from Solis'",
+       "provenance": "inferred",
+       "value": "Solis"
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "section 'habsim': 'hourly steps across a full Mars year'",
+       "provenance": "inferred",
+       "value": "hourly on the sol axis"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      }
+     },
+     "direction": "consumes",
+     "item": "operating constraints",
+     "kind": "bound",
+     "source": "tharsis_readme.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "owner": {
+       "note": "'it is maintained locally in inputs/pop/ because no upstream source publishes it'",
+       "provenance": "stated",
+       "value": "maintained locally by Tharsis, no upstream producer"
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      }
+     },
+     "direction": "consumes",
+     "item": "population schedules",
+     "kind": "schedule",
+     "source": "tharsis_readme.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "section 'Running the model': 'Time is indexed in sols from arrival'",
+       "provenance": "inferred",
+       "value": "sols from arrival, 668-sol year, 24h39m35s sol"
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "section 'habsim': 'hourly steps across a full Mars year'",
+       "provenance": "inferred",
+       "value": "hourly on the sol axis"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "'one value per hour per commodity' names no unit",
+       "provenance": "inferred",
+       "value": "per commodity, unit unstated"
+      }
+     },
+     "direction": "produces",
+     "item": "time-series demand",
+     "kind": "series",
+     "source": "tharsis_readme.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "section 'Running the model': 'Time is indexed in sols from arrival'",
+       "provenance": "inferred",
+       "value": "sols from arrival, 668-sol year, 24h39m35s sol"
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "section 'habsim': 'hourly steps across a full Mars year'",
+       "provenance": "inferred",
+       "value": "hourly on the sol axis"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      }
+     },
+     "direction": "produces",
+     "item": "service shortfalls",
+     "kind": "series",
+     "source": "tharsis_readme.md"
+    },
+    {
+     "clauses": {
+      "boundary": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "cadence": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "encoding": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "epoch": {
+       "note": "section 'Running the model': 'Time is indexed in sols from arrival'",
+       "provenance": "inferred",
+       "value": "sols from arrival, 668-sol year, 24h39m35s sol"
+      },
+      "owner": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "scenario": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "spatial": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "temporal": {
+       "note": "section 'habsim': 'hourly steps across a full Mars year'",
+       "provenance": "inferred",
+       "value": "hourly on the sol axis"
+      },
+      "uncertainty": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      },
+      "unit": {
+       "note": "",
+       "provenance": "absent",
+       "value": null
+      }
+     },
+     "direction": "produces",
+     "item": "operational responses",
+     "kind": "unknown",
+     "source": "tharsis_readme.md"
+    }
+   ],
+   "name": "Tharsis",
+   "role": "university simulation team"
+  }
+ ]
+}</script>
+    <script>
+      // Inlined script. No external references, no network calls.
+      (function () {
+        var model = JSON.parse(document.getElementById("model").textContent);
+        var rows = Array.prototype.slice.call(
+          document.querySelectorAll("#findings tbody tr"));
+        var chips = Array.prototype.slice.call(document.querySelectorAll(".chip"));
+        var buttons = Array.prototype.slice.call(
+          document.querySelectorAll(".controls button"));
+        var item = null, severity = "all";
+
+        function apply() {
+          var shown = 0;
+          rows.forEach(function (tr) {
+            var okSev = severity === "all" || tr.className === severity;
+            var okItem = !item || (tr.dataset.items || "").split("|").indexOf(item) > -1;
+            var on = okSev && okItem;
+            tr.hidden = !on;
+            if (on) { shown += 1; }
+          });
+          var c = document.getElementById("shown");
+          if (c) { c.textContent = shown; }
+        }
+
+        chips.forEach(function (chip) {
+          chip.addEventListener("click", function () {
+            var key = chip.dataset.key;
+            item = (item === key) ? null : key;
+            chips.forEach(function (c) {
+              c.setAttribute("aria-pressed", String(c.dataset.key === item));
+            });
+            apply();
+          });
+        });
+
+        buttons.forEach(function (b) {
+          b.addEventListener("click", function () {
+            severity = b.dataset.severity;
+            buttons.forEach(function (o) {
+              o.setAttribute("aria-pressed", String(o === b));
+            });
+            apply();
+          });
+        });
+
+        apply();
+      })();
+    </script>
+  </body>
+</html>
