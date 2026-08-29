@@ -201,7 +201,10 @@ def read_helix(path: Path) -> Partner:
         )
         note = body.get("$comment", "")
         if note:
-            d.boundary = inferred(note[:120], "$comment on the schema property")
+            # Not truncated. These comments are the only place Helix says what it
+            # thinks a field means, and a boundary convention cut off mid-sentence
+            # is worse than no boundary convention, because it reads as one.
+            d.boundary = inferred(note, "$comment on the schema property")
         # Every leaf in this schema is a bare number. No unit, no cadence, no
         # semantics. The reader records that rather than supplying one.
         decls.append(d)
