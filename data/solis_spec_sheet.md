@@ -23,6 +23,18 @@ dispatches on. -->
     Scope           ARES settlement, phase 1 build-out, 1,000 residents
     Planning horizon 10 years, annual resolution
 
+## 0. Deliverables to the consortium
+
+The parameters in section 1 are grouped for issue as four deliverables. The
+consortium receives the deliverable, not the parameter list.
+
+| Ref | Deliverable | Comprising |
+|---|---|---|
+| DEL-1 | capacity choices | OUT-01 through OUT-08 |
+| DEL-2 | operating envelopes | OUT-09 through OUT-12 |
+| DEL-3 | resource allocations | OUT-13, OUT-14 |
+| DEL-4 | system trade-offs | OUT-15 |
+
 ## 1. Published outputs
 
 | Ref | Parameter | Unit | Typical range |

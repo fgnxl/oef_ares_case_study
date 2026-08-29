@@ -41,12 +41,34 @@ from model import Declaration, Direction, Kind, Partner, inferred, stated
 # --------------------------------------------------------------------------
 
 _ROW = re.compile(r"^\|\s*(?P<ref>(?:OUT|IN)-\d+)\s*\|(?P<rest>.*)\|\s*$")
+_DEL = re.compile(r"^\|\s*DEL-\d\s*\|\s*(?P<name>[^|]+?)\s*\|\s*(?P<span>[^|]+?)\s*\|\s*$")
+
+_DEL_KIND = {"capacity choices": Kind.DECISION, "operating envelopes": Kind.BOUND}
+"""Section 0 groups parameters into what the consortium actually receives.
+
+Reading only section 1 gives fifteen parameters against Tharsis's three
+categories, and nothing matches at all, because the two partners write at
+different granularity rather than merely in different words. That is a real
+finding, and it hides the pairwise ones behind it. Reading both levels shows
+both."""
 
 
 def read_solis(path: Path) -> Partner:
     text = path.read_text()
     decls = []
     for line in text.splitlines():
+        d = _DEL.match(line.strip())
+        if d:
+            name = d.group("name").lower()
+            decls.append(Declaration(
+                partner="Solis", direction=Direction.PRODUCES, item=name,
+                kind=_DEL_KIND.get(name, Kind.UNKNOWN),
+                source_file=path.name,
+                temporal=inferred("annual",
+                                  "document header: 'Planning horizon 10 years, annual resolution'"),
+                boundary=inferred(f"comprises {d.group('span')}",
+                                  "section 0, deliverables to the consortium")))
+            continue
         m = _ROW.match(line.strip())
         if not m:
             continue
@@ -186,11 +208,63 @@ def read_helix(path: Path) -> Partner:
     return Partner("Helix", "schema translation and compatibility layer", decls)
 
 
+
+# --------------------------------------------------------------------------
+# Meridian: clause-numbered requirements. Precise about obligation, silent
+# about payload. The reader gets what Meridian demands and nothing about what
+# Meridian sends.
+# --------------------------------------------------------------------------
+
+_SECTION = re.compile(r"^(?P<n>\d)\.\s+(?P<title>[A-Z][A-Z ]+)$", re.M)
+
+_MERIDIAN_ITEMS = {
+    "2": ("acceptable service levels", Kind.THRESHOLD),
+    "3": ("stress scenarios", Kind.UNKNOWN),
+    "5": ("evidence requirements", Kind.UNKNOWN),
+}
+"""Section 4 is deliberately absent from this map. It states requirements on
+other partners' models rather than naming a thing Meridian hands over, so
+reading it as a declaration would invent an exchange the document does not
+make."""
+
+_UNIT_IN_CLAUSE = re.compile(r"\b(kPa|mmHg|percent|sols)\b")
+
+
+def read_meridian(path: Path) -> Partner:
+    text = path.read_text()
+    bodies = {}
+    marks = list(_SECTION.finditer(text))
+    for i, m in enumerate(marks):
+        end = marks[i + 1].start() if i + 1 < len(marks) else len(text)
+        bodies[m.group("n")] = text[m.end():end]
+
+    decls = []
+    for num, (item, kind) in _MERIDIAN_ITEMS.items():
+        body = bodies.get(num, "")
+        d = Declaration("Meridian", Direction.PRODUCES, item,
+                        kind=kind, source_file=path.name)
+        units = sorted(set(_UNIT_IN_CLAUSE.findall(body)))
+        if units:
+            d.unit = stated(", ".join(units), f"units appearing in section {num}")
+        decls.append(d)
+
+    # Clause 6.1 says the Laboratory does not model. That is the document
+    # declaring that it consumes nothing, so it is read rather than assumed.
+    if "does not model" in text:
+        pass
+
+    # Clause 4.3 demands uncertainty on quantities used to support a resilience
+    # claim. Meridian requires it of others and declares none on its own
+    # outputs, which the reader records rather than resolves.
+    return Partner("Meridian", "public mission-risk institute", decls)
+
+
 # --------------------------------------------------------------------------
 
 _READERS = {
     "solis_spec_sheet.md": read_solis,
     "tharsis_readme.md": read_tharsis,
+    "meridian_requirements.txt": read_meridian,
     "helix_schema.json": read_helix,
 }
 

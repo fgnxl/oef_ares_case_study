@@ -1,9 +1,119 @@
-PLACEHOLDER. Synthetic partner declaration, format 3 of 4: clause-numbered
-requirements. Legal-adjacent register, "shall" and "must", numbered clauses,
-cross-references between clauses. Precise about obligation, vague about payload.
+Synthetic partner declaration, format 3 of 4: clause-numbered requirements.
+Legal-adjacent register, "shall" and "must", numbered clauses, cross-references
+between clauses. Precise about obligation, vague about payload.
 
-Replace with the real synthetic content. Keep the filename: parse.py dispatches
-on it, and the partner name is half of what it dispatches on.
+Written to be a good requirements document and a poor interface contract. It
+says what the consortium must do and never says what Meridian will send, in what
+form, on what schedule, or to whom. Meridian is complied with rather than
+coupled to, and this document is why.
 
-1. Scope
-1.1 [placeholder]
+Values are grounded in the worldbuilding research and are synthetic. Keep the
+filename: parse.py dispatches on it.
+
+
+MERIDIAN RISK LABORATORY
+ARES resilience evidence requirements
+Document MRL-ARES-ER-011, revision B, issued 2029-02-02
+
+
+1.  SCOPE
+
+1.1 This document states the evidence the Laboratory requires in order to
+    issue a resilience opinion on a proposed ARES settlement configuration.
+
+1.2 It applies to any configuration submitted for opinion. It does not
+    constrain how a configuration is arrived at.
+
+1.3 Compliance with this document is a precondition of an opinion. It is not
+    a guarantee of a favourable one.
+
+
+2.  ACCEPTABLE SERVICE LEVELS
+
+2.1 The habitat atmosphere shall be maintained at a total pressure of not
+    less than 34.5 kPa and not more than 103 kPa.
+
+2.2 Diluent gas shall constitute not less than 30 percent of the atmosphere
+    by partial pressure at all operating pressures.
+
+2.3 Carbon dioxide partial pressure shall not exceed 3 mmHg on any rolling
+    one-hour basis.
+
+2.4 Oxygen partial pressure shall remain within the band appropriate to the
+    total pressure selected under clause 2.1.
+
+2.5 Potable water availability shall not fall below 2 sols of demand at the
+    prevailing population.
+
+2.6 An excursion beyond any limit in clauses 2.1 to 2.5 shall be reported
+    with its duration, its depth and the population exposed.
+
+2.7 The limits in this section are minima for an opinion. A configuration
+    that meets them is not thereby judged resilient.
+
+
+3.  STRESS CASES THE MODEL MUST BE ABLE TO REPRESENT
+
+3.1 A regional dust event reducing incident insolation for a period of not
+    less than 20 sols.
+
+3.2 A planet-encircling dust event reducing incident insolation for a period
+    of not less than 120 sols.
+
+3.3 Loss of a single generation unit for the duration of its repair.
+
+3.4 Loss of an oxygen generation train concurrent with clause 3.1.
+
+3.5 Loss of a water recovery train concurrent with a resupply window slip of
+    one synodic period.
+
+3.6 A pressure loss event in one habitat module during any of clauses 3.1
+    to 3.5.
+
+3.7 The Laboratory shall specify the compound cases to be run. The list at
+    clauses 3.4 to 3.6 is illustrative and is not exhaustive.
+
+
+4.  REPRESENTATION REQUIREMENTS
+
+4.1 The model shall represent the concurrence of clauses 3.1 to 3.6 rather
+    than their individual occurrence.
+
+4.2 Where two stressors share a physical cause, the model shall not treat
+    them as independent.
+
+4.3 The model shall carry a representation of uncertainty on any quantity
+    used to support a resilience claim. A point estimate is not evidence.
+
+4.4 The model shall be able to state, for any reported excursion, which
+    subsystem failed and in what order.
+
+4.5 Clause 4.2 is not satisfied by running each stressor separately and
+    combining the results.
+
+
+5.  EVIDENCE REQUIRED WITH A SUBMISSION
+
+5.1 The configuration under opinion, as a complete set of installed
+    capacities and operating limits.
+
+5.2 The demand basis, including the population state assumed and the
+    provenance of that assumption.
+
+5.3 The results of every case required under clause 3, at the resolution at
+    which the excursion limits in clause 2 are evaluated.
+
+5.4 A statement of what the submission does not establish.
+
+5.5 Sufficient information to reproduce the results in clause 5.3.
+
+
+6.  GENERAL
+
+6.1 The Laboratory does not model. It states what shall be demonstrated and
+    judges what is submitted.
+
+6.2 Failure to satisfy any clause of section 4 shall cause a submission to
+    be returned without opinion.
+
+6.3 Queries on this document to the Laboratory's evidence secretariat.
