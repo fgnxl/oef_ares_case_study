@@ -5,6 +5,6 @@ the units and the update cadence implied rather than given. The reader has to
 infer, and parse.py must record that it inferred.
 
 Replace with the real synthetic content. Keep the filename: parse.py dispatches
-on it. -->
+on it, and the partner name is half of what it dispatches on. -->
 
-# Partner B
+# Tharsis

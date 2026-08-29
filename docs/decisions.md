@@ -7,8 +7,9 @@ from is in `options.md`.
 ## Reading the consortium
 
 Only two partners have a declared interface. Solis and Tharsis each have a
-consumes clause and a produces clause. Meridian has produces only. Helix has
-neither. That asymmetry is in the brief and it shapes everything below.
+consumes clause and a produces clause. Meridian has produces only. Helix
+declares no model interface at either surface: the brief describes what it is
+building, not what it exchanges. That asymmetry is in the brief and it shapes everything below.
 
 Meridian is complied with, not coupled to. It has no consumes clause, so it
 is not downstream of anything. It sets what counts as evidence and judges the
@@ -37,8 +38,9 @@ coupling because partner capacity will not carry two contracts at once.
 underspecified.** This is the argument, and it answers the question the brief
 leaves open about whether tight bidirectional coupling is scientifically
 necessary. A fully specified boundary makes the interior of each model
-irrelevant to the other, which is what permits loose coupling. Where the boundary is vague, tight coupling is the only remaining way to
-keep the two consistent.
+irrelevant to the other, which is what permits loose coupling. Where the
+boundary is vague, tight coupling is the only remaining way to keep the two
+consistent.
 
 ## What the six-week demonstration is
 

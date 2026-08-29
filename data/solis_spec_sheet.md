@@ -4,6 +4,6 @@ Tabular, terse, units in the header row, no prose. The format that looks most
 machine-readable and is therefore the one whose ambiguities are easiest to miss.
 
 Replace with the real synthetic content. Keep the filename: parse.py dispatches
-on it. -->
+on it, and the partner name is half of what it dispatches on. -->
 
-# Partner A interface specification
+# Solis interface specification

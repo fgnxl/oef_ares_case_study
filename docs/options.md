@@ -5,8 +5,8 @@
 # ARES case study: options exploration
 
 Divergent exploration of what could be built for the NEST ARES candidate case study, written
-before any convergent decision. Sourced from the brief alone
-(`NEST_ARES_Candidate_Case_Study.pdf`). No other material consulted.
+before any convergent decision. Sourced from the brief supplied with the exercise, which is not
+reproduced here. No other material consulted.
 
 Everything below is an option, not a plan. The recommendation section at the end picks, but the
 earlier sections deliberately keep incompatible ideas alive.
@@ -589,6 +589,12 @@ guarantees a shallow build in 45 minutes.
 ---
 
 ## 8. Recommendation
+
+> **Superseded by `decisions.md`.** This section was written during divergent
+> exploration and recommended a YAML interface registry plus a conformance
+> validator (A1 with A8). What was actually built is a contract model with a
+> partner matrix, which keeps the conformance check and drops the registry as a
+> separate artefact. Kept unedited so the change is visible.
 
 ### Primary: A1 plus A8, with A3 as the stretch
 

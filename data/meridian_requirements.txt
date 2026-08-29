@@ -3,7 +3,7 @@ requirements. Legal-adjacent register, "shall" and "must", numbered clauses,
 cross-references between clauses. Precise about obligation, vague about payload.
 
 Replace with the real synthetic content. Keep the filename: parse.py dispatches
-on it.
+on it, and the partner name is half of what it dispatches on.
 
 1. Scope
 1.1 [placeholder]

@@ -6,5 +6,5 @@
 name = "ares-case-study"
 version = "0.1.0"
 description = "Contract-first integration model for the ARES partner interfaces."
-requires-python = ">=3.13"
+requires-python = ">=3.10"
 dependencies = []

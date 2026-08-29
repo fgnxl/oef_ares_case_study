@@ -12,10 +12,10 @@ DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 # One per format. The formats differing is the point of the case study, so the
 # set is asserted explicitly rather than globbed.
 EXPECTED_DECLARATIONS = {
-    "partner_a_spec_sheet.md",
-    "partner_b_readme.md",
-    "partner_c_requirements.txt",
-    "partner_d_schema.json",
+    "solis_spec_sheet.md",
+    "tharsis_readme.md",
+    "meridian_requirements.txt",
+    "helix_schema.json",
 }
 
 

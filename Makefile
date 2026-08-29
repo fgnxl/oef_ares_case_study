@@ -1,5 +1,5 @@
 # One command: `make`. It reads data/, checks the contracts, writes the page.
-# No build system, no virtualenv, no dependencies. Python 3.13 and this file.
+# No build system, no virtualenv, no dependencies. Python 3.10 or later and this file.
 #
 # Without make:  python3 src/build.py
 
@@ -7,7 +7,10 @@ PYTHON ?= python3
 PAGE = out/ares_interface_map.html
 
 .DEFAULT_GOAL := page
-.PHONY: page check test clean
+.PHONY: help page check test clean
+
+help: ## List the targets
+	@grep -E '^[a-z]+:.*##' $(MAKEFILE_LIST) | sed 's/:.*##/\t/'
 
 page: ## Regenerate the interactive page from data/ into out/
 	$(PYTHON) src/build.py
