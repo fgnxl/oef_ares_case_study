@@ -27,14 +27,15 @@ specification.
 The brief leaves open whether tight bidirectional coupling is scientifically
 necessary. It is, and the reason is the stress case. Supply and demand on Mars
 are not independent variables, they are driven by the same state. A dust storm
-cuts generation, and the same loss of sunlight cuts passive solar gain into the
-habitat and removes any daylight contribution to habitat and crop lighting, so
-heating and lighting load rise as generation falls. Not everything rises.
-Extravehicular activity stops, and suit charging, airlock cycling and rover
-operations fall with it. The direction of the net effect is physical, the size
-of it is assumed rather than measured. Battery state of charge at any hour
-depends on generation and demand at every hour before it, and those two were
-correlated by a common cause throughout.
+cuts generation to a fraction of clear-sky output, and the same storm forces a
+load-shedding decision, because the loads that keep people alive cannot be shed
+with the rest. NASA's own surface power baseline holds habitat power flat
+through a dust storm while rover recharge and drilling go to zero (Cataldo 2009,
+NASA GRC E-18237, Table II). So the coupled question is not how much demand
+rises. It is whether the floor that cannot be shed still fits underneath a
+supply that has mostly gone. Battery state of charge at any hour depends on
+generation and demand at every hour before it, and those two were driven by a
+common cause throughout.
 
 Exchange bounds once and that correlation is destroyed by construction. What
 comes back is a worst-case supply and a worst-case demand as two separate
@@ -154,7 +155,7 @@ not reaching the thing being judged.
 
 This is why the interface asserts independence. Both models need the dust state
 over time. Solis needs it to derate generation, Tharsis needs it to drive
-habitat heating, lighting and the loads that stop when nobody goes outside.
+the shedding schedule and the non-sheddable floor left underneath it.
 Neither consumes it, and the partner who produces it is the one with no route to
 either. The common cause exists, it has
 an owner, and it reaches nobody, so each model treats its own half of a

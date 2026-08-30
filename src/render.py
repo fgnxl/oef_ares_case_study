@@ -22,6 +22,7 @@ from pathlib import Path
 from string import Template
 
 import schedule
+import toy
 from check import Finding, Severity, candidate_pairs
 from model import Declaration, Direction, Partner, Provenance, all_declarations
 
@@ -157,6 +158,16 @@ def _counts(partners: list[Partner], findings: list[Finding]) -> str:
                    for v, l in items)
 
 
+def toy_json() -> str:
+    """The toy model's constants, embedded so the page carries its own data.
+
+    Sorted keys and a fixed indent for the same reason model_json uses them: the
+    page has to render byte-identically from identical inputs or the diff is
+    unreadable.
+    """
+    return json.dumps(toy.payload(), indent=1, sort_keys=True)
+
+
 def model_json(partners: list[Partner], findings: list[Finding]) -> str:
     """The model as embedded JSON, so the page carries its own data.
 
@@ -254,6 +265,221 @@ def _calendar() -> str:
         'on what either one means. A test asserts both halves.</p>')
 
 
+# ---------------------------------------------------------------------------
+# The coupled toy model.
+#
+# The rest of this page renders an analysis. This section performs one. It runs
+# a small settlement energy model twice, once for a design sized the way the
+# current interface sizes things and once for a design iterated against a single
+# dust state, and it draws both.
+#
+# The constants live in toy.py so they are testable and so every one of them can
+# be rendered beside the tag that says whether a partner stated it or this
+# exercise assumed it. The model itself runs in the browser, because the reader
+# has to be able to move the uplift slider to zero and watch the argument for
+# tight coupling disappear. A page that only asserts that would not be evidence.
+#
+# No clause identifier from data/ appears in any text below. Those documents are
+# synthetic and were written for this exercise, so quoting a clause number back
+# at a reader would be this repository's own invention presented as a partner
+# requirement. Their numbers are read and used, which is what they are for.
+# ---------------------------------------------------------------------------
+
+
+def _num(x) -> str:
+    """A number formatted for reading rather than for a machine."""
+    f = float(x)
+    if f.is_integer() and abs(f) >= 1000:
+        return f"{int(f):,}"
+    if f.is_integer():
+        return str(int(f))
+    return f"{f:g}"
+
+
+def _fmt_value(v) -> str:
+    if isinstance(v, list):
+        if len(v) == 2:
+            return f"{_num(v[0])} to {_num(v[1])}"
+        mean = sum(v) / len(v)
+        return (f"{len(v)} values, {_num(min(v))} to {_num(max(v))}, "
+                f"mean {mean:.2f}")
+    return _num(v)
+
+
+def _tag(kind: str) -> str:
+    return f'<span class="tag {_e(kind)}">{_e(kind)}</span>'
+
+
+def _dial(ident: str, label: str, caption: str, lo: int, hi: int,
+          value: int) -> str:
+    """One slider, captioned with the tag on the number it moves."""
+    return (
+        f'<div class="dial">'
+        f'<label for="{_e(ident)}">{_e(label)}'
+        f'<b id="{_e(ident)}-v">{value}%</b></label>'
+        f'<input type="range" id="{_e(ident)}" min="{lo}" max="{hi}" step="1" '
+        f'value="{value}" />'
+        f'<span class="cap">{_tag("assumed")} {_e(caption)}</span></div>'
+    )
+
+
+def _column(side: str, title: str) -> str:
+    """One design column. Python draws the frame, the model fills the numbers."""
+    def cell(key: str, label: str) -> str:
+        return (f'<div><span>{_e(label)}</span>'
+                f'<b id="{side}-{key}">&mdash;</b></div>')
+    return (
+        f'<article class="col" id="col-{side}">'
+        f'<h3>{_e(title)}</h3>'
+        f'<p class="sub" id="{side}-sub"></p>'
+        f'<div class="caps">{cell("pv", "PV peak, kWe")}'
+        f'{cell("batt", "Battery, kWh")}{cell("h2", "Hydrogen, kg")}</div>'
+        f'<div class="big" id="{side}-big"><b id="{side}-surv">&mdash;</b>'
+        f'<span>survives, of {int(toy.values()["RIDE_SOLS"])} sols'
+        f'<br><i id="{side}-when"></i></span></div>'
+        f'<div class="spark" id="{side}-spark"></div>'
+        f'<p class="note" id="{side}-note"></p>'
+        f"</article>"
+    )
+
+
+def _constants_table() -> str:
+    rows = []
+    for group in toy.groups():
+        rows.append(f'<tr class="grp"><td colspan="4">{_e(group)}</td></tr>')
+        for c in toy.entries():
+            if c["group"] != group:
+                continue
+            rows.append(
+                f'<tr><td class="cn">{_e(c["label"])}</td>'
+                f'<td class="cv">{_e(_fmt_value(c["value"]))}'
+                f'<em>{_e(c["unit"])}</em></td>'
+                f'<td class="cs">{_tag(c["tag"])}</td>'
+                f'<td class="csrc">{_e(c["source"])}</td></tr>')
+    stated, assumed = toy.counts()
+    return (
+        '<div class="scroller"><table class="consts"><thead><tr>'
+        '<th>Constant</th><th>Value</th><th>Provenance</th>'
+        f'<th>Where it came from ({stated} stated, {assumed} assumed)</th>'
+        f'</tr></thead><tbody>{"".join(rows)}</tbody></table></div>')
+
+
+_LIMITS = (
+    "Nothing here carries uncertainty. Every number is one deterministic run of "
+    "one set of assumptions, and a range is not the same object as a point.",
+    "Only electricity is modelled. Water, oxygen, buffer gas, thermal duty and "
+    "carbon dioxide removal are the loads that actually end a settlement first, "
+    "and none of them is here.",
+    "The dust state is one scalar with one shape. A real event varies over the "
+    "site, over the spectrum and over the sol, and its optical depth is not a "
+    "slider.",
+    "The reactor never turns down, no unit ever fails, and no maintenance is "
+    "scheduled. The availability derate is a single assumed number standing in "
+    "for a function nobody owns.",
+    "The demand uplift is the pivot of the whole comparison and it is assumed. "
+    "Its direction is physically robust, because the habitat loses passive "
+    "solar gain and daylight has to be replaced electrically, while suspended "
+    "external work pushes the other way. Its magnitude is established by "
+    "nothing. Set it to zero and the comparison collapses, which is the honest "
+    "way to show what the argument rests on.",
+    "Per resident demand, the diurnal shape, the array capacity factor and the "
+    "sheddable fraction were all chosen here. No partner publishes any of them.",
+    "This is a toy. It is an argument about what coupling changes, not a "
+    "settlement design, and no configuration it prints should be built.",
+)
+
+
+def _toy_section() -> str:
+    v = toy.values()
+    return (
+        '<section class="toy">'
+        '<h2 class="toy-h">Would this settlement survive the storm. '
+        'Two ways of asking.</h2>'
+        '<p class="lede">A dust storm cuts generation and raises demand from '
+        'the same cause. The left column sizes a settlement the way the current '
+        'interface sizes one, against a single exchanged bound, so the '
+        'correlation between the two is destroyed before the sizing starts. The '
+        'right column starts from that design and iterates it against one dust '
+        'state, where generation and demand move together because they are '
+        'driven by the same variable. Both are then run through the same '
+        'coupled model. Every number below is tagged with whether a partner '
+        'stated it or this page assumed it.</p>'
+        '<div class="dials">'
+        + _dial("sev", "Storm severity",
+                "peak insolation loss at the array", 0, 95,
+                int(round(v["SEVERITY_DEFAULT"] * 100)))
+        + _dial("up", "Demand uplift under storm",
+                "thermal and lighting load, net of suspended external work",
+                0, 40, int(round(v["UPLIFT_DEFAULT"] * 100)))
+        + _dial("shed", "Sheddable fraction of load",
+                "load that can be switched off under stress", 0, 50,
+                int(round(v["SHEDDABLE_DEFAULT"] * 100)))
+        + '<div class="dial"><label>Envelope statistic'
+          '<b id="env-v">P95</b></label>'
+          '<div class="controls" id="env">'
+          '<button type="button" data-p="50" aria-pressed="false">P50</button>'
+          '<button type="button" data-p="95" aria-pressed="true">P95</button>'
+          '<button type="button" data-p="99" aria-pressed="false">P99</button>'
+          '</div><span class="cap">' + _tag("assumed")
+        + ' which statistic of an hourly trace becomes the one exchanged bound. '
+          'Left column only</span></div>'
+        '</div>'
+        '<div class="duo">'
+        + _column("loose", "Loose, bounds exchanged once")
+        + _column("tight", "Tight, iterated on one dust state")
+        + '</div>'
+        '<p class="sparkkey">Both charts share one pair of axes, so the columns '
+        'are directly comparable. <i class="sw dem"></i> demand after shedding '
+        'and uplift, <i class="sw gen"></i> generation available, '
+        '<i class="sw sto"></i> energy in store, battery plus hydrogen, '
+        '<i class="sw fail"></i> the first hour a load goes unserved.</p>'
+        '<p class="verdict" id="verdict"></p>'
+        '<div id="ceiling"></div>'
+        '<h3 class="toy-sub">The constants, and where each one came from</h3>'
+        + _constants_table()
+        + '<p class="legend">Per resident demand is the one assumed constant '
+          'chosen rather than researched. It is set where the design space the '
+          'power partner declares actually closes, meaning the sizing rule '
+          'lands inside the declared range for the array and the battery '
+          'instead of running off the top of every one of them at once. A '
+          'higher figure does not make the settlement fail more interestingly, '
+          'it makes both columns identical at the ceiling and the comparison '
+          'shows nothing.</p>'
+        '<h3 class="toy-sub">What this does not establish</h3>'
+        '<ul class="limits">'
+        + "".join(f"<li>{_e(x)}</li>" for x in _LIMITS)
+        + '</ul></section>'
+    )
+
+
+def _storage_figure() -> str:
+    """The unowned-load figure, which now sits directly under the toy model.
+
+    It answers the question the model above raises. The model shows that
+    survival turns on how much load can be switched off. This shows what the
+    load that cannot be switched off costs in landed mass, which is the number
+    neither partner can compute alone.
+    """
+    return (
+        "<h2>What an unowned load costs</h2>"
+        '<p class="legend">GAP-5 is the split between load that can be shed '
+        'under stress and load that cannot, and no partner declares it. It is '
+        'the sheddable slider above, and it moves the answer there more than '
+        'any other control. This is what it costs. A settlement has to ride out '
+        'a planet-encircling dust event, and the reference mission sizes for '
+        '120 sols, which is 2,959 hours. So every kilowatt that cannot be '
+        'switched off needs 2,959 kWh of stored energy. The figure is the mass '
+        'that implies. The multiplier is fixed. How many kilowatts it applies '
+        'to is the number neither partner can compute alone.</p>'
+        f'<figure class="fig"><img alt="Mass of stored energy required per '
+        f'kilowatt of non-sheddable load through a 120 sol dust storm, by '
+        f'storage technology" src="{_data_uri("storage_mass.png")}">'
+        '<figcaption>Reactant mass only for the fuel cell cases, so the real '
+        'system mass is higher. Comparators are illustrative and not tied to '
+        'any mission cargo budget.</figcaption></figure>'
+    )
+
+
 def page(partners: list[Partner], findings: list[Finding]) -> str:
     """The whole artifact, as one string. No I/O, so it is testable."""
     matched = _matched(partners)
@@ -261,10 +487,12 @@ def page(partners: list[Partner], findings: list[Finding]) -> str:
         '<div class="wrap">'
         f"<h1>{_e(TITLE)}</h1>"
         f'<p class="lede">{_e(LEDE)}</p>'
-        f'<div class="counts">{_counts(partners, findings)}</div>'
-        "<h2>The boundary</h2>"
-        f'<div class="grid">{"".join(_partner_card(p, matched) for p in partners)}</div>'
-        '<p class="legend"><b>Solid</b> means the item is part of an exchange '
+        + _toy_section()
+        + _storage_figure()
+        + f'<div class="counts">{_counts(partners, findings)}</div>'
+        + "<h2>The boundary</h2>"
+        + f'<div class="grid">{"".join(_partner_card(p, matched) for p in partners)}</div>'
+        + '<p class="legend"><b>Solid</b> means the item is part of an exchange '
         'this tool could identify. <b>Broken</b> means it is not: an input no '
         'partner produces, or an output no partner consumes. Select any item to '
         'filter the findings to it.</p>'
@@ -279,21 +507,6 @@ def page(partners: list[Partner], findings: list[Finding]) -> str:
         'findings below.</p>'
         '<p class="empty-detail" id="nodetail">Nothing selected.</p>'
         + "".join(_provenance(d) for d in all_declarations(partners)) +
-        "<h2>What an unowned load costs</h2>"
-        '<p class="legend">GAP-5 is the split between load that can be shed under '
-        'stress and load that cannot, and no partner declares it. This is what '
-        'that costs. A settlement has to ride out a planet-encircling dust '
-        'event, and the reference mission sizes for 120 sols, which is 2,959 '
-        'hours. So every kilowatt that cannot be switched off needs 2,959 kWh '
-        'of stored energy. The figure is the mass that implies. The multiplier '
-        'is fixed. How many kilowatts it applies to is the number neither '
-        'partner can compute alone.</p>'
-        f'<figure class="fig"><img alt="Mass of stored energy required per '
-        f'kilowatt of non-sheddable load through a 120 sol dust storm, by '
-        f'storage technology" src="{_data_uri("storage_mass.png")}">'
-        '<figcaption>Reactant mass only for the fuel cell cases, so the real '
-        'system mass is higher. Comparators are illustrative and not tied to '
-        'any mission cargo budget.</figcaption></figure>'
         "<h2>Findings</h2>"
         '<div class="controls">'
         '<button data-severity="all" aria-pressed="true">all</button>'
@@ -312,4 +525,5 @@ def page(partners: list[Partner], findings: list[Finding]) -> str:
         "</footer></div>"
     )
     return Template(TEMPLATE.read_text()).substitute(
-        title=TITLE, body=body, data=model_json(partners, findings))
+        title=TITLE, body=body, data=model_json(partners, findings),
+        toy=toy_json())

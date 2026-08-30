@@ -11,6 +11,7 @@
   Placeholders:
     $$title      page title
     $$data       the model, serialised to JSON, embedded in a script tag
+    $$toy        the toy model's constants, likewise
     $$body       the server-free rendered content
 -->
 <html lang="en">
@@ -169,6 +170,85 @@
       .src { display: block; font-size: .72rem; color: var(--mute);
              margin-top: .18rem; border-left: 2px solid var(--rule);
              padding-left: .5rem; }
+      /* --- The coupled toy model. Placed first on the page, because the
+             page should perform the analysis and not only render it. ------- */
+      .toy { border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+             padding: 1.25rem 0 1.5rem; margin: 1.1rem 0 1.6rem; }
+      .toy-h { font-size: 1.2rem; color: var(--ink); font-weight: 700;
+               margin: 0 0 .4rem; letter-spacing: -0.01em; }
+      .toy-sub { font-size: .9rem; color: var(--head); font-weight: 600;
+                 margin: 1.7rem 0 .45rem; }
+      .tag { font-size: .58rem; text-transform: uppercase; letter-spacing: .13em;
+             font-weight: 700; border-radius: 3px; padding: .04rem .3rem;
+             border: 1px solid currentColor; white-space: nowrap; }
+      .tag.stated  { color: var(--pos); }
+      .tag.assumed { color: #b45309; }
+      .dials { display: grid;
+               grid-template-columns: repeat(auto-fit, minmax(212px, 1fr));
+               gap: .9rem 1.5rem; margin: 1rem 0 1.15rem; }
+      .dial label { display: block; font-size: .68rem; color: var(--head);
+                    font-weight: 600; text-transform: uppercase;
+                    letter-spacing: .1em; }
+      .dial label b { float: right; color: var(--ink); font-size: .95rem;
+                      font-weight: 700; letter-spacing: 0; text-transform: none; }
+      .dial input[type="range"] { width: 100%; margin: .4rem 0 .15rem;
+                                  accent-color: var(--ink); }
+      .dial .cap { display: block; font-size: .67rem; color: var(--mute);
+                   line-height: 1.5; }
+      .dial .controls { margin: .4rem 0 .2rem; }
+      .duo { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; }
+      .col { border: 1px solid var(--rule); border-radius: 8px;
+             padding: .85rem .9rem .75rem; }
+      .col h3 { margin: 0; font-size: .95rem; color: var(--ink); font-weight: 600; }
+      .col .sub { font-size: .7rem; color: var(--mute); line-height: 1.45;
+                  margin: .25rem 0 .7rem; min-height: 4.4em; }
+      .caps { display: flex; gap: 1.3rem; flex-wrap: wrap;
+              border-top: 1px solid var(--rule); padding-top: .55rem; }
+      .caps span { display: block; font-size: .58rem; text-transform: uppercase;
+                   letter-spacing: .13em; color: var(--faint); }
+      .caps b { font-size: 1rem; color: var(--ink); font-weight: 600; }
+      .big { margin: .75rem 0 .35rem; display: flex; align-items: baseline;
+             gap: .55rem; }
+      .big b { font-size: 2.7rem; line-height: 1; font-weight: 700;
+               color: var(--ink); letter-spacing: -0.03em; }
+      .big.fail b { color: var(--neg); }
+      .big.ok b { color: var(--pos); }
+      .big span { font-size: .7rem; color: var(--mute); line-height: 1.4; }
+      .big i { font-style: normal; color: var(--faint); }
+      .spark svg { width: 100%; height: auto; display: block; }
+      .col .note { font-size: .66rem; color: var(--faint); margin: .25rem 0 0;
+                   min-height: 2.6em; line-height: 1.45; }
+      .sparkkey { font-size: .68rem; color: var(--mute); margin: .6rem 0 0; }
+      .sw { display: inline-block; width: .85rem; height: .26rem; border-radius: 2px;
+            vertical-align: .12rem; margin: 0 .12rem 0 .55rem; }
+      .sw.dem  { background: var(--ink); }
+      .sw.gen  { background: var(--pos); }
+      .sw.sto  { background: var(--rule); box-shadow: inset 0 0 0 1px var(--faint); }
+      .sw.fail { background: var(--neg); width: .2rem; height: .72rem;
+                 vertical-align: -.08rem; }
+      .verdict { margin: 1.15rem 0 0; padding: .9rem 1.1rem; background: var(--panel);
+                 border-left: 3px solid var(--ink); border-radius: 0 8px 8px 0;
+                 color: var(--ink); font-size: .92rem; max-width: 80ch; }
+      .verdict b { font-weight: 700; }
+      .ceiling { margin: .7rem 0 0; padding: .75rem 1rem; border: 1px solid var(--neg);
+                 border-radius: 8px; font-size: .82rem; color: var(--ink);
+                 max-width: 80ch; line-height: 1.5; }
+      .ceiling b { color: var(--neg); text-transform: uppercase; font-size: .62rem;
+                   letter-spacing: .16em; display: block; margin-bottom: .25rem; }
+      table.consts { font-size: .78rem; }
+      table.consts td.cn { color: var(--ink); font-weight: 600; }
+      table.consts td.cv { white-space: nowrap; color: var(--ink); }
+      table.consts td.cv em { display: block; font-style: normal; color: var(--faint);
+                              font-size: .68rem; }
+      table.consts td.cs { white-space: nowrap; }
+      table.consts td.csrc { color: var(--mute); font-size: .74rem; }
+      table.consts tr.grp td { background: var(--panel); font-size: .62rem;
+                               text-transform: uppercase; letter-spacing: .16em;
+                               color: var(--head); font-weight: 600; }
+      ul.limits { font-size: .8rem; color: var(--mute); max-width: 80ch;
+                  margin: .45rem 0 0; padding-left: 1.1rem; }
+      ul.limits li { margin-bottom: .32rem; }
+      @media (max-width: 720px) { .duo { grid-template-columns: 1fr; } }
       footer { margin-top: 2.6rem; padding-top: .8rem; border-top: 1px solid var(--rule);
                font-size: .78rem; color: var(--faint); max-width: 76ch; }
     </style>
