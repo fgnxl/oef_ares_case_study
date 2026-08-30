@@ -277,6 +277,20 @@ class TestSchedule(unittest.TestCase):
         weeks = [w for w, _, _ in self.s.CAPABILITY]
         self.assertEqual(list(range(1, 7)), weeks)
 
+    def test_capability_never_shortens(self):
+        """The ratchet claim, asserted rather than described.
+
+        schedule.py says each week is a superset of the last. Nothing checked
+        it, so the docstring was a promise. A week that removes a capability
+        breaks the always-demonstrable principle, and the plan would need
+        redrawing rather than relabelling.
+        """
+        seen = set()
+        for _week, name, _detail in self.s.CAPABILITY:
+            self.assertNotIn(name, seen)
+            seen.add(name)
+        self.assertEqual(len(self.s.CAPABILITY), len(seen))
+
     def test_the_first_week_does_not_claim_a_running_demonstration(self):
         """Week 1 is contract work. Claiming otherwise would be the plan
         flattering itself, and the honest start is what makes the rest credible."""

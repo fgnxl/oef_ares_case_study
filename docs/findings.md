@@ -4,9 +4,9 @@ What the consortium is missing is not agreement. It is five named objects that
 sit on the boundary between the models and that no partner owns. Each is read
 off the brief's own description of the partners, and nothing here is invented.
 
-Each finding carries a stable identifier. The deck, the six-week plan, the
-checker output and the tests all refer to a gap by its identifier, so there is
-one name for one thing.
+Each finding carries a stable identifier. The deck, the six-week plan and the
+tests all refer to a gap by its identifier, so there is one name for one thing.
+The checker does not, because no rule in it names a gap.
 
 ## Why these are the finding, and the vocabulary is not
 
