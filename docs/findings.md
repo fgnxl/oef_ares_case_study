@@ -1,8 +1,9 @@
-# Five missing objects on the boundary
+# Five things the models need that nobody produces
 
-What the consortium is missing is not agreement. It is five named objects that
-sit on the boundary between the models and that no partner owns. Each is read
-off the brief's own description of the partners, and nothing here is invented.
+What the consortium is missing is not agreement. It is five named things the
+models need from each other, and that no partner has agreed to produce. Each is
+read off the brief's own description of the partners, and nothing here is
+invented.
 
 Each finding carries a stable identifier. The deck, the six-week plan and the
 tests all refer to a gap by its identifier, so there is one name for one thing.
@@ -12,11 +13,13 @@ The checker does not, because no rule in it names a gap.
 
 The four partners use different words for adjacent ideas, and it is tempting to
 call that the problem. It is not. Words can be reconciled in an afternoon by
-anyone with authority to rule. What cannot be reconciled that way is an object
-that has to exist for the models to exchange anything, that neither side has
-agreed to produce, and that each therefore produces privately.
+anyone with authority to rule. What cannot be reconciled that way is a
+quantity, or a conversion between two of them, that has to exist for the models
+to exchange anything, that neither side has agreed to produce, and that each
+therefore invents privately.
 
-A private object is invisible in a status meeting and lethal in an integration.
+A privately invented one is invisible in a status meeting and lethal in an
+integration.
 Two teams each fill the same gap with a reasonable assumption, neither writes it
 down, and the models disagree for a reason that appears nowhere in either
 specification.
@@ -58,11 +61,12 @@ model that can carry a life-safety design decision and one that cannot, and this
 consortium is currently on the wrong side of it.
 
 Read that way, the four partners are not producing four models that would be
-nice to connect. They are producing three quarters of one instrument, and the
-missing quarter is the coupling: engineering capacity from Solis, human life
-support demand from Tharsis, and failure behaviour under stress from Meridian
-have to propagate into each other, or the thing being asked of the model, would
-this settlement survive a bad year, has no answer that anybody should act on.
+nice to connect. They are building three parts of one tool and nobody is
+building the fourth. Engineering capacity from Solis, life support demand from
+Tharsis and failure behaviour under stress from Meridian have to feed into each
+other, and the code that carries each one into the next is what no partner
+owns. Without it the question the model exists to answer, would this settlement
+survive a bad year, has no answer that anybody should act on.
 
 The contract is therefore the precondition for tight coupling and not an
 alternative to it. Coupling two models tightly across three vocabularies, two
@@ -71,8 +75,8 @@ confident, wrong answers, and it produces them every timestep.
 
 ## GAP-1. The aggregation operator
 
-- **Missing object.** The conversion from an hourly demand trajectory to a bound
-that a multi-year capacity optimisation can plan against.
+- **What is missing.** Nobody turns Tharsis's hour-by-hour demand into the
+single bound that Solis's multi-year capacity optimisation plans against.
 
 - **Evidence.** Solis consumes `demand envelopes`. Tharsis produces `time-series
 demand`. These are not the same object. An envelope is a bound over a period, a
@@ -94,8 +98,9 @@ statistic is it, and over what window.
 
 ## GAP-2. The derate function
 
-- **Missing object.** The conversion from a capacity decision to hour-by-hour
-available capacity, after dust deposition, forced outage and maintenance.
+- **What is missing.** Nobody turns Solis's capacity decision into the
+hour-by-hour capacity actually available after dust deposition, forced outages
+and maintenance.
 
 - **Evidence.** Solis produces `capacity choices`. Tharsis consumes `available
 capacity`. A choice is a decision variable, fixed at the point of planning.
@@ -117,10 +122,9 @@ placeholder.
 
 ## GAP-3. The service thresholds and the stress scenarios
 
-- **Missing object.** Two things travelling the same absent route. A versioned
-  set of thresholds defining what counts as a shortfall, and the stress
-  scenarios themselves, meaning the environmental state that drives both models
-  at once.
+- **What is missing.** Two things Meridian holds and sends to nobody. A
+  versioned set of thresholds saying what counts as a shortfall, and the stress
+  scenarios themselves, meaning the weather that drives both models at once.
 
 - **Evidence.** Meridian "defines component failures, compound events and
 acceptable service levels" and produces "stress scenarios, reliability metrics
@@ -128,10 +132,11 @@ and evidence requirements". Tharsis produces `service shortfalls`. A shortfall
 is measured against a threshold. Meridian's produces clause has no arrow to
 Tharsis anywhere in the brief.
 
-- **Why it is unowned.** The object exists and its owner is clear. What is missing
-is the route. Meridian is described as producing and consuming nothing, which
-means it is complied with rather than coupled to, and nothing in the description
-carries its thresholds to the model that applies them.
+- **Why it is unowned.** Both things exist and Meridian owns them. What is
+missing is the route to the models that need them. Meridian is described as
+producing and consuming nothing, so it is complied with rather than coupled to,
+and nothing in the description carries its thresholds to the model that applies
+them.
 
 - **What it costs today.** Tharsis is reporting shortfalls against a threshold it
 was never sent. Meridian's stated objection is that "the current interface
@@ -148,12 +153,14 @@ over time. Solis needs it to derate generation, Tharsis needs it to drive
 sheltering, activity and thermal load. Neither consumes it, and the partner who
 produces it is the one with no route to either. The common cause exists, it has
 an owner, and it reaches nobody, so each model treats its own half of a
-correlated event as an independent input. Restoring that one route is the single
-highest-value edge in the whole consortium.
+correlated event as an independent input. Restoring that one route, Meridian's dust
+scenarios and thresholds reaching both models, is the highest-value change in
+the whole consortium.
 
 ## GAP-4. The population schedule
 
-- **Missing object.** A producer for the input that drives every demand profile.
+- **What is missing.** Nobody produces the population schedule, and it drives
+every demand profile.
 
 - **Evidence.** Tharsis consumes `available capacity`, `operating constraints` and
 `population schedules`. No partner in the consortium produces population
@@ -174,7 +181,7 @@ revised, and is it versioned such that a demand result can be traced to one.
 
 ## GAP-5. The load taxonomy
 
-- **Missing object.** A split of demand into loads that can be shed under
+- **What is missing.** Nobody splits demand into loads that can be shed under
   stress and loads that cannot.
 - **Evidence.** Tharsis produces `time-series demand`, which is one number per
   commodity per hour. Solis consumes `demand envelopes` and sizes against them.
@@ -196,7 +203,7 @@ revised, and is it versioned such that a demand result can be traced to one.
 
 ## Six families of interface clause
 
-The five gaps above are the worst class of defect, where an object that has to
+The five gaps above are the worst class of defect, where something that has to
 exist is produced by nobody. There is a second and more common class, where the
 object exists but a property the consumer needs is never declared. An interface
 contract has clauses. This consortium has stated almost none of them.
@@ -232,10 +239,12 @@ that judgement at all, regardless of how well the models are built. Its stated
 objection is not a complaint about quality. It is a statement that the interface
 lacks a clause its function requires.
 
-## The four symptoms are one artifact
+## The four symptoms are one unwritten contract
 
-The brief lists four things that have gone wrong at month 8. They present as four
-separate problems and they are four views of one missing artifact.
+The brief lists four things that have gone wrong at month 8. They present as
+four separate problems. All four happen because one document does not exist: an
+interface contract saying what crosses each boundary, in what units, on which
+clock, and owned by whom.
 
 | Symptom in the brief | Family |
 |---|---|
@@ -254,9 +263,10 @@ while the operators that bridge their scales are unowned.
 
 ## What the checker must find
 
-Four of the five are the acceptance test for the artifact. GAP-5 is a
-distinction missing inside a declared object rather than an object missing from
-the boundary, so no rule reading these declarations can see it. The checker reads the four
+Four of the five are the acceptance test for the checker. GAP-5 is a
+distinction missing inside a quantity both sides already declare, rather than a
+quantity nobody declares at all, so no rule reading these declarations can see
+it. The checker reads the four
 partner declarations and computes findings. It is never told the answer, because
 a checker that is told what to find demonstrates nothing.
 

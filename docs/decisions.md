@@ -8,8 +8,8 @@ from is in `options.md`.
 
 Only two partners have a declared interface. Solis and Tharsis each have a
 consumes clause and a produces clause. Meridian has produces only. Helix
-declares no model interface at either surface: the brief describes what it is
-building, not what it exchanges. That asymmetry is in the brief and it shapes
+declares neither. The brief describes what Helix is building, not what it takes
+in or hands over. That asymmetry is in the brief and it shapes
 everything below.
 
 Meridian is complied with, not coupled to. It has no consumes clause, so it
@@ -89,8 +89,9 @@ incentives and its own deliverables, and none of them reports to ARES. They will
 attend. What cannot be done by fiat is make the coordinator's ask outrank their
 own priorities once the meeting ends.
 
-So the question is not how to compel the declaration. It is what to put on the
-table so that the declaration is the thing each partner already wants. The brief
+So the question is not how to compel a partner to write its side down. It is
+what to put on the table so that writing it down is what each partner already
+wants. The brief
 supplies the answer: every partner is worse off under the status quo, and three
 of them do not yet know how.
 
@@ -123,23 +124,24 @@ convening plus the diagnosis, and the diagnosis is the part that does the work.
 That is also why the artifact matters beyond being a demonstration. A checker
 that reports "Solis publishes capacity choices and Tharsis consumes available
 capacity, and neither declares a contract linking them" is a neutral third
-party. It makes the gap a property of the interface rather than an accusation
+party. It makes the gap a fact about the interface rather than an accusation
 against a partner, which is what lets four institutions look at the same finding
 without anyone having to concede anything first.
 
 Sequencing follows from the incentives. Helix and Meridian are aligned with the
 contract from the start, so they are approached first and the workshop opens
 with two partners already asking for it. Solis and Tharsis are then joined by a
-question about a specific unowned object rather than by a request to adopt a
-process.
+question about one specific thing nobody produces rather than by a request to
+adopt a process.
 
 ## The artifact
 
-A constraint model with two renderings, over a validator alone. The
-contract matrix answers the integration problem. A critical path derived from
-the same data answers the executable half, which the brief requires inside the
-same eight slides. One object, two views, because the plan is a projection of
-the contract state and every empty cell is a blocking dependency.
+One contract table with two renderings, chosen over a checker alone. The table
+answers the integration question, which quantity crosses which boundary and on
+whose authority. A critical path computed from the same table answers the
+delivery question, which the brief requires inside the same eight slides. One
+data set, two views, because the plan is computed from the contract table and
+every cell still empty in it is a blocking dependency.
 
 Its levers are programme constraints, not physics. Weeks to the review,
 partner capacity, which stress event, how many exchanges to attempt, and the

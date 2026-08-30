@@ -5,8 +5,9 @@
 Month 8. An exchange between the two central models is two months late and
 arrived in a format the receiver did not plan for. Two partners disagree about
 what several interface variables mean and who owns them, and one of them has
-already built against its own reading. The risk laboratory says the interface
-cannot carry the claims it exists to make. Nobody has demonstrated that the
+already built against its own reading. Meridian, the risk laboratory, says the
+interface cannot represent failure or uncertainty well enough to support the
+risk claims the programme exists to make. Nobody has demonstrated that the
 coupling everyone assumed is either necessary or achievable. Second-year funding
 is in question.
 
@@ -89,7 +90,7 @@ exchanges that already happen implicitly.
 
 | Action | Closes | Output |
 |---|---|---|
-| Fix the calendar and epoch for every exchanged series | part of GAP-1 | one stated time basis, sols or Earth, with the conversion owned by name |
+| Fix the calendar and epoch for every exchanged series | part of GAP-1 | one stated time basis, sols or Earth, with one named partner owning the conversion |
 | Name the aggregation from hourly trace to planning envelope | GAP-1 | the statistic, the window, and the partner who computes it |
 | Move the derate out of Tharsis and into the contract | GAP-2 | availability as a declared quantity with a named owner, not a private module |
 | Assign ownership of the population schedule | GAP-4 | a producer, a revision cadence, and a version identifier on every run |
@@ -108,8 +109,8 @@ down, before the demonstration is designed around it.
 
 | Action | Closes | Output |
 |---|---|---|
-| Elicit what a credible mission-risk claim requires | Meridian's stated objection | the evidence requirement, as a document |
-| Fix how uncertainty crosses the boundary | six families | the representation, whether ensemble, interval or scenario set |
+| Ask Meridian what evidence makes a mission-risk claim credible | Meridian's stated objection | Meridian's evidence requirements, written down |
+| Fix how uncertainty crosses the boundary | six families | how an uncertain number is written down, whether as an ensemble, an interval or a scenario set |
 | Route the acceptable service levels to the model that applies them | GAP-3 | a published, versioned threshold set, replacing the ones Tharsis took from a standard |
 | Choose the one material stress event | brief requirement | a named scenario, with its duration and what it stresses |
 
@@ -180,8 +181,8 @@ examine. A run can overturn this, and the test is below.
 The second is about what the model is for, and no run can overturn it. A
 settlement model exists so that somebody can commit to a habitat design that has
 to keep people alive. That purpose sets a floor on fidelity, and below the floor
-the model is not a coarser version of the same instrument, it is inadmissible as
-evidence for the decision it was built to inform. What can be settled is where
+the model is not a rougher version of a usable tool, it is unusable as evidence
+for the decision it was built to inform. What can be settled is where
 the floor sits, and the consortium already has the body that decides: Meridian
 states what makes a resilience claim credible, and track B elicits exactly that
 in weeks 1 to 3. If Meridian's requirement turns out to be satisfiable by a
@@ -228,9 +229,9 @@ Solis revises at least once. That shows the correlation between falling
 generation and rising demand survives the exchange, which is the property the
 platform would have to preserve, without building the platform to prove it.
 
-No tooling beyond what the contract needs. The checker exists to make an unowned
-object visible, and a dashboard built on top of an unresolved interface displays
-the same private assumptions more attractively.
+No tooling beyond what the contract needs. The checker exists to show which quantities
+nobody has agreed to produce, and a dashboard built on top of an unresolved
+interface displays the same private assumptions more attractively.
 
 ## Approach order is not work order
 
