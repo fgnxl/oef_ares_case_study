@@ -139,19 +139,27 @@ TRACKS = [
 ]
 
 CAPABILITY = [
-    (1, "nothing runs yet", "Contract v0 exists on paper."),
-    (2, "it runs end to end", "Crude inputs, one sol, no correctness claimed."),
-    (3, "it runs on the real contract", "Contract v1, units and calendar fixed."),
-    (4, "normal case, traceable", "One configuration, every number attributable."),
-    (5, "stress case, iterated", "The correlation survives the exchange."),
-    (6, "rehearsed", "Same demonstration, four days of polish."),
+    (1, "nothing runs yet",
+     "Partners state units, calendars and who owns each variable."),
+    (2, "data moves both ways",
+     "Solis sends a configuration, Tharsis returns demand, on rough numbers."),
+    (3, "both models use the same numbers",
+     "Units, calendar and the derate are agreed and written down."),
+    (4, "a normal year, end to end",
+     "The model shows demand met, and where every number came from."),
+    (5, "a 120-sol dust storm",
+     "The model shows what fails, when, and by how much."),
+    (6, "rehearsed",
+     "The same run, presented, four days before the board sees it."),
 ]
 """What the demonstration can do at the end of each week.
 
-Held as data because it is the plan's central claim rather than a caption. Each
-entry is a superset of the one before it, and a test asserts the list never
-shortens, because the moment a week removes a capability the always-demonstrable
-principle has been broken and the plan needs redrawing rather than relabelling.
+Each entry names what the partners have to have done and what the model has to
+be able to show, because those are the two things a board can hold anyone to.
+Held as data because it is the plan's central claim rather than a caption, and a
+test asserts the list never shortens, since the moment a week removes a
+capability the always-demonstrable principle is broken and the plan needs
+redrawing rather than relabelling.
 """
 
 REVIEW_POINTS = {
