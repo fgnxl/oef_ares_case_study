@@ -138,10 +138,10 @@ adopt a process.
 
 One contract table with two renderings, chosen over a checker alone. The table
 answers the integration question, which quantity crosses which boundary and on
-whose authority. A critical path computed from the same table answers the
-delivery question, which the brief requires inside the same eight slides. One
-data set, two views, because the plan is computed from the contract table and
-every cell still empty in it is a blocking dependency.
+whose authority. A critical path over those same cells answers the delivery
+question, which the brief requires inside the same eight slides. One data set,
+two views, because the plan is computed from the contract cells, and every cell
+still empty is a blocking dependency.
 
 Its levers are programme constraints, not physics. Weeks to the review,
 partner capacity, which stress event, how many exchanges to attempt, and the

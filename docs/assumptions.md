@@ -9,7 +9,7 @@ wrong, it does not belong in this file.
 
 ## About the judgements that shape the recommendation
 
-These four came later than the rest and each of them changes what the
+These came later than the rest and each of them changes what the
 recommendation is, rather than only what it costs.
 
 | Assumed | Why it is reasonable | What changes if it is false |
