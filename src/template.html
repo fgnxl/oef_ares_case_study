@@ -10,8 +10,7 @@
 
   Placeholders:
     $$title      page title
-    $$data       the model, serialised to JSON, embedded in a script tag
-    $$toy        the toy model's constants, likewise
+    $$toy        the toy model's constants, serialised to JSON
     $$body       the server-free rendered content
 -->
 <html lang="en">
@@ -41,44 +40,10 @@
         font-variant-numeric: tabular-nums;
       }
       .wrap { max-width: 1060px; margin: 2.2rem auto; padding: 0 1.1rem 4rem; }
-      h1 { font-size: 1.45rem; color: var(--ink); margin: 0 0 .35rem;
-           letter-spacing: -0.01em; font-weight: 700; }
-      .lede { font-size: .95rem; color: var(--mute); margin: 0 0 1.4rem; max-width: 68ch; }
-      h2 { font-size: 1.02rem; color: var(--head); font-weight: 600;
-           margin: 2.2rem 0 .4rem; }
-      .callout { background: var(--panel); border-left: 3px solid var(--ink);
-                 border-radius: 0 8px 8px 0; padding: .85rem 1.1rem; margin: 0 0 1.4rem;
-                 color: var(--ink); font-size: 1.0rem; max-width: 74ch; }
-      .callout b { font-weight: 700; }
-      .counts { display: flex; gap: 2rem; flex-wrap: wrap; padding: .9rem 0 0;
-                border-top: 1px solid var(--rule); margin-bottom: .5rem; }
-      .count b { display: block; font-size: 1.5rem; color: var(--ink); font-weight: 700;
-                 line-height: 1.15; }
-      .count span { font-size: .68rem; color: var(--faint); text-transform: uppercase;
-                    letter-spacing: .16em; }
-      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(244px, 1fr));
-              gap: .75rem; }
-      .partner { background: #fff; border: 1px solid var(--rule); border-radius: 8px;
-                 padding: .9rem .9rem .8rem; }
-      .partner h3 { margin: 0; font-size: 1rem; color: var(--ink); font-weight: 600; }
-      .partner .role { color: var(--faint); font-size: .72rem; margin: .1rem 0 .7rem;
-                       text-transform: uppercase; letter-spacing: .06em; }
-      .surface { margin-top: .65rem; }
-      .surface > span { font-size: .66rem; text-transform: uppercase;
-                        letter-spacing: .18em; color: var(--faint); }
-      .chip { display: block; width: 100%; text-align: left; cursor: pointer;
-              font: inherit; font-size: .82rem; margin-top: .3rem; padding: .3rem .5rem;
-              background: var(--panel); color: var(--ink); border-radius: 4px;
-              border: 1px solid var(--rule); border-left-width: 3px; }
-      .chip.matched { border-left-color: var(--pos); }
-      .chip.orphan  { border-left-color: var(--neg); background: #fff; }
-      .chip:hover { border-color: var(--link); border-left-color: var(--link); }
-      .chip[aria-pressed="true"] { background: var(--ink); color: #fff;
-                                   border-color: var(--ink); border-left-color: var(--link); }
-      .chip em { font-style: normal; color: var(--faint); font-size: .7rem;
-                 display: block; margin-top: .05rem; }
-      .chip[aria-pressed="true"] em { color: var(--faint); }
-      .empty { color: var(--neg); font-size: .8rem; margin-top: .3rem; }
+      h1 { font-size: 1.5rem; color: var(--ink); margin: 0 0 .5rem;
+           letter-spacing: -0.01em; font-weight: 700; line-height: 1.3;
+           max-width: 34ch; }
+      .lede { font-size: .95rem; color: var(--mute); margin: 0 0 1.4rem; max-width: 72ch; }
       .legend { font-size: .8rem; color: var(--mute); margin: .7rem 0 0; max-width: 78ch; }
       .legend b { color: var(--ink); font-weight: 600; }
       .controls { display: flex; gap: .4rem; flex-wrap: wrap; margin: .5rem 0 .7rem; }
@@ -97,85 +62,15 @@
            vertical-align: top; color: var(--body); }
       tbody tr:hover td { background: var(--panel); }
       tbody tr:last-child td { border-bottom: 0; }
-      td.rule { white-space: nowrap; font-size: .7rem; letter-spacing: .04em;
-                font-weight: 600; }
-      tr.blocking td.rule { color: var(--neg); }
-      tr.reported td.rule { color: var(--mute); }
-      tr.advisory td.rule { color: var(--faint); }
-      td.subject { white-space: nowrap; color: var(--mute); font-size: .78rem; }
       code { background: var(--code); border-radius: 3px; padding: .05rem .3rem;
              font-size: .9em; }
-      .bars { display: grid; grid-template-columns: repeat(6, 1fr); gap: .3rem;
-              margin: .9rem 0 .3rem; }
-      .bar { grid-row: auto; background: var(--panel); border: 1px solid var(--rule);
-             border-radius: 6px; padding: .35rem .6rem; }
-      .bar.crit { border-color: var(--link); background: #eff6ff; }
-      .bar b { display: block; font-size: .76rem; color: var(--ink); font-weight: 600; }
-      .bar span { font-size: .68rem; color: var(--mute); }
-      .cal { display: grid; grid-template-columns: repeat(6, 1fr); gap: .45rem;
-             margin-top: .45rem; }
-      .week { border: 1px solid var(--rule); border-radius: 8px; padding: .5rem .55rem;
-              display: flex; flex-direction: column; gap: .35rem; }
-      .week h4 { margin: 0; font-size: .66rem; text-transform: uppercase;
-                 letter-spacing: .18em; color: var(--faint); font-weight: 600; }
-      .mile { border-left: 3px solid var(--rule); padding-left: .45rem; }
-      .mile.skeleton { border-left-color: var(--pos); }
-      .mile.buffer   { border-left-color: #f59e0b; }
-      .mile.demo     { border-left-color: var(--ink); }
-      .mile.gate     { border-left-color: var(--link); }
-      .mile b { display: block; font-size: .78rem; color: var(--ink); font-weight: 600; }
-      .mile span, .sess span { display: block; font-size: .67rem; color: var(--mute);
-                               line-height: 1.4; }
-      .sess { background: var(--panel); border-radius: 5px; padding: .35rem .45rem;
-              border-left: 3px solid transparent; }
-      .sess.auth { border-left-color: var(--link); }
-      .sess b { font-size: .74rem; color: var(--ink); font-weight: 600; }
-      .who { float: right; letter-spacing: .04em; }
-      .dot { font-style: normal; display: inline-block; width: 1.05em; height: 1.05em;
-             line-height: 1.05em; text-align: center; border-radius: 50%;
-             font-size: .58rem; font-weight: 700; margin-left: .1em; }
-      .dot.on  { background: var(--ink); color: #fff; }
-      .dot.rules { background: var(--link); color: #fff;
-                   box-shadow: 0 0 0 1.5px var(--link); }
-      .dot.off { background: transparent; color: var(--rule);
-                 box-shadow: inset 0 0 0 1px var(--rule); }
-      .gate { margin-top: auto; padding-top: .35rem; border-top: 1px dashed var(--rule);
-              font-size: .65rem; color: var(--head); }
-      @media (max-width: 900px) {
-        .cal, .bars { grid-template-columns: repeat(2, 1fr); }
-        .bar { grid-column: auto !important; }
-      }
       .fig { margin: .8rem 0 0; padding: 0; }
       .fig img { width: 100%; max-width: 62rem; height: auto; display: block;
                  border: 1px solid var(--rule); border-radius: 8px; }
       .fig figcaption { font-size: .72rem; color: var(--faint); margin-top: .4rem;
                         max-width: 62rem; }
-      .detail { border: 1px solid var(--rule); border-radius: 8px;
-                padding: .8rem .9rem; margin-top: .5rem; }
-      .detail h4 { margin: 0 0 .55rem; font-size: .95rem; color: var(--ink);
-                   font-weight: 600; }
-      .detail h4 b { color: var(--link); }
-      .detail .from { float: right; font-size: .72rem; color: var(--faint);
-                      font-weight: 400; }
-      .empty-detail { font-size: .82rem; color: var(--faint); margin: .6rem 0 0; }
-      table.clauses { font-size: .8rem; }
-      table.clauses td.cn { font-weight: 600; color: var(--ink); white-space: nowrap; }
-      table.clauses td.cf { color: var(--faint); white-space: nowrap; font-size: .74rem; }
-      table.clauses td.cs { white-space: nowrap; font-size: .72rem;
-                            text-transform: uppercase; letter-spacing: .09em; }
-      tr.p-stated   td.cs { color: var(--pos); font-weight: 600; }
-      tr.p-inferred td.cs { color: #b45309; font-weight: 600; }
-      tr.p-absent   td.cs { color: var(--neg); font-weight: 600; }
-      tr.p-absent   td em { color: var(--neg); font-style: normal; }
-      .src { display: block; font-size: .72rem; color: var(--mute);
-             margin-top: .18rem; border-left: 2px solid var(--rule);
-             padding-left: .5rem; }
-      /* --- The coupled toy model. Placed first on the page, because the
-             page should perform the analysis and not only render it. ------- */
-      .toy { border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
-             padding: 1.25rem 0 1.5rem; margin: 1.1rem 0 1.6rem; }
-      .toy-h { font-size: 1.2rem; color: var(--ink); font-weight: 700;
-               margin: 0 0 .4rem; letter-spacing: -0.01em; }
+      /* --- The coupled toy model, which is the whole page. -------------- */
+      .toy { padding: 0; margin: 0 0 1.6rem; }
       .toy-sub { font-size: .9rem; color: var(--head); font-weight: 600;
                  margin: 1.7rem 0 .45rem; }
       .tag { font-size: .58rem; text-transform: uppercase; letter-spacing: .13em;
@@ -204,12 +99,15 @@
       .col h3 { margin: 0; font-size: .95rem; color: var(--ink); font-weight: 600; }
       .col .sub { font-size: .7rem; color: var(--mute); line-height: 1.45;
                   margin: .25rem 0 .7rem; min-height: 4.4em; }
-      .caps { display: flex; gap: 1.3rem; flex-wrap: wrap;
-              border-top: 1px solid var(--rule); padding-top: .55rem; }
+      .col .lab { font-size: .58rem; text-transform: uppercase;
+                  letter-spacing: .16em; color: var(--faint); font-weight: 600;
+                  border-top: 1px solid var(--rule); padding-top: .5rem;
+                  margin: .7rem 0 .3rem; }
+      .caps { display: flex; gap: 1.3rem; flex-wrap: wrap; }
       .caps span { display: block; font-size: .58rem; text-transform: uppercase;
                    letter-spacing: .13em; color: var(--faint); }
       .caps b { font-size: 1rem; color: var(--ink); font-weight: 600; }
-      .big { margin: .75rem 0 .35rem; display: flex; align-items: baseline;
+      .big { margin: .1rem 0 .35rem; display: flex; align-items: baseline;
              gap: .55rem; }
       .big b { font-size: 2.7rem; line-height: 1; font-weight: 700;
                color: var(--ink); letter-spacing: -0.03em; }
@@ -259,73 +157,7 @@
   </head>
   <body>
     $body
-    <script type="application/json" id="model">$data</script>
     <script type="application/json" id="toy">$toy</script>
-    <script>
-      // Inlined script. No external references, no network calls.
-      (function () {
-        var model = JSON.parse(document.getElementById("model").textContent);
-        var rows = Array.prototype.slice.call(
-          document.querySelectorAll("#findings tbody tr"));
-        var chips = Array.prototype.slice.call(document.querySelectorAll(".chip"));
-        var buttons = Array.prototype.slice.call(
-          document.querySelectorAll(".controls button"));
-        var item = null, severity = "all";
-
-        function apply() {
-          var shown = 0;
-          rows.forEach(function (tr) {
-            var okSev = severity === "all" || tr.className === severity;
-            var okItem = !item || (tr.dataset.items || "").split("|").indexOf(item) > -1;
-            var on = okSev && okItem;
-            tr.hidden = !on;
-            if (on) { shown += 1; }
-          });
-          var c = document.getElementById("shown");
-          if (c) { c.textContent = shown; }
-        }
-
-        var details = Array.prototype.slice.call(
-          document.querySelectorAll(".detail"));
-        var nodetail = document.getElementById("nodetail");
-
-        function showDetail() {
-          var any = false;
-          details.forEach(function (d) {
-            var on = item !== null && d.id === "d-" + item;
-            d.hidden = !on;
-            if (on) { any = true; }
-          });
-          if (nodetail) { nodetail.hidden = any; }
-        }
-
-        chips.forEach(function (chip) {
-          chip.addEventListener("click", function () {
-            var key = chip.dataset.key;
-            item = (item === key) ? null : key;
-            chips.forEach(function (c) {
-              c.setAttribute("aria-pressed", String(c.dataset.key === item));
-            });
-            showDetail();
-            apply();
-          });
-        });
-
-        showDetail();
-
-        buttons.forEach(function (b) {
-          b.addEventListener("click", function () {
-            severity = b.dataset.severity;
-            buttons.forEach(function (o) {
-              o.setAttribute("aria-pressed", String(o === b));
-            });
-            apply();
-          });
-        });
-
-        apply();
-      })();
-    </script>
     <script>
       // The coupled toy model. Inlined, vanilla, no external references.
       //
@@ -674,6 +506,17 @@
                        "Its answer is that this settlement cannot be built " +
                        "from the parts on offer, which is a real answer and " +
                        "one that no exchange of single bounds can produce."))) +
+              (function () {
+                var dpv = Tt.pv - L.pv, dh2 = Tt.h2 - L.h2, parts = [];
+                if (dpv >= 0.5) { parts.push(n0(dpv) + " kWe more array"); }
+                if (dh2 >= 0.5) { parts.push(n0(dh2) + " kg more hydrogen"); }
+                if (!parts.length) { return ""; }
+                return " These are two settlement designs and not two " +
+                  "predictions. Both were put through the same storm. The " +
+                  "coupled design carries " + parts.join(" and ") + " than " +
+                  "the one sized without the storm, and that is what the two " +
+                  "models not talking to each other costs in built hardware.";
+              }()) +
               (zero
                 ? (" The uplift is already at zero, so the gap between the " +
                    "columns here is not the correlation at all. It is the " +

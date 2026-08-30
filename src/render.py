@@ -52,17 +52,21 @@ def _data_uri(name: str) -> str:
     return "data:image/png;base64," + base64.b64encode(raw).decode("ascii")
 
 
-TITLE = "Would this settlement survive the storm"
-HEADING = "Would this settlement survive the storm. Two ways of asking."
-LEDE = ("A dust storm cuts generation and raises demand from the same cause. "
-        "The left column sizes a settlement the way the current interface sizes "
-        "one, against a single exchanged bound formed with the storm switched "
-        "off, so the correlation between the two is destroyed before the sizing "
-        "starts. The right column starts from that design and iterates it "
-        "against one dust state, where generation and demand move together "
-        "because one variable drives both. Both are then run through the same "
-        "coupled model, live in this page, and every number below is tagged "
-        "with whether a partner stated it or this exercise assumed it.")
+TITLE = "Sizing a settlement for the storm"
+HEADING = ("Sizing a settlement for a dust storm: one model alone, or two "
+           "revising against each other")
+LEDE = (
+    "Solis sizes generation and storage over multi-year horizons. Tharsis "
+    "simulates habitat demand hour by hour. On the left, Solis picks a "
+    "capacity from a single demand number and stops. On the right, Solis "
+    "picks, watches Tharsis run the storm against that choice, and revises. "
+    "Those are two different settlement designs, one sized the way the "
+    "partners work today and one sized with the two models talking to each "
+    "other, and both are then put through the same storm in the same "
+    f"simulation. What differs is not the prediction, it is what got built, "
+    f"and how many of the {int(toy.values()['RIDE_SOLS'])} sols it lasts. "
+    "Every number below is tagged with whether a partner stated it or this "
+    "exercise assumed it.")
 
 
 def _e(s: str) -> str:
@@ -124,8 +128,10 @@ def _column(side: str, title: str) -> str:
         f'<article class="col" id="col-{side}">'
         f'<h3>{_e(title)}</h3>'
         f'<p class="sub" id="{side}-sub"></p>'
+        f'<p class="lab">What gets built</p>'
         f'<div class="caps">{cell("pv", "PV peak, kWe")}'
         f'{cell("batt", "Battery, kWh")}{cell("h2", "Hydrogen, kg")}</div>'
+        f'<p class="lab">What the storm does to it</p>'
         f'<div class="big" id="{side}-big"><b id="{side}-surv">&middot;</b>'
         f'<span>survives, of {int(toy.values()["RIDE_SOLS"])} sols'
         f'<br><i id="{side}-when"></i></span></div>'
@@ -237,8 +243,9 @@ def _widget() -> str:
           'Left column only</span></div>'
         '</div>'
         '<div class="duo">'
-        + _column("loose", "Loose, bounds exchanged once")
-        + _column("tight", "Tight, iterated on one dust state")
+        + _column("loose", "Loose: Solis picks a capacity and stops")
+        + _column("tight", "Tight: Solis revises against Tharsis running "
+                           "the storm")
         + '</div>'
         '<p class="sparkkey">Both charts share one pair of axes, so the two '
         'columns are directly comparable. <i class="sw raw"></i> demand as the '
