@@ -428,11 +428,14 @@ def _toy_section() -> str:
         + _column("loose", "Loose, bounds exchanged once")
         + _column("tight", "Tight, iterated on one dust state")
         + '</div>'
-        '<p class="sparkkey">Both charts share one pair of axes, so the columns '
-        'are directly comparable. <i class="sw dem"></i> demand after shedding '
-        'and uplift, <i class="sw gen"></i> generation available, '
+        '<p class="sparkkey">Both charts share one pair of axes, so the two '
+        'columns are directly comparable. <i class="sw raw"></i> demand as the '
+        'storm raises it, <i class="sw dem"></i> demand actually served after '
+        'shedding, <i class="sw gen"></i> generation available, '
         '<i class="sw sto"></i> energy in store, battery plus hydrogen, '
-        '<i class="sw fail"></i> the first hour a load goes unserved.</p>'
+        '<i class="sw fail"></i> the first hour a load goes unserved. The '
+        'dashed line rising while the green one falls is the correlation, and '
+        'it is the thing a single exchanged number cannot carry.</p>'
         '<p class="verdict" id="verdict"></p>'
         '<div id="ceiling"></div>'
         '<h3 class="toy-sub">The constants, and where each one came from</h3>'

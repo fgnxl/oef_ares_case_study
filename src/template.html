@@ -186,11 +186,13 @@
       .dials { display: grid;
                grid-template-columns: repeat(auto-fit, minmax(212px, 1fr));
                gap: .9rem 1.5rem; margin: 1rem 0 1.15rem; }
-      .dial label { display: block; font-size: .68rem; color: var(--head);
-                    font-weight: 600; text-transform: uppercase;
-                    letter-spacing: .1em; }
-      .dial label b { float: right; color: var(--ink); font-size: .95rem;
-                      font-weight: 700; letter-spacing: 0; text-transform: none; }
+      .dial label { display: flex; align-items: baseline; gap: .6rem;
+                    font-size: .68rem; color: var(--head); font-weight: 600;
+                    text-transform: uppercase; letter-spacing: .1em;
+                    line-height: 1.35; min-height: 2.7em; }
+      .dial label b { margin-left: auto; color: var(--ink); font-size: .95rem;
+                      font-weight: 700; letter-spacing: 0; text-transform: none;
+                      white-space: nowrap; }
       .dial input[type="range"] { width: 100%; margin: .4rem 0 .15rem;
                                   accent-color: var(--ink); }
       .dial .cap { display: block; font-size: .67rem; color: var(--mute);
@@ -221,6 +223,8 @@
       .sparkkey { font-size: .68rem; color: var(--mute); margin: .6rem 0 0; }
       .sw { display: inline-block; width: .85rem; height: .26rem; border-radius: 2px;
             vertical-align: .12rem; margin: 0 .12rem 0 .55rem; }
+      .sw.raw  { background: transparent; height: 0;
+                 border-top: 1px dashed var(--faint); }
       .sw.dem  { background: var(--ink); }
       .sw.gen  { background: var(--pos); }
       .sw.sto  { background: var(--rule); box-shadow: inset 0 0 0 1px var(--faint); }
@@ -256,6 +260,7 @@
   <body>
     $body
     <script type="application/json" id="model">$data</script>
+    <script type="application/json" id="toy">$toy</script>
     <script>
       // Inlined script. No external references, no network calls.
       (function () {
@@ -319,6 +324,423 @@
         });
 
         apply();
+      })();
+    </script>
+    <script>
+      // The coupled toy model. Inlined, vanilla, no external references.
+      //
+      // Two designs, one simulator. The loose design is sized the way the
+      // current interface sizes things, against a single exchanged bound formed
+      // by taking a percentile of a nominal year. No storm uplift enters it,
+      // because nothing in the current interface carries one. The tight design
+      // starts from that and iterates against one dust state, in which
+      // generation and demand move together because the same variable drives
+      // both. Both are then run through the same simulator.
+      //
+      // This runs in the browser rather than in Python because the point of the
+      // section is that a reader can take the uplift to zero and watch the
+      // argument for coupling disappear. A page that only asserted that would
+      // be one more assertion.
+      (function () {
+        var T = JSON.parse(document.getElementById("toy").textContent);
+        var V = T.values;
+        var POP = V.POP, PC = V.PER_CAP_KW, SHAPE = V.SHAPE, SOLH = V.SOL_HOURS;
+        var FIS = V.FISSION_KW, PVR = V.PV_RANGE, BR = V.BATT_RANGE;
+        var SOC = V.SOC_FLOOR, H2R = V.H2_RANGE, ELR = V.ELY_RANGE;
+        var NS = V.RIDE_SOLS, PVC = V.PV_CLEAR, DAYM = V.DAY_MEAN;
+        var EB = V.ETA_BATT, EE = V.ETA_ELY, HK = V.H2_KWH_PER_KG;
+        var DER = V.DERATE_ASSUMED, SR = V.SOIL_RATE, SF = V.SOIL_FLOOR;
+        var RAMP = V.RAMP_SOLS, HOLD = V.STORM_HOLD_SOL;
+        var NIGHT = V.BATT_NIGHT_HOURS, ELF = V.ELY_SIZE_FRACTION;
+        var STEP = V.PV_ITER_STEP, MAXIT = V.MAX_ITER;
+        var EPS = 1e-9;
+
+        function clamp(v, r) { return Math.max(r[0], Math.min(r[1], v)); }
+        function n0(v) {
+          return Math.round(v).toLocaleString("en-GB");
+        }
+
+        // The dust state. One scalar, ramped in, held, ramped out. Everything
+        // that follows is driven by this one number, which is the whole point:
+        // supply and demand are not independent, they are two readings of it.
+        function stormAt(sol) {
+          if (sol < RAMP) { return sol / RAMP; }
+          if (sol <= HOLD) { return 1; }
+          return Math.max(0, (NS - sol) / (NS - HOLD));
+        }
+
+        // One design through 120 sols at hourly steps on the Mars clock.
+        function simulate(d, s) {
+          var soc = d.batt, h2 = d.h2, unserved = 0, failHour = null;
+          var sols = [], sol, h;
+          for (sol = 0; sol < NS; sol++) {
+            var storm = stormAt(sol);
+            var trans = 1 - s.severity * storm;
+            var soil = Math.max(SF, 1 - SR * sol);
+            var dsum = 0, gsum = 0, rsum = 0;
+            for (h = 0; h < 24; h++) {
+              var day = Math.max(0, Math.sin(2 * Math.PI * (h / 24 - 0.25)));
+              var gen = d.pv * PVC * day * trans * soil + FIS;
+              var dem = POP * PC * SHAPE[h] * (1 + s.uplift * storm);
+              var shed = Math.min(dem * s.sheddable, Math.max(0, dem - gen));
+              var served = dem - shed;
+              var net = (gen - served) * SOLH / 24;
+              if (net >= 0) {
+                var room = (d.batt - soc) / EB;
+                var take = Math.min(net, room);
+                soc += take * EB;
+                net -= take;
+                if (net > 0) {
+                  var cap = d.ely * SOLH / 24;
+                  h2 = Math.min(d.h2, h2 + Math.min(net, cap) * EE / HK);
+                }
+              } else {
+                var need = -net;
+                var draw = Math.min(need, soc - d.batt * SOC);
+                if (draw > 0) { soc -= draw; need -= draw; }
+                if (need > 0) {
+                  var fromH2 = Math.min(need, h2 * HK);
+                  h2 -= fromH2 / HK;
+                  need -= fromH2;
+                }
+                if (need > EPS) {
+                  unserved += need;
+                  if (failHour === null) { failHour = sol * 24 + h; }
+                }
+              }
+              dsum += served;
+              rsum += dem;
+              gsum += gen;
+            }
+            sols.push({
+              dem: dsum / 24, raw: rsum / 24, gen: gsum / 24,
+              store: soc + h2 * HK
+            });
+          }
+          return {
+            unserved: unserved,
+            failHour: failHour,
+            survives: failHour === null ? NS : Math.floor(failHour / 24),
+            sols: sols
+          };
+        }
+
+        function percentile(arr, p) {
+          var s = arr.slice().sort(function (a, b) { return a - b; });
+          var i = (s.length - 1) * p / 100;
+          var lo = Math.floor(i), hi = Math.ceil(i);
+          return lo === hi ? s[lo] : s[lo] + (s[hi] - s[lo]) * (i - lo);
+        }
+
+        // A nominal year of the same demand model with the storm set to zero.
+        var NOMINAL = (function () {
+          var out = [], sol, h;
+          for (sol = 0; sol < NS; sol++) {
+            for (h = 0; h < 24; h++) { out.push(POP * PC * SHAPE[h]); }
+          }
+          return out;
+        }());
+
+        function elySize(pv) { return clamp(pv * PVC * ELF, ELR); }
+
+        // The loose design. One number crosses the boundary, and it is sized
+        // against as a binding case. No uplift appears anywhere below, because
+        // the interface has no field that could carry it.
+        function looseDesign(stat, severity) {
+          var E = percentile(NOMINAL, stat);
+          var pvWant = (E / DER - FIS) / (PVC * DAYM);
+          var pv = clamp(pvWant, PVR);
+          var predicted = pv * PVC * DAYM * (1 - severity) + FIS;
+          var h2Want = Math.max(0, E - predicted) * NS * SOLH / HK;
+          var battWant = (E - FIS) * NIGHT * SOLH / 24 / (1 - SOC);
+          return {
+            E: E,
+            pv: pv, batt: clamp(battWant, BR), h2: clamp(h2Want, H2R),
+            ely: elySize(pv),
+            pvWant: pvWant, h2Want: h2Want, battWant: battWant,
+            predicted: predicted
+          };
+        }
+
+        // The tight design. Start from the loose one and iterate against the
+        // dust state until nothing goes unserved, or until the declared design
+        // space runs out, which is itself an answer.
+        function tightDesign(base, s) {
+          var d = { pv: base.pv, batt: base.batt, h2: base.h2, ely: base.ely };
+          var run = simulate(d, s), iters = 0, i;
+          for (i = 0; i < MAXIT && run.unserved > 0; i++) {
+            var pv = Math.min(PVR[1], d.pv * (1 + STEP));
+            var h2 = Math.min(H2R[1], d.h2 + run.unserved / HK);
+            if (pv - d.pv < EPS && h2 - d.h2 < EPS) { break; }
+            d = { pv: pv, batt: d.batt, h2: h2, ely: elySize(pv) };
+            iters += 1;
+            run = simulate(d, s);
+          }
+          // Only the two variables the loop is allowed to move can pin it.
+          // The battery is reported separately, because a loop that never
+          // sizes it cannot have been stopped by it.
+          var pinned = [];
+          if (d.pv >= PVR[1] - EPS) { pinned.push("the array peak rating"); }
+          if (d.h2 >= H2R[1] - EPS) { pinned.push("the hydrogen store"); }
+          d.battPinned = d.batt >= BR[1] - EPS;
+          d.iters = iters;
+          d.run = run;
+          d.pinned = pinned;
+          d.exhausted = run.unserved > 0 && pinned.length > 0;
+          return d;
+        }
+
+        // ---------------------------------------------------------- drawing
+        var W = 520, H = 112, X0 = 34, X1 = 514, Y0 = 9, Y1 = 88, YB = 104;
+
+        function drawSpark(res, sc) {
+          var i, n = res.sols.length, area = "", dem = "", gen = "", raw = "";
+          function px(k) { return X0 + (X1 - X0) * (k + 0.5) / n; }
+          function py(v) { return Y1 - (Y1 - Y0) * Math.min(1, v / sc.p); }
+          function sy(v) { return Y1 - (Y1 - Y0) * Math.min(1, v / sc.s); }
+          area = "M " + px(0).toFixed(1) + " " + Y1;
+          for (i = 0; i < n; i++) {
+            var x = px(i).toFixed(1);
+            area += " L " + x + " " + sy(res.sols[i].store).toFixed(1);
+            raw += (i ? " L " : "M ") + x + " " + py(res.sols[i].raw).toFixed(1);
+            dem += (i ? " L " : "M ") + x + " " + py(res.sols[i].dem).toFixed(1);
+            gen += (i ? " L " : "M ") + x + " " + py(res.sols[i].gen).toFixed(1);
+          }
+          area += " L " + px(n - 1).toFixed(1) + " " + Y1 + " Z";
+
+          var ticks = "", t, marks = [0, 30, 60, 90];
+          for (t = 0; t < marks.length; t++) {
+            var mx = (X0 + (X1 - X0) * marks[t] / n).toFixed(1);
+            ticks += '<line x1="' + mx + '" y1="' + Y1 + '" x2="' + mx +
+              '" y2="' + (Y1 + 3) + '" stroke="#e2e8f0" stroke-width="1"/>' +
+              '<text x="' + mx + '" y="' + YB + '" fill="#94a3b8" ' +
+              'font-size="8.5" text-anchor="middle">' + marks[t] + '</text>';
+          }
+
+          var rule = "";
+          if (res.failHour !== null) {
+            var fx = (X0 + (X1 - X0) * (res.failHour / (n * 24))).toFixed(1);
+            rule = '<line x1="' + fx + '" y1="' + (Y0 - 3) + '" x2="' + fx +
+              '" y2="' + Y1 + '" stroke="#dc2626" stroke-width="1.4"/>' +
+              '<circle cx="' + fx + '" cy="' + (Y0 - 3) + '" r="2.2" ' +
+              'fill="#dc2626"/>';
+          }
+
+          return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
+            'aria-label="Demand, available generation and stored energy ' +
+            'through the event">' +
+            '<path d="' + area + '" fill="#e2e8f0"/>' +
+            '<path d="' + area + '" fill="none" stroke="#94a3b8" ' +
+            'stroke-width="0.8"/>' +
+            '<path d="' + raw + '" fill="none" stroke="#94a3b8" ' +
+            'stroke-width="1" stroke-dasharray="2.5 2" ' +
+            'stroke-linejoin="round"/>' +
+            '<path d="' + gen + '" fill="none" stroke="#059669" ' +
+            'stroke-width="1.3" stroke-linejoin="round"/>' +
+            '<path d="' + dem + '" fill="none" stroke="#0f172a" ' +
+            'stroke-width="1.3" stroke-linejoin="round"/>' +
+            rule +
+            '<line x1="' + X0 + '" y1="' + Y1 + '" x2="' + X1 + '" y2="' + Y1 +
+            '" stroke="#e2e8f0" stroke-width="1"/>' + ticks +
+            '<text x="0" y="' + (Y0 + 3) + '" fill="#94a3b8" font-size="8.5">' +
+            n0(sc.p) + ' kW</text>' +
+            '<text x="0" y="' + Y1 + '" fill="#94a3b8" font-size="8.5">0</text>' +
+            '<text x="' + X1 + '" y="' + YB + '" fill="#94a3b8" ' +
+            'font-size="8.5" text-anchor="end">' + n + ' sols</text>' +
+            '</svg>';
+        }
+
+        // ------------------------------------------------------------- wiring
+        var el = function (id) { return document.getElementById(id); };
+        var state = { severity: 0.90, uplift: 0.25, sheddable: 0.30, stat: 95 };
+
+        function fillColumn(side, d, res, sc, sub, note) {
+          el(side + "-pv").textContent = n0(d.pv);
+          el(side + "-batt").textContent = n0(d.batt);
+          el(side + "-h2").textContent = n0(d.h2);
+          el(side + "-surv").textContent = res.survives;
+          el(side + "-sub").textContent = sub;
+          el(side + "-note").textContent = note;
+          el(side + "-big").className = "big " +
+            (res.survives >= NS ? "ok" : "fail");
+          el(side + "-when").textContent = res.failHour === null
+            ? "rides the whole event out"
+            : ("first unserved hour on sol " + (res.survives + 1) + ", " +
+               n0(res.unserved) + " kWh unserved in all");
+          el(side + "-spark").innerHTML = drawSpark(res, sc);
+        }
+
+        function statName() { return "P" + state.stat; }
+
+        function update() {
+          var s = {
+            severity: state.severity,
+            uplift: state.uplift,
+            sheddable: state.sheddable
+          };
+          var L = looseDesign(state.stat, state.severity);
+          var lres = simulate(L, s);
+          var Tt = tightDesign(L, s);
+          var tres = Tt.run;
+
+          var sc = { p: 0, s: 0 }, i;
+          [lres, tres].forEach(function (r) {
+            for (i = 0; i < r.sols.length; i++) {
+              sc.p = Math.max(sc.p, r.sols[i].raw, r.sols[i].gen);
+              sc.s = Math.max(sc.s, r.sols[i].store);
+            }
+          });
+          sc.p = Math.ceil(sc.p / 50) * 50;
+          sc.s = Math.max(sc.s, 1);
+
+          var same = Math.abs(Tt.pv - L.pv) < EPS && Math.abs(Tt.h2 - L.h2) < EPS;
+
+          fillColumn("loose", L, lres, sc,
+            "Sized against one number, the " + statName() + " of a nominal " +
+            "year, taken as a binding case and divided by the assumed derate. " +
+            "The storm enters only as a predicted loss of generation. Its " +
+            "effect on demand enters nowhere, because the interface has no " +
+            "field that carries it.",
+            "Sizing rule asked for " + n0(L.pvWant) + " kWe of array, " +
+            n0(L.battWant) + " kWh of battery and " + n0(L.h2Want) +
+            " kg of hydrogen before the declared ranges clipped it.");
+
+          fillColumn("tight", Tt, tres, sc,
+            same
+              ? ("Started from the loose design and ran it against the dust " +
+                 "state. Nothing went unserved, so the loop ran zero times and " +
+                 "the two designs are the same design.")
+              : ("Started from the loose design and iterated " + Tt.iters +
+                 " time" + (Tt.iters === 1 ? "" : "s") + " against one dust " +
+                 "state, in which generation and demand move together because " +
+                 "the same variable drives both."),
+            same
+              ? "No iteration was needed at these settings."
+              : (function () {
+                  var moved = [];
+                  if (Tt.pv - L.pv > 0.5) {
+                    moved.push("array raised " +
+                      Math.round((Tt.pv / L.pv - 1) * 100) + " percent");
+                  }
+                  if (Tt.h2 - L.h2 > 0.5) {
+                    moved.push("hydrogen raised " + n0(Tt.h2 - L.h2) + " kg");
+                  }
+                  if (!moved.length) {
+                    moved.push("nothing moved, both variables the loop may " +
+                      "raise were already at the top of the declared range");
+                  }
+                  return moved.join(", ") + ". The battery is untouched " +
+                    "because the loop does not size it.";
+                }()));
+
+          // The verdict, computed rather than written. Every branch has to
+          // be true of the run that produced it, including the branches where
+          // the recommendation this repository makes does not hold.
+          var zero = state.uplift === 0;
+          var v;
+          if (same) {
+            v = "<b>At these settings the two columns are the same design.</b> " +
+              "The loose sizing rule produced a configuration the coupled run " +
+              "has nothing to correct, so the iteration ran zero times and " +
+              "both ride out all " + NS + " sols. " +
+              (zero
+                ? ("With the uplift at zero, generation and demand are no " +
+                   "longer two readings of one variable, the correlation that " +
+                   "a single exchanged bound destroys is not there to be " +
+                   "destroyed, and this model shows no reason to couple " +
+                   "anything. That is what refuting the recommendation looks " +
+                   "like, and the coefficient that decides it is tagged " +
+                   "assumed because it is.")
+                : ("The uplift is not zero here, so the two are still driven " +
+                   "by one cause. It is simply not large enough at this " +
+                   "severity and this sheddable fraction to break a design " +
+                   "sized without it. Take the severity up, or the sheddable " +
+                   "fraction down, and that stops being true."));
+          } else {
+            v = "<b>The loose design was sized to ride out the whole event, " +
+              "and the coupled run puts its first unserved hour on sol " +
+              (lres.survives + 1) + " of " + NS + ".</b> Nothing is wrong with " +
+              "its arithmetic. It was handed a demand bound formed with the " +
+              "storm switched off, and the storm raises demand by the same " +
+              "cause that cuts generation. Iterating on the dust state " +
+              "instead " +
+              (tres.survives >= NS
+                ? "rides the event out."
+                : (tres.survives > lres.survives
+                    ? ("reaches sol " + (tres.survives + 1) + " and no " +
+                       "further.")
+                    : ("cannot do better, because everything it is allowed to " +
+                       "raise is already at the top of the declared range. " +
+                       "Its answer is that this settlement cannot be built " +
+                       "from the parts on offer, which is a real answer and " +
+                       "one that no exchange of single bounds can produce."))) +
+              (zero
+                ? (" The uplift is already at zero, so the gap between the " +
+                   "columns here is not the correlation at all. It is the " +
+                   "loose rule sizing against a bound rather than against a " +
+                   "trajectory.")
+                : (" Take the uplift slider to zero and the two columns " +
+                   "become one design again, which is the test this section " +
+                   "exists to fail."));
+          }
+          el("verdict").innerHTML = v;
+
+          // A ceiling is a finding, not an error.
+          var c = el("ceiling");
+          if (Tt.exhausted) {
+            c.className = "ceiling";
+            c.innerHTML = "<b>Finding: the declared design space is exhausted</b>" +
+              "The iteration stopped because " + Tt.pinned.join(" and ") +
+              " reached the top of the range the power partner declares, with " +
+              n0(tres.unserved) + " kWh still unserved" +
+              (Tt.battPinned
+                ? ", and the battery bank is at the top of its range too"
+                : "") + ". Inside the ranges on " +
+              "the table below there is no configuration that carries this " +
+              "settlement through " + NS + " sols at these settings. That is " +
+              "an output of the model and not a failure of it. It is also " +
+              "invisible to anyone exchanging a single bound, because the " +
+              "single bound never contained the demand side of the storm.";
+          } else {
+            c.className = "";
+            c.innerHTML = "";
+          }
+        }
+
+        function bindSlider(id, key) {
+          var input = el(id), out = el(id + "-v");
+          input.addEventListener("input", function () {
+            state[key] = Number(input.value) / 100;
+            out.textContent = input.value + "%";
+            update();
+          });
+          out.textContent = input.value + "%";
+        }
+
+        bindSlider("sev", "severity");
+        bindSlider("up", "uplift");
+        bindSlider("shed", "sheddable");
+
+        Array.prototype.slice.call(
+          el("env").querySelectorAll("button")
+        ).forEach(function (b) {
+          b.addEventListener("click", function () {
+            state.stat = Number(b.dataset.p);
+            Array.prototype.slice.call(
+              el("env").querySelectorAll("button")
+            ).forEach(function (o) {
+              o.setAttribute("aria-pressed", String(o === b));
+            });
+            el("env-v").textContent = statName();
+            update();
+          });
+        });
+
+        state.severity = Number(el("sev").value) / 100;
+        state.uplift = Number(el("up").value) / 100;
+        state.sheddable = Number(el("shed").value) / 100;
+        el("env-v").textContent = statName();
+        update();
       })();
     </script>
   </body>
