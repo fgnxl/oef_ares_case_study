@@ -84,7 +84,7 @@ SESSIONS = [
             "Settles the frame rather than any variable, so nobody rules here."),
     Session(1, "Interface working session", "half day",
             ("Solis", "Tharsis", "Helix"),
-            "Calendar and epoch, units, encoding. The first written agreement leaves this room.",
+            "Calendar and epoch, units, encoding. The first written contract leaves this room.",
             decides=("Solis", "Tharsis")),
     Session(1, "Evidence elicitation", "90 min", ("Meridian",),
             "What makes a resilience claim credible, written down.",
