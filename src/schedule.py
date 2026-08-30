@@ -93,7 +93,7 @@ SESSIONS = [
             "Solis cannot declare how capacity degrades without Meridian's failure "
             "definitions. The expensive decision in the whole plan.",
             decides=("Solis", "Meridian")),
-    Session(2, "Agreement sign-off", "half day",
+    Session(2, "Contract sign-off", "half day",
             ("Solis", "Tharsis", "Helix"),
             "Every cell filled, or visibly empty. Helix re-points its existing "
             "adapter to the ruling, which is a diff rather than a rewrite, and that "
@@ -117,10 +117,10 @@ SESSIONS = [
 ]
 
 MILESTONES = [
-    Milestone(1, "First written agreement", "Calendar fixed, thresholds published, schedule owned."),
+    Milestone(1, "First written contract", "Calendar fixed, thresholds published, schedule owned."),
     Milestone(2, "End to end on junk data", "Every format and encoding mismatch fails here.",
               "skeleton"),
-    Milestone(3, "Agreement complete", "Every exchange defined, or its gaps visible.", "gate"),
+    Milestone(3, "Contract complete", "Every exchange defined, or its gaps visible.", "gate"),
     Milestone(4, "Normal case runs", "One configuration, traceable."),
     Milestone(5, "Traceability pass", "If week 4 held. Catch-up if it did not.", "buffer"),
     Milestone(6, "Board demonstration", "Normal case and one stress event.", "demo"),

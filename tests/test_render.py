@@ -107,6 +107,35 @@ class TestGeneratedPage(unittest.TestCase):
         self.assertNotIn('"declarations"', self.html)
 
 
+    def test_the_opening_sets_the_scene_before_the_controls(self):
+        """A reader who knows nothing has to be able to start at the top.
+
+        The settlement, then the hazard, then why the model exists, then the
+        partners, and all of it above the first slider.
+        """
+        paras = render._opening()
+        self.assertGreaterEqual(len(paras), 3)
+        self.assertLessEqual(len(paras), 4)
+        for para in paras:
+            with self.subTest(para=para[:40]):
+                self.assertIn(render._e(para), self.html)
+        joined = " ".join(paras)
+        for token in ("1,000", "residents", "120", "dust", "Solis", "Tharsis"):
+            with self.subTest(token=token):
+                self.assertIn(token, joined)
+        self.assertLess(self.html.index(render._e(paras[0])),
+                        self.html.index('class="dials"'))
+
+    def test_the_reference_list_is_present_and_non_empty(self):
+        """The values came from somewhere and the page has to say where."""
+        self.assertIn('<div class="refs">', self.html)
+        self.assertGreaterEqual(render.reference_count(), 10)
+        self.assertEqual(render.reference_count(), self.html.count("<li><b>"))
+        self.assertIn("fictional", self.html)
+        self.assertLess(self.html.index('class="dials"'),
+                        self.html.index('<div class="refs">'))
+
+
 class TestToyModel(unittest.TestCase):
     """The coupled toy model, and the provenance every one of its numbers carries.
 

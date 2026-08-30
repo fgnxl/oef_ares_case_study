@@ -69,6 +69,59 @@ LEDE = (
     "exercise assumed it.")
 
 
+def _opening() -> list[str]:
+    """Four short paragraphs that let a reader who knows nothing follow.
+
+    Every number in them is read from toy.py rather than typed here, so the
+    prose cannot drift away from the model the page actually runs.
+    """
+    v = toy.values()
+    pop = int(v["POP"])
+    per_cap = float(v["PER_CAP_KW"])
+    draw = pop * per_cap
+    fission = float(v["FISSION_KW"])
+    ride = int(v["RIDE_SOLS"])
+    sol = float(v["SOL_HOURS"])
+    return [
+        f"The settlement being sized here is a phase 1 Mars habitat holding "
+        f"{_num(pop)} residents. At {per_cap} kW of continuous electrical "
+        f"demand each it draws roughly {_num(draw)} kW around the clock, "
+        f"against {_num(fission)} kW of installed fission surface power, so "
+        f"the balance has to come from solar arrays and from whatever those "
+        f"arrays can put into store. That power is not amenity. It runs air "
+        f"revitalisation and carbon dioxide removal, water recovery, heating "
+        f"against a night that falls well below freezing, lighting on a "
+        f"{sol:.2f} hour sol, and the growing space. It is the reason anybody "
+        f"inside is alive.",
+
+        f"Mars has planet-encircling dust storms. The research record puts the "
+        f"large events on the order of {ride} sols, and while one is overhead "
+        f"the optical depth is deep enough that output from a solar array "
+        f"falls to a small fraction of its clear sky figure, in the worst of "
+        f"it a few percent. The load does not fall with it. If anything it "
+        f"rises, because the habitat loses passive solar gain and daylight has "
+        f"to be replaced electrically. NASA's own surface power planning for "
+        f"Mars carries a ride through case of the same {ride} sol order, which "
+        f"is where the target on this page comes from.",
+
+        "So this model exists to ask two things. Whether a settlement sized "
+        "the way such things are normally sized survives that storm at all, "
+        "and whether sizing it with two models revising against each other "
+        "produces a materially different design. The page runs the same "
+        "settlement twice and puts both through the same storm.",
+
+        "The two models belong to different organisations. Solis sizes "
+        "generating and storage capacity over multi-year horizons, which is "
+        "the long view that picks an array, a battery bank and a hydrogen "
+        "store. Tharsis simulates habitat demand hour by hour, which is the "
+        "short view that knows when the load actually arrives. Below, two "
+        "columns compare what each way of working builds. On the left "
+        "Solis picks a capacity from a single demand number and stops. On "
+        "the right it picks, watches Tharsis run the storm against that "
+        "choice, and revises. Both designs then face the same storm.",
+    ]
+
+
 def _e(s: str) -> str:
     return html.escape(str(s), quote=True)
 
@@ -222,7 +275,9 @@ def _widget() -> str:
         '<section class="toy">'
         f'<h1>{_e(HEADING)}</h1>'
         f'<p class="lede">{_e(LEDE)}</p>'
-        '<div class="dials">'
+        + "".join(f'<p class="opening">{_e(p)}</p>'
+                   for p in _opening())
+        +         '<div class="dials">'
         + _dial("sev", "Storm severity",
                 "peak insolation loss at the array", 0, 95,
                 int(round(v["SEVERITY_DEFAULT"] * 100)))
@@ -275,6 +330,167 @@ def _widget() -> str:
     )
 
 
+
+# Where the values came from. Only sources that underpin something on this
+# page: surface power, the Mars solar resource and dust, habitat load and life
+# support. The partner declarations in data/ are this repository's own
+# worldbuilding and are not references, so nothing below is attributed to them.
+_REFERENCES: tuple[tuple[str, tuple[tuple[str, str, str, str, str], ...]], ...] = (
+    ("Surface power, storage and mission architecture", (
+        ("Rucker, M. A.", "2016",
+         "Surface Power for Mars",
+         "NASA Mars Study Capability Team, NTRS 20160014032",
+         "https://ntrs.nasa.gov/api/citations/20160014032/downloads/20160014032.pdf"),
+        ("Smith, B., Mason, L., Palac, D. and Gibson, M.", "2018",
+         "Kilopower: Small and Affordable Fission Power Systems for Space",
+         "NASA Glenn Research Center, NTRS 20180000691",
+         "https://ntrs.nasa.gov/api/citations/20180000691/downloads/20180000691.pdf"),
+        ("NASA Glenn Research Center", "2014",
+         "Kilowatt-Class Fission Power Systems for Science and Human Precursor "
+         "Missions",
+         "NTRS 20140010823",
+         "https://ntrs.nasa.gov/api/citations/20140010823/downloads/20140010823.pdf"),
+        ("Guzik, M. C., Jakupca, I. J., Gilligan, R. P., Bennett, W. R., "
+         "Smith, P. J. and Fincannon, J.", "2017",
+         "Regenerative Fuel Cell Power Systems for Lunar and Martian Surface "
+         "Exploration, AIAA-2017-5368",
+         "NASA Glenn Research Center, AIAA SPACE Forum, NTRS 20170009088",
+         "https://ntrs.nasa.gov/api/citations/20170009088/downloads/20170009088.pdf"),
+        ("NASA Glenn Research Center", "2006",
+         "Round Trip Energy Efficiency of NASA Glenn Regenerative Fuel Cell "
+         "Systems",
+         "NTRS 20060008706",
+         "https://ntrs.nasa.gov/api/citations/20060008706/downloads/20060008706.pdf"),
+        ("NASA", "2010",
+         "A Study on Advanced Lithium-Based Battery Cell Design",
+         "NTRS 20100033740",
+         "https://ntrs.nasa.gov/api/citations/20100033740/downloads/20100033740.pdf"),
+        ("NASA", "1995",
+         "Solar-Electrochemical Power System for a Mars Mission",
+         "NTRS 19950012155",
+         "https://ntrs.nasa.gov/api/citations/19950012155/downloads/19950012155.pdf"),
+        ("NASA Mars Architecture Steering Group (Drake, B. G., ed.)", "2009",
+         "Human Exploration of Mars Design Reference Architecture 5.0, "
+         "NASA-SP-2009-566",
+         "NASA",
+         "https://www.nasa.gov/wp-content/uploads/2015/09/373665main_nasa-sp-2009-566.pdf"),
+    )),
+    ("The Mars solar resource and dust", (
+        ("Appelbaum, J. and Flood, D. J.", "1989",
+         "Solar Radiation on Mars, NASA Technical Memorandum 102299",
+         "NASA, NTRS 19890018252",
+         "https://ntrs.nasa.gov/api/citations/19890018252/downloads/19890018252.pdf"),
+        ("Landis, G. A. and others", "2004",
+         "Mars Solar Power",
+         "NASA, NTRS 20040191326",
+         "https://ntrs.nasa.gov/api/citations/20040191326/downloads/20040191326.pdf"),
+        ("Hartwick, V. L., Toon, O. B., Lundquist, J. K., Pierpaoli, O. and "
+         "Kahre, M.", "2022",
+         "Assessment of Wind Energy Resource Potential for Future Human "
+         "Missions to Mars",
+         "Research Square preprint of Nature Astronomy, "
+         "doi 10.1038/s41550-022-01851-4",
+         "https://www.researchsquare.com/article/rs-1510777/v1.pdf"),
+        ("Guzewich, S. D. and others", "2019",
+         "Mars Science Laboratory Observations of the 2018 / Mars Year 34 "
+         "Global Dust Storm",
+         "Geophysical Research Letters",
+         ""),
+    )),
+    ("Habitat load and life support", (
+        ("Ewert, M. K., Chen, T. T. and Powell, C. D.", "2022",
+         "Life Support Baseline Values and Assumptions Document, "
+         "NASA/TP-2015-218570/REV2",
+         "NASA Johnson Space Center, NTRS 20210024855",
+         "https://ntrs.nasa.gov/api/citations/20210024855/downloads/BVAD_2.15.22-final.pdf"),
+        ("NASA", "2010",
+         "Human Integration Design Handbook, NASA/SP-2010-3407",
+         "NTRS 20130000738",
+         "https://ntrs.nasa.gov/api/citations/20130000738/downloads/20130000738.pdf"),
+        ("NASA Office of the Chief Health and Medical Officer", "2023",
+         "NASA-STD-3001 Volume 2 Revision D: Human Factors, Habitability and "
+         "Environmental Health",
+         "NASA",
+         "https://www.nasa.gov/wp-content/uploads/2023/11/nasa-std-3001-vol-2-rev-d-with-signature.pdf"),
+        ("NASA Office of the Chief Health and Medical Officer", "2023",
+         "NASA-STD-3001 Technical Brief: Carbon Dioxide, OCHMO-TB-004 Rev D",
+         "NASA",
+         "https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-004-carbon-dioxide.pdf"),
+        ("NASA Office of the Chief Health and Medical Officer", "2023",
+         "NASA-STD-3001 Technical Brief: Exercise Overview, OCHMO-TB-031",
+         "NASA",
+         "https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-031-exercise-overview.pdf"),
+        ("NASA Johnson Space Center", "2023",
+         "Environmental Control and Life Support System Options for Mars "
+         "Transit and Mars Surface Missions",
+         "52nd International Conference on Environmental Systems, "
+         "NTRS 20230002103",
+         "https://ntrs.nasa.gov/api/citations/20230002103/downloads/Environmental%20Control%20and%20Life%20Support%20System%20(ECLSS)%20Options%20for%20Mars%20Transit%20and%20Mars%20Surface%20Missions%20(ICES%202023)%20-%20Final%20Submission.pdf"),
+        ("Knox, J. and others", "2015",
+         "Optimization of the Carbon Dioxide Removal Assembly in Support of "
+         "the International Space Station and Advanced Exploration Systems",
+         "NASA, NTRS 20150016500",
+         "https://ntrs.nasa.gov/api/citations/20150016500/downloads/20150016500.pdf"),
+        ("NASA Johnson Space Center", "2023",
+         "Status of ISS Water Management and Recovery",
+         "52nd International Conference on Environmental Systems, "
+         "NTRS 20230006217",
+         "https://ntrs.nasa.gov/api/citations/20230006217/downloads/ICES%202023-097%20Status%20of%20ISS%20Water%20Management%20and%20Recovery.pdf"),
+        ("NASA", "2015",
+         "Environmental Control and Life Support System, NASA Facts sheet",
+         "NASA",
+         "https://www.nasa.gov/wp-content/uploads/2015/03/104840main_eclss.pdf"),
+    )),
+    ("Settlement scale and the sol", (
+        ("Multiple authors", "2021",
+         "How to Live on Mars With a Proper Circadian Clock?",
+         "Frontiers in Astronomy and Space Sciences",
+         "https://www.frontiersin.org/journals/astronomy-and-space-sciences/articles/10.3389/fspas.2021.796943/pdf"),
+        ("Author per arXiv listing", "2021",
+         "Plan for Building a 1000 Person Martian Colony (preprint, not peer "
+         "reviewed, used only as a scale illustration)",
+         "arXiv 2112.06145",
+         "https://arxiv.org/pdf/2112.06145"),
+    )),
+)
+
+_NOT_RETRIEVED = ("Not retrieved. Wiley paywalls it and no open copy was "
+                  "found, so this page uses none of the optical depth "
+                  "figures it reports.")
+
+
+def _references() -> str:
+    """The reference list at the foot of the page.
+
+    URLs are printed as text rather than as anchors, because an href to an
+    external host is exactly what the self-contained rule forbids and what the
+    test for it catches.
+    """
+    parts = [
+        '<div class="refs"><h2>Where the values came from</h2>'
+        '<p class="legend">These are the published sources behind the numbers '
+        'on this page. The four partner organisations named here are '
+        'fictional, and the declarations this repository reads them from were '
+        'written for this exercise, so nothing below is attributed to a '
+        'partner. Every reference is a real document.</p>'
+    ]
+    for group, items in _REFERENCES:
+        parts.append(f"<h3>{_e(group)}</h3><ol>")
+        for author, year, title, venue, url in items:
+            tail = (f'<span class="u">{_e(url)}</span>' if url
+                    else _e(_NOT_RETRIEVED))
+            parts.append(
+                f"<li><b>{_e(author)} ({_e(year)}).</b> {_e(title)}. "
+                f"{_e(venue)}. {tail}</li>")
+        parts.append("</ol>")
+    parts.append("</div>")
+    return "".join(parts)
+
+
+def reference_count() -> int:
+    """How many references the page carries. Asserted by the tests."""
+    return sum(len(items) for _, items in _REFERENCES)
+
 def page(partners: list[Partner], findings: list[Finding]) -> str:
     """The whole artifact, as one string. No I/O, so it is testable.
 
@@ -286,6 +502,7 @@ def page(partners: list[Partner], findings: list[Finding]) -> str:
     body = (
         '<div class="wrap">'
         + _widget()
+        + _references()
         + "<footer>A toy, built for a candidate case study. One deterministic "
         "run of one set of assumptions, and no configuration it prints should "
         "be built. Its constants are read from four synthetic partner "

@@ -52,6 +52,40 @@ Three findings changed the submission.
 
 ## The material limitation
 
+I built the wrong artifact first, and kept improving it.
+
+The original tool parsed the four synthetic partner declarations and reported
+which interface clauses they failed to state. I wrote those four documents. So
+the tool discovered the omissions I had put in them and reported 344 absent
+clauses as a finding. It graded its own homework, and the more rigorous the
+checker looked, the more clearly it did so. It also contained no energy system
+and no physics, in a submission for an energy systems role.
+
+Nobody caught that for two hours, including me, because each individual
+improvement was real. Provenance panels, better figures, a cleaner layout. The
+thing was wrong at the root and getting steadily more polished.
+
+What replaced it sizes a settlement two ways, once the way the partners work
+today and once with the two models revising against each other, runs both
+through the same 120 sol dust storm, and reports how many sols each survives.
+The two approaches do not disagree about an answer. They cause you to build
+different things, and the survival number is what happens to what you built.
+
+The second limitation is in that model and it is deliberate. One of its four
+controls is the demand response to a storm, and it reaches zero. At zero the two
+designs converge exactly and the recommendation refutes itself on screen. That
+coefficient is assumed rather than measured, because a literature search found
+no published figure for it, and the honest thing to do with an argument resting
+on an unmeasured number is to put the number in the reader's hands.
+
+A third, smaller one worth recording because it is the same class. Partway
+through, a slide quoted a clause from one of those synthetic partner documents
+as evidence that a partner required something. It is our own invention presented
+back to the assessors as a finding. It is gone, and a rule now applies across
+the submission: anything in `data/` is an input, never evidence.
+
+## The earlier limitation
+
 The tool produced a confident, well-argued and wrong recommendation, and a human
 had to overrule it.
 
