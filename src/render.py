@@ -327,14 +327,14 @@ def _column(side: str, title: str) -> str:
     """One design column. Python draws the frame, the model fills the numbers."""
     def cell(key: str, label: str) -> str:
         return (f'<div><span>{_e(label)}</span>'
-                f'<b id="{side}-{key}">&mdash;</b></div>')
+                f'<b id="{side}-{key}">&middot;</b></div>')
     return (
         f'<article class="col" id="col-{side}">'
         f'<h3>{_e(title)}</h3>'
         f'<p class="sub" id="{side}-sub"></p>'
         f'<div class="caps">{cell("pv", "PV peak, kWe")}'
         f'{cell("batt", "Battery, kWh")}{cell("h2", "Hydrogen, kg")}</div>'
-        f'<div class="big" id="{side}-big"><b id="{side}-surv">&mdash;</b>'
+        f'<div class="big" id="{side}-big"><b id="{side}-surv">&middot;</b>'
         f'<span>survives, of {int(toy.values()["RIDE_SOLS"])} sols'
         f'<br><i id="{side}-when"></i></span></div>'
         f'<div class="spark" id="{side}-spark"></div>'

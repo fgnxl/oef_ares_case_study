@@ -179,7 +179,7 @@ CONSTANTS: tuple[Const, ...] = (
     Const("STORM_HOLD_SOL", "Last sol at full storm depth", 115, "sol", ASSUMED,
           "The event holds to here and clears by the end of the ride through "
           "window", "The dust state"),
-    Const("SEVERITY_DEFAULT", "Storm severity, peak insolation loss", 0.90,
+    Const("SEVERITY_DEFAULT", "Storm severity, peak insolation loss", 0.75,
           "fraction", ASSUMED,
           "The depth of a planet encircling event. Adjustable on the page",
           "The dust state"),
