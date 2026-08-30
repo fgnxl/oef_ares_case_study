@@ -37,7 +37,7 @@ These are context, not partner attributes, and every partner profile below sits 
 - STATED. The programme is at "Month 8" and "The foundation's major milestone review is in six weeks".
 - STATED. "The models operate at different temporal and spatial scales, and nobody has yet shown that a tight, bidirectional coupling is scientifically necessary."
 - UNKNOWN. How the $12 million is split across the four partners. Budget share usually drives who absorbs integration cost, and the brief is silent.
-- UNKNOWN. Whether the partners hold subcontracts with ARES, direct grants from the foundation, or some other instrument. This determines what use exists over any of them.
+- UNKNOWN. Whether the partners hold subcontracts with ARES, direct grants from the foundation, or some other instrument. This determines what authority exists over any of them.
 - UNKNOWN. Headcount, seniority, location and timezone for every partner.
 
 ---
@@ -211,7 +211,7 @@ Inference throughout. No sample of Meridian's own writing exists in the brief.
 - STATED terms the brief puts in Meridian's frame: "component failures", "compound events", "acceptable service levels", "stress scenarios", "reliability metrics", "evidence requirements", "sufficiently resilient", "mission-risk", "failure conditions", "uncertainty", "credible mission-risk claims".
 - INFERRED. A risk institute usually speaks in hazard, failure mode, initiating event, consequence, exposure, likelihood, severity, margin, criterion, threshold and assurance case.
 - INFERRED. It is the partner most likely to insist on the word "credible" and on a distinction between a result and evidence for a claim. The brief already uses both phrasings in its voice.
-- INFERRED. It is the partner most likely to treat uncertainty as a explicit field on every variable rather than as an optional annotation.
+- INFERRED. It is the partner most likely to treat uncertainty as an explicit field on every variable rather than as an optional annotation.
 - UNKNOWN. Whether it works to a named standard or framework. None is mentioned.
 
 ## What it needs and what needs it
@@ -242,17 +242,17 @@ Inference throughout. No sample of Meridian's own writing exists in the brief.
 - STATED. "It does not own the authoritative domain models."
 - INFERRED. As a vendor it is paid to deliver tooling, so its incentive is to ship and to be seen to be useful, which explains why it has already built against an unconfirmed reading.
 - INFERRED. Owning no authoritative model leaves it structurally dependent. It cannot validate anything on its own authority and needs another partner to vouch for correctness.
-- INFERRED. It is the fastest-moving of the four. Tooling can be rebuilt in days, where a domain model carries a validation history that has to be redone with it.
+- INFERRED. It is the fastest-moving of the four. Tooling can be rebuilt in days, where a domain model has a validation history that has to be redone with it.
 - INFERRED. It is also the partner with the least standing in a scientific dispute, since the brief explicitly denies it ownership of authoritative models.
 - UNKNOWN. Whether Helix is a small specialist shop or a large vendor, and whether its tooling is bespoke to ARES or a platform it also sells elsewhere.
 - UNKNOWN. Whether Helix's tooling IP belongs to Helix, to ARES or to the foundation.
 
 ## What it does, and at what resolution
 
-- STATED. "It is developing schema translation, automated quality checks, model orchestration, surrocontrol methods and tools for interpreting results across the consortium."
+- STATED. "It is developing schema translation, automated quality checks, model orchestration, surrogate methods and tools for interpreting results across the consortium."
 - INFERRED. Those five activities describe an integration layer rather than a domain model, which is consistent with the explicit statement that it owns no authoritative domain model.
-- INFERRED. Surrocontrol methods imply it intends to approximate other partners' models, which requires access to their inputs and outputs at some volume.
-- UNKNOWN. Which model or models the surrocontrols are meant to approximate. No target is named.
+- INFERRED. Surrogate methods imply it intends to approximate other partners' models, which requires access to their inputs and outputs at some volume.
+- UNKNOWN. Which model or models the surrogates are meant to approximate. No target is named.
 - UNKNOWN temporal and spatial resolution. Helix has none of its own that the brief states. A translation and orchestration layer inherits the resolutions of whatever it connects, and the brief does not say what it currently connects.
 - UNKNOWN. How far along any of the five activities is, apart from the tooling built against a provisional interpretation.
 - UNKNOWN. What "automated quality checks" check, and against what definition of correct.
@@ -273,7 +273,7 @@ This is the second and larger absence. Helix has neither a consumes clause nor a
 
 Inference throughout. No sample of Helix's own writing exists in the brief.
 
-- STATED terms the brief puts in Helix's frame: "schema translation", "automated quality checks", "model orchestration", "surrocontrol methods", "interpreting results", "tooling", "provisional interpretation", "interface variables", "authoritative domain models".
+- STATED terms the brief puts in Helix's frame: "schema translation", "automated quality checks", "model orchestration", "surrogate methods", "interpreting results", "tooling", "provisional interpretation", "interface variables", "authoritative domain models".
 - INFERRED. A methods vendor usually speaks in schema, adapter, pipeline, contract, validation rule, endpoint, version, mapping, emulator and training set.
 - INFERRED. It is the partner most likely to name a variable after its role in a data structure rather than after the physical quantity, which is precisely the kind of divergence that produces an ownership dispute.
 - INFERRED. It is the most likely of the four to version things explicitly and to talk about breaking changes.

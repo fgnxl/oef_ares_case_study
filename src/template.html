@@ -149,6 +149,26 @@
                  border: 1px solid var(--rule); border-radius: 8px; }
       .fig figcaption { font-size: .72rem; color: var(--faint); margin-top: .4rem;
                         max-width: 62rem; }
+      .detail { border: 1px solid var(--rule); border-radius: 8px;
+                padding: .8rem .9rem; margin-top: .5rem; }
+      .detail h4 { margin: 0 0 .55rem; font-size: .95rem; color: var(--ink);
+                   font-weight: 600; }
+      .detail h4 b { color: var(--link); }
+      .detail .from { float: right; font-size: .72rem; color: var(--faint);
+                      font-weight: 400; }
+      .empty-detail { font-size: .82rem; color: var(--faint); margin: .6rem 0 0; }
+      table.clauses { font-size: .8rem; }
+      table.clauses td.cn { font-weight: 600; color: var(--ink); white-space: nowrap; }
+      table.clauses td.cf { color: var(--faint); white-space: nowrap; font-size: .74rem; }
+      table.clauses td.cs { white-space: nowrap; font-size: .72rem;
+                            text-transform: uppercase; letter-spacing: .09em; }
+      tr.p-stated   td.cs { color: var(--pos); font-weight: 600; }
+      tr.p-inferred td.cs { color: #b45309; font-weight: 600; }
+      tr.p-absent   td.cs { color: var(--neg); font-weight: 600; }
+      tr.p-absent   td em { color: var(--neg); font-style: normal; }
+      .src { display: block; font-size: .72rem; color: var(--mute);
+             margin-top: .18rem; border-left: 2px solid var(--rule);
+             padding-left: .5rem; }
       footer { margin-top: 2.6rem; padding-top: .8rem; border-top: 1px solid var(--rule);
                font-size: .78rem; color: var(--faint); max-width: 76ch; }
     </style>
@@ -180,6 +200,20 @@
           if (c) { c.textContent = shown; }
         }
 
+        var details = Array.prototype.slice.call(
+          document.querySelectorAll(".detail"));
+        var nodetail = document.getElementById("nodetail");
+
+        function showDetail() {
+          var any = false;
+          details.forEach(function (d) {
+            var on = item !== null && d.id === "d-" + item;
+            d.hidden = !on;
+            if (on) { any = true; }
+          });
+          if (nodetail) { nodetail.hidden = any; }
+        }
+
         chips.forEach(function (chip) {
           chip.addEventListener("click", function () {
             var key = chip.dataset.key;
@@ -187,9 +221,12 @@
             chips.forEach(function (c) {
               c.setAttribute("aria-pressed", String(c.dataset.key === item));
             });
+            showDetail();
             apply();
           });
         });
+
+        showDetail();
 
         buttons.forEach(function (b) {
           b.addEventListener("click", function () {

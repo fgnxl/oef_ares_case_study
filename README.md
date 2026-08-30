@@ -23,7 +23,7 @@ alternative to it.
 
     make          # read data/, check the contracts, write the page
     make check    # validate only, exit non-zero on any blocking finding
-    make test     # 36 tests
+    make test     # the unit tests
 
 Python 3.10 or later. No dependencies, no virtualenv, no build system.
 

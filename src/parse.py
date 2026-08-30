@@ -34,7 +34,7 @@ import json
 import re
 from pathlib import Path
 
-from model import Declaration, Direction, Kind, Partner, inferred, stated
+from model import ABSENT, Declaration, Direction, Kind, Partner, inferred, stated
 
 # --------------------------------------------------------------------------
 # Solis: a markdown spec sheet. Structure is real, so read it.
@@ -96,9 +96,7 @@ def read_solis(path: Path) -> Partner:
                 Kind.BOUND if _in_note(text, "3.3", m.group("ref")) else Kind.UNKNOWN)
         elif "envelope" in name.lower():
             d.kind = Kind.BOUND
-        if not outgoing and not last:
-            d.owner = Declaration.__dataclass_fields__["owner"].default
-        elif not outgoing:
+        if not outgoing and last:
             d.owner = stated(last)
         decls.append(d)
     return Partner("Solis", "commercial infrastructure modeller", decls)
@@ -135,7 +133,7 @@ def read_tharsis(path: Path) -> Partner:
     epoch = inferred(
         "sols from arrival, 668-sol year, 24h39m35s sol",
         "section 'Running the model': 'Time is indexed in sols from arrival'"
-    ) if seen("indexed in sols") else Declaration.__dataclass_fields__["epoch"].default
+    ) if seen("indexed in sols") else ABSENT
 
     hourly = inferred("hourly on the sol axis",
                       "section 'habsim': 'hourly steps across a full Mars year'")
@@ -211,7 +209,6 @@ def read_helix(path: Path) -> Partner:
     return Partner("Helix", "schema translation and compatibility layer", decls)
 
 
-
 # --------------------------------------------------------------------------
 # Meridian: clause-numbered requirements. Precise about obligation, silent
 # about payload. The reader gets what Meridian demands and nothing about what
@@ -251,11 +248,9 @@ def read_meridian(path: Path) -> Partner:
             d.unit = stated(", ".join(units), f"units appearing in section {num}")
         decls.append(d)
 
-    # Clause 6.1 says the Laboratory does not model. That is the document
-    # declaring that it consumes nothing, so it is read rather than assumed.
-    if "does not model" in text:
-        pass
-
+    # Clause 6.1 says the Laboratory does not model, so Meridian declares no
+    # consumes clause and the reader gives it none.
+    #
     # Clause 4.3 demands uncertainty on quantities used to support a resilience
     # claim. Meridian requires it of others and declares none on its own
     # outputs, which the reader records rather than resolves.

@@ -92,6 +92,11 @@ wrong and therefore three different asks of the board.
 
 ### Narrative A: "Coupling must be earned"
 
+> **Superseded by `decisions.md` and `findings.md`.** The position taken is that
+> tight bidirectional coupling is scientifically necessary and the declared
+> contract is its precondition. The loose-coupling option below is kept unedited
+> so the reversal is visible.
+
 **The argument.** The programme is not failing at engineering, it is failing at a scientific
 question nobody has answered: how tightly do these models actually need to be coupled? Symptoms 1
 to 3 are downstream costs of trying to build an interface whose required fidelity has never been

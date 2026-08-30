@@ -7,8 +7,11 @@ paragraph of HTML.
 Every rule here is general. None of them names a partner, an item or a gap. Run
 against a boundary where every object has an owner and every clause is stated,
 all of them return nothing, which is the condition the recommendation aims at.
-The four gaps in docs/findings.md are the expected OUTPUT of this file and never
-an input to it, because a checker told what to find demonstrates nothing.
+The gaps in docs/findings.md are the expected OUTPUT of this file and never an
+input to it, because a checker told what to find demonstrates nothing. Four of
+the five fall out of the rules below. GAP-5 does not, because it is a
+distinction missing inside a declared object rather than an object missing from
+the boundary, and no rule reading these declarations can see it.
 
 Pairing deserves a word. A producer and a consumer are matched by similarity of
 wording, not by a declared link, because no partner in this consortium declares

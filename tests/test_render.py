@@ -37,7 +37,23 @@ class TestGeneratedPage(unittest.TestCase):
         self.assertEqual(self.html, again)
 
     def test_every_finding_reaches_the_page(self):
-        self.assertEqual(len(self.findings), self.html.count('<tr class="'))
+        """Counted by severity class, which only findings rows carry.
+
+        This test previously counted every row on the page, which passed until
+        the provenance tables arrived and then failed for a reason that had
+        nothing to do with findings going missing. A count is only a check if it
+        counts the thing it names.
+        """
+        severities = sum(self.html.count(f'<tr class="{s}"')
+                         for s in ("blocking", "reported", "advisory"))
+        self.assertEqual(len(self.findings), severities)
+
+    def test_every_declaration_has_a_provenance_panel(self):
+        """The panel is where a finding stops being an assertion."""
+        import parse
+        from model import all_declarations
+        n = len(all_declarations(parse.load_all(ROOT / "data")))
+        self.assertEqual(n, self.html.count('class="detail"'))
 
     def test_the_page_carries_its_own_data(self):
         """The embedded JSON is what makes the page readable without the repo."""

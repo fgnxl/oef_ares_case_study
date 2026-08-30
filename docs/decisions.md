@@ -9,7 +9,8 @@ from is in `options.md`.
 Only two partners have a declared interface. Solis and Tharsis each have a
 consumes clause and a produces clause. Meridian has produces only. Helix
 declares no model interface at either surface: the brief describes what it is
-building, not what it exchanges. That asymmetry is in the brief and it shapes everything below.
+building, not what it exchanges. That asymmetry is in the brief and it shapes
+everything below.
 
 Meridian is complied with, not coupled to. It has no consumes clause, so it
 is not downstream of anything. It sets what counts as evidence and judges the
@@ -89,8 +90,9 @@ attend. What cannot be done by fiat is make the coordinator's ask outrank their
 own priorities once the meeting ends.
 
 So the question is not how to compel the declaration. It is what to put on the
-table so that the declaration is the thing each partner already wants. The brief supplies the answer: every partner is worse off under the status
-quo, and three of them do not yet know how.
+table so that the declaration is the thing each partner already wants. The brief
+supplies the answer: every partner is worse off under the status quo, and three
+of them do not yet know how.
 
 - **Helix is the most exposed and has the most to gain.** It has already built
   tooling against a provisional interpretation. If a contract is later declared

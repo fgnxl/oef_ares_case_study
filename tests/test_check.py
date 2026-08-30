@@ -2,9 +2,9 @@
 
 Two kinds of test here. The rule tests use the smallest fixture that isolates
 one rule, so a failure names the rule. The acceptance tests at the bottom assert
-that the four gaps in docs/findings.md fall out of the general rules, which is
-what stops the document and the code drifting apart: weaken a rule and they go
-red.
+that the four machine-detectable gaps in docs/findings.md fall out of the
+general rules, which is what stops the document and the code drifting apart:
+weaken a rule and they go red.
 
 No test tells the checker what to find. Every fixture is a set of partner
 declarations, and the expected finding is computed from them.
@@ -148,7 +148,7 @@ class TestContractRules(unittest.TestCase):
 
 
 class TestTheFourGapsFallOut(unittest.TestCase):
-    """docs/findings.md names four gaps. They must be computed, not asserted.
+    """Four of the five gaps in docs/findings.md are computed, not asserted.
 
     The fixture below is the consortium as the brief describes it, and nothing
     more. If a rule is weakened so that a gap stops being found, one of these
@@ -226,10 +226,6 @@ class TestTheFourGapsFallOut(unittest.TestCase):
         self.assertGreater(len(blocking(self.findings)), 0)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class TestSchedule(unittest.TestCase):
     """The seating plan carries a rule, so the rule is asserted rather than stated."""
 
@@ -285,3 +281,7 @@ class TestSchedule(unittest.TestCase):
         """Week 1 is contract work. Claiming otherwise would be the plan
         flattering itself, and the honest start is what makes the rest credible."""
         self.assertIn("nothing runs", self.s.CAPABILITY[0][1])
+
+
+if __name__ == "__main__":
+    unittest.main()

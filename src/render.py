@@ -62,6 +62,33 @@ def _matched(partners: list[Partner]) -> set[str]:
     return keys
 
 
+def _provenance(d: Declaration) -> str:
+    """Every clause of one declaration, with where its value came from.
+
+    This is the part of the model a reader most needs and the page has been
+    hiding. A finding that says a clause was inferred is an assertion. The same
+    finding beside the sentence it was inferred from is evidence.
+    """
+    rows = []
+    for c in Declaration.CLAUSES:
+        cl = d.clause(c)
+        state = cl.provenance.value
+        val = _e(cl.value) if cl.value else "<em>not stated</em>"
+        note = f'<span class="src">{_e(cl.note)}</span>' if cl.note else ""
+        rows.append(
+            f'<tr class="p-{state}"><td class="cn">{_e(c)}</td>'
+            f'<td class="cf">{_e(Declaration.FAMILY[c])}</td>'
+            f'<td class="cs">{state}</td><td>{val}{note}</td></tr>')
+    return (
+        f'<div class="detail" id="d-{_e(_key(d))}" hidden>'
+        f'<h4>{_e(d.partner)} {_e(d.direction.value)} <b>{_e(d.item)}</b>'
+        f'<span class="from">read from {_e(d.source_file)}</span></h4>'
+        f'<div class="scroller"><table class="clauses"><thead><tr>'
+        f'<th>Clause</th><th>Family</th><th>Provenance</th>'
+        f'<th>Value, and the text it came from</th></tr></thead>'
+        f'<tbody>{"".join(rows)}</tbody></table></div></div>')
+
+
 def _chip(d: Declaration, matched: set[str]) -> str:
     state = "matched" if _key(d) in matched else "orphan"
     bits = []
@@ -168,7 +195,6 @@ def model_json(partners: list[Partner], findings: list[Finding]) -> str:
     return json.dumps(payload, indent=1, sort_keys=True)
 
 
-
 _INITIAL = {"Solis": "S", "Tharsis": "T", "Meridian": "M", "Helix": "H"}
 
 
@@ -176,8 +202,9 @@ def _who(attendees: tuple, decides: tuple = ()) -> str:
     """Four markers, filled where the partner is in the room.
 
     The seating plan carries an argument, so it is drawn rather than described.
-    Helix is present for every technical session and absent from every session
-    that settles what a variable means.
+    Helix is present in the sessions that settle what a variable means, because
+    the contract being settled is the one its tooling was built against, and it
+    holds the ruling in none of them.
     """
     dots = []
     for name, ch in _INITIAL.items():
@@ -226,6 +253,7 @@ def _calendar() -> str:
         'because converting between two vocabularies confers no standing to rule '
         'on what either one means. A test asserts both halves.</p>')
 
+
 def page(partners: list[Partner], findings: list[Finding]) -> str:
     """The whole artifact, as one string. No I/O, so it is testable."""
     matched = _matched(partners)
@@ -242,6 +270,15 @@ def page(partners: list[Partner], findings: list[Finding]) -> str:
         'filter the findings to it.</p>'
         "<h2>The six weeks</h2>"
         + _calendar() +
+        '<h2>Where a finding comes from</h2>'
+        '<p class="legend">Select any item above. Every clause of that '
+        'declaration is listed with what the reader found, whether the document '
+        '<b>stated</b> it, whether the reader <b>inferred</b> it and from which '
+        'sentence, or whether it is <b>absent</b> and every consumer therefore '
+        'decides privately. This is the whole of the evidence behind the '
+        'findings below.</p>'
+        '<p class="empty-detail" id="nodetail">Nothing selected.</p>'
+        + "".join(_provenance(d) for d in all_declarations(partners)) +
         "<h2>What an unowned load costs</h2>"
         '<p class="legend">GAP-5 is the split between load that can be shed under '
         'stress and load that cannot, and no partner declares it. This is what '

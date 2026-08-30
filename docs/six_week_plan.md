@@ -73,13 +73,14 @@ point in the dust cycle and which population state count as normal. That is a
 decision rather than a default, and half the demonstration rests on it.
 
 Everything else survives the test. Without a fixed calendar the two models
-produce numbers that cannot be lined up. Without the aggregation operator Solis cannot consume what
-Tharsis emits, so there is no end-to-end run. Without an owned derate the stress
-case is Tharsis's private assumption, which fails the traceability requirement
-precisely when it matters most, since the stress event is a derate event.
-Without a versioned population schedule the run is not repeatable, and the brief
-asks for repeatable. Without Meridian's thresholds the question of whether the
-settlement met service levels has no answer any partner agrees with.
+produce numbers that cannot be lined up. Without the aggregation operator
+Solis cannot consume what Tharsis emits, so there is no end-to-end run.
+Without an owned derate the stress case is Tharsis's private assumption, which
+fails the traceability requirement precisely when it matters most, since the
+stress event is a derate event. Without a versioned population schedule the
+run is not repeatable, and the brief asks for repeatable. Without Meridian's
+thresholds the question of whether the settlement met service levels has no
+answer any partner agrees with.
 
 ## Track A: resolve the Solis to Tharsis interface
 
