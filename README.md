@@ -41,7 +41,7 @@ Python, so both are written from one run to stop them drifting apart.
 
 | Path | What it is |
 |---|---|
-| `docs/findings.md` | The diagnosis: five things the models need that no partner produces, and the six kinds of interface clause nobody has written |
+| `docs/findings.md` | The diagnosis: five things the models need that no partner produces, and the six families of interface clause nobody has written |
 | `docs/six_week_plan.md` | What the next six weeks do, with every action keyed to a gap, a meeting schedule, and where the slack is |
 | `docs/decisions.md` | What was chosen, what it was chosen over, and leadership without direct control |
 | `docs/assumptions.md` | Assumptions that materially shape the recommendation |

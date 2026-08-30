@@ -183,13 +183,14 @@ CONSTANTS: tuple[Const, ...] = (
           "fraction", ASSUMED,
           "The depth of a planet encircling event. Adjustable on the page",
           "The dust state"),
-    Const("UPLIFT_DEFAULT", "Demand uplift under storm", 0.25, "fraction",
+    Const("UPLIFT_DEFAULT", "Demand response to a storm", 0.25, "fraction",
           ASSUMED,
-          "The direction is physically robust: the habitat loses passive solar "
-          "gain so heating load rises, and daylight has to be replaced "
-          "electrically. Extravehicular activity stops, which pushes the other "
-          "way. The magnitude is not established by anything, and the page "
-          "lets you set it to zero",
+          "No published source gives a demand uplift figure for a Mars "
+          "habitat in a dust storm, and the only published direction is "
+          "downward: NASA's surface power baseline holds habitat power flat "
+          "through a storm while rover and drill loads shed. This control "
+          "stands in for a reader who wants to test an uplift case against "
+          "that baseline. Set it to zero to match the published direction",
           "The dust state"),
     Const("SHEDDABLE_DEFAULT", "Sheddable fraction of load", 0.30, "fraction",
           ASSUMED,

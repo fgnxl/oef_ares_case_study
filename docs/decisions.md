@@ -38,10 +38,11 @@ coupling because partner capacity will not carry two contracts at once.
 The brief leaves open whether tight bidirectional coupling is scientifically
 necessary, and the answer taken here is that it is. A settlement model exists to
 show what a settlement will actually endure, and what ends a settlement is a
-compound event in which generation falls and demand rises together because both
-respond to the same weather. A one-directional pass, or a single exchange of
-bounds, cannot represent that coincidence at all. It returns a worst case for
-each side separately, which is the wrong quantity.
+compound event in which generation falls while the load that cannot be shed
+does not fall with it, because both respond to the same weather. A
+one-directional pass, or a single exchange of bounds, cannot represent that
+coincidence at all. It returns a worst case for each side separately, which is
+the wrong quantity.
 
 So the argument is not that a declared boundary permits loose coupling. It is
 that a declared boundary is what makes tight coupling safe to build. Two models

@@ -226,8 +226,9 @@ recommendation and it is not six weeks of work. What the demonstration does
 instead is run the stress case iterated: Solis proposes, Tharsis simulates with
 the derate applied from the shared declared state rather than privately, and
 Solis revises at least once. That shows the correlation between falling
-generation and rising demand survives the exchange, which is the property the
-platform would have to preserve, without building the platform to prove it.
+generation and the load that cannot be shed survives the exchange, which is
+the property the platform would have to preserve, without building the
+platform to prove it.
 
 No tooling beyond what the contract needs. The checker exists to show which quantities
 nobody has agreed to produce, and a dashboard built on top of an unresolved
