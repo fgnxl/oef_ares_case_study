@@ -15,7 +15,7 @@ alternative to it.
 
 | Path | What it is |
 |---|---|
-| `deck/ares_board_deck.pptx` | The board deck, eight slides |
+| `deck/ares_board_deck.pptx` | The board deck, a cover and eight slides |
 | `public/index.html` | The artifact, built. Opens from disk, no network |
 | `docs/ai_use.md` | The AI-use disclosure |
 
@@ -23,7 +23,7 @@ alternative to it.
 
     make          # read data/, check the contracts, write the page
     make check    # validate only, exit non-zero on any blocking finding
-    make test     # 32 tests
+    make test     # 36 tests
 
 Python 3.10 or later. No dependencies, no virtualenv, no build system.
 
@@ -36,7 +36,7 @@ Python, so both are written from one run to stop them drifting apart.
 
 | Path | What it is |
 |---|---|
-| `docs/findings.md` | The diagnosis: four objects on the boundary that no partner owns, and the six families of interface clause behind them |
+| `docs/findings.md` | The diagnosis: five objects on the boundary that no partner owns, and the six families of interface clause behind them |
 | `docs/six_week_plan.md` | What the next six weeks do, with every action keyed to a gap, a meeting schedule, and where the slack is |
 | `docs/decisions.md` | What was chosen, what it was chosen over, and leadership without direct control |
 | `docs/assumptions.md` | Assumptions that materially shape the recommendation |

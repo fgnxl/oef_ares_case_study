@@ -28,8 +28,9 @@ consortium must then be able to explain what information was exchanged, how
 inconsistencies and uncertainty were handled, what was validated, and what the
 demonstration does and does not establish.
 
-Traceable and explainable are the words that do the work. A demonstration that produces a
-number nobody can account for fails the review while appearing to succeed.
+Traceable and explainable are the words that do the work. A demonstration that
+produces a number nobody can account for fails the review while appearing to
+succeed.
 
 ## The shape: two tracks, one critical path
 
@@ -71,8 +72,8 @@ has to define what the normal operating case is, meaning which season, which
 point in the dust cycle and which population state count as normal. That is a
 decision rather than a default, and half the demonstration rests on it.
 
-Everything else survives the test. Without a fixed calendar the two models produce numbers that
-cannot be lined up. Without the aggregation operator Solis cannot consume what
+Everything else survives the test. Without a fixed calendar the two models
+produce numbers that cannot be lined up. Without the aggregation operator Solis cannot consume what
 Tharsis emits, so there is no end-to-end run. Without an owned derate the stress
 case is Tharsis's private assumption, which fails the traceability requirement
 precisely when it matters most, since the stress event is a derate event.
@@ -140,9 +141,10 @@ Keeping it out would mean settling a contract that contradicts working code.
 One thing Helix is deliberately not given, and this part is not a judgement about
 Helix. A translation layer converts between vocabularies and cannot rule on what
 a variable means, and nobody in the consortium could confer that standing on it.
-So it attends every technical session and no session that settles meaning or
-ownership. A test in `tests/test_check.py` asserts the seating plan honours that,
-rather than leaving it as an intention.
+So it attends the sessions that settle meaning and ownership, because the
+contract being settled is the one its tooling was built against, and it holds
+the ruling in none of them. A test in `tests/test_check.py` asserts both halves,
+rather than leaving them as an intention.
 
 ## Weeks 4 to 6: run it
 
@@ -193,7 +195,7 @@ that revision.
 If Solis's revised configuration comes back within tolerance of its first, then
 seeing the hourly trace under stress did not change what it would build, the
 feedback between the two models is weak, one pass suffices, and the
-recommendation is wrong. The four gaps stand either way, because an unowned
+recommendation is wrong. The five gaps stand either way, because an unowned
 object is unowned regardless of how the models are coupled, but the coupling
 argument does not survive.
 

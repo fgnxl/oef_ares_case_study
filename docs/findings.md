@@ -1,6 +1,6 @@
-# Four missing objects on the boundary
+# Five missing objects on the boundary
 
-What the consortium is missing is not agreement. It is four named objects that
+What the consortium is missing is not agreement. It is five named objects that
 sit on the boundary between the models and that no partner owns. Each is read
 off the brief's own description of the partners, and nothing here is invented.
 
@@ -48,8 +48,8 @@ as surrogate systems, useful for productively informing real world decisions."
 The limiting case at the far end is a digital twin.
 
 A settlement model exists so that somebody can commit to a design that has to
-keep people alive. That purpose sets a floor on fidelity. Below some level of resolution and
-coupling, a model is not a less useful version of the same tool.
+keep people alive. That purpose sets a floor on fidelity. Below some level of
+resolution and coupling, a model is not a less useful version of the same tool.
 It is inadmissible as evidence for the decision it was built to inform, because
 no engineer would sign a habitat design on the strength of a tool whose own
 authors would not trust it to design one. The question is not whether tight
@@ -115,7 +115,7 @@ about the design Solis chose.
 and does the derate come from Meridian's failure definitions or from a
 placeholder.
 
-## GAP-3. The service level threshold set
+## GAP-3. The service thresholds and the stress scenarios
 
 - **Missing object.** Two things travelling the same absent route. A versioned
   set of thresholds defining what counts as a shortfall, and the stress
@@ -151,7 +151,7 @@ an owner, and it reaches nobody, so each model treats its own half of a
 correlated event as an independent input. Restoring that one route is the single
 highest-value edge in the whole consortium.
 
-## GAP-4. Population schedules
+## GAP-4. The population schedule
 
 - **Missing object.** A producer for the input that drives every demand profile.
 
@@ -160,8 +160,9 @@ highest-value edge in the whole consortium.
 schedules.
 
 - **Why it is unowned.** It is not a modelling output at all. It is a programme
-assumption about who is on Mars and what they are doing, and it the mission owns it rather than any of the four
-models, and that is precisely why it fell between them.
+assumption about who is on Mars and what they are doing, and the mission owns it
+rather than any of the four models, which is precisely why it fell between
+them.
 
 - **What it costs today.** It is the largest single driver of hourly demand, and
 its provenance is unrecorded. Two runs of Tharsis are not comparable unless they
@@ -195,7 +196,7 @@ revised, and is it versioned such that a demand result can be traced to one.
 
 ## Six families of interface clause
 
-The four gaps above are the worst class of defect, where an object that has to
+The five gaps above are the worst class of defect, where an object that has to
 exist is produced by nobody. There is a second and more common class, where the
 object exists but a property the consumer needs is never declared. An interface
 contract has clauses. This consortium has stated almost none of them.
@@ -253,7 +254,9 @@ while the operators that bridge their scales are unowned.
 
 ## What the checker must find
 
-These four are the acceptance test for the artifact. The checker reads the four
+Four of the five are the acceptance test for the artifact. GAP-5 is a
+distinction missing inside a declared object rather than an object missing from
+the boundary, so no rule reading these declarations can see it. The checker reads the four
 partner declarations and computes findings. It is never told the answer, because
 a checker that is told what to find demonstrates nothing.
 
