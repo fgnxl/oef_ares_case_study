@@ -17,7 +17,7 @@ to it.
 | Path | What it is |
 |---|---|
 | `deck/ares_board_deck.pptx` | The board deck, a cover and eight slides |
-| `public/index.html` | The artifact: the checker's findings as one page. Opens from disk, no network |
+| `public/index.html` | The artifact: the coupled toy model as one interactive page. Two settlement designs, one sized the way the partners work today and one sized with the two models talking to each other, both put through the same storm. Opens from disk, no network |
 | `docs/ai_use.md` | The AI-use disclosure |
 
 ## Building the page
@@ -25,6 +25,10 @@ to it.
     make          # read data/, check the contracts, write the page
     make check    # validate only, exit non-zero on any blocking finding
     make test     # the unit tests
+
+The checker is a command line tool and its output is not rendered. It reads the
+four declarations, applies the rules and reports on the terminal, which is where
+a gate belongs. The page carries the toy model and nothing else.
 
 Python 3.10 or later. No dependencies, no virtualenv, no build system.
 

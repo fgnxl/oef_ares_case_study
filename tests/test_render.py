@@ -1,8 +1,15 @@
-"""The generated page must open from disk with no network. That is testable.
+"""The page is the coupled toy model and nothing else. That is testable.
 
-The self-contained requirement is the one property of the output worth a test:
-it is easy to break by adding a font or a CDN script, and the break only shows
-up on the machine that is offline.
+Two properties are worth a test above all others. The page must open from disk
+with no network, which is easy to break by adding a font or a CDN script and
+only breaks on the machine that is offline. And it must render byte-identically
+from identical inputs, or its diff is unreadable.
+
+The rest of these tests hold the page to being one thing. The checker still
+runs, it is still a gate, and none of what it produces reaches the page, so the
+tests that once asserted a provenance panel per declaration and every finding on
+the page now assert the opposite property: the model is checked on the command
+line and the page carries only the toy.
 """
 
 import re
@@ -19,6 +26,21 @@ import render  # noqa: E402
 import toy  # noqa: E402
 
 _EXTERNAL = re.compile(r"""(?:src|href)\s*=\s*["\'](https?:|//)""")
+
+# Headings and hooks of the sections the page used to carry. A page that grows
+# one of them back has stopped being one thing.
+_REMOVED = (
+    "The boundary",
+    "The six weeks",
+    "Where a finding comes from",
+    "What an unowned load costs",
+    'id="findings"',
+    'class="chip',
+    'class="detail"',
+    'class="counts"',
+    'id="model"',
+    "blocking findings",
+)
 
 
 class TestGeneratedPage(unittest.TestCase):
@@ -37,29 +59,52 @@ class TestGeneratedPage(unittest.TestCase):
         again = render.page(self.partners, check.run(self.partners))
         self.assertEqual(self.html, again)
 
-    def test_every_finding_reaches_the_page(self):
-        """Counted by severity class, which only findings rows carry.
+    def test_the_page_has_a_top_that_stands_alone(self):
+        """A reader landing cold has to know what the two columns are.
 
-        This test previously counted every row on the page, which passed until
-        the provenance tables arrived and then failed for a reason that had
-        nothing to do with findings going missing. A count is only a check if it
-        counts the thing it names.
+        The title, the heading and the lede are the whole of the framing, so
+        each has to be on the page and the lede has to name both models and say
+        what each one does.
         """
-        severities = sum(self.html.count(f'<tr class="{s}"')
-                         for s in ("blocking", "reported", "advisory"))
-        self.assertEqual(len(self.findings), severities)
+        self.assertIn(f"<title>{render.TITLE}</title>", self.html)
+        self.assertIn(f"<h1>{render._e(render.HEADING)}</h1>", self.html)
+        self.assertIn(render._e(render.LEDE), self.html)
+        for name in ("Solis", "Tharsis"):
+            with self.subTest(partner=name):
+                self.assertIn(name, render.LEDE)
+        self.assertLess(self.html.index("<h1>"), self.html.index('class="dials"'))
 
-    def test_every_declaration_has_a_provenance_panel(self):
-        """The panel is where a finding stops being an assertion."""
-        import parse
-        from model import all_declarations
-        n = len(all_declarations(parse.load_all(ROOT / "data")))
-        self.assertEqual(n, self.html.count('class="detail"'))
+    def test_the_widget_is_the_only_section(self):
+        """One section element, and it is the toy model."""
+        self.assertEqual(1, self.html.count("<section"))
+        self.assertIn('<section class="toy">', self.html)
 
-    def test_the_page_carries_its_own_data(self):
+    def test_no_removed_section_survives_anywhere_on_the_page(self):
+        """Deleting a section means its markup and its prose both go."""
+        for needle in _REMOVED:
+            with self.subTest(removed=needle):
+                self.assertNotIn(needle, self.html)
+
+    def test_the_checker_still_runs_and_stays_off_the_page(self):
+        """The gate is real and its output is not rendered.
+
+        The page no longer reports findings, which is only defensible while the
+        findings are still produced and still block. Both halves are asserted
+        here, because dropping the section would otherwise be indistinguishable
+        from dropping the check.
+        """
+        self.assertTrue(self.findings)
+        self.assertTrue(check.blocking(self.findings))
+        for f in self.findings[:20]:
+            with self.subTest(rule=f.rule, subject=f.subject):
+                self.assertNotIn(f.message, self.html)
+                self.assertNotIn(f.subject, self.html)
+
+    def test_the_page_carries_the_toy_data_and_no_contract_model(self):
         """The embedded JSON is what makes the page readable without the repo."""
-        self.assertIn('<script type="application/json" id="model">', self.html)
-        self.assertIn('"declarations"', self.html)
+        self.assertIn('<script type="application/json" id="toy">', self.html)
+        self.assertIn('"PER_CAP_KW"', self.html)
+        self.assertNotIn('"declarations"', self.html)
 
 
 class TestToyModel(unittest.TestCase):
@@ -100,15 +145,27 @@ class TestToyModel(unittest.TestCase):
         with self.assertRaises(ValueError):
             toy.Const("X", "x", 1, "u", "assumed", "   ", "g")
 
-    def test_the_toy_section_reaches_the_page(self):
-        self.assertIn("Would this settlement survive the storm", self.html)
-        self.assertIn('<section class="toy">', self.html)
-        self.assertIn("Loose, bounds exchanged once", self.section)
-        self.assertIn("Tight, iterated on one dust state", self.section)
+    def test_the_controls_and_both_columns_reach_the_page(self):
         for ident in ("sev", "up", "shed", "env", "verdict", "ceiling",
-                      "loose-spark", "tight-spark", "loose-surv", "tight-surv"):
+                      "loose-spark", "tight-spark", "loose-surv", "tight-surv",
+                      "loose-pv", "tight-pv", "loose-h2", "tight-h2"):
             with self.subTest(id=ident):
                 self.assertIn(f'id="{ident}"', self.section)
+
+    def test_each_column_names_its_regime_in_plain_words(self):
+        """A column heading has to be readable before the argument is read.
+
+        Both name a partner and say what it does, rather than naming a term
+        from an argument the reader has not reached yet.
+        """
+        self.assertIn("Loose: Solis picks a capacity and stops", self.section)
+        self.assertIn("Tight: Solis revises against Tharsis running the storm",
+                      self.section)
+
+    def test_each_column_separates_what_is_built_from_what_happens_to_it(self):
+        """The capacities are the design. The survival number is the outcome."""
+        self.assertEqual(2, self.section.count("What gets built"))
+        self.assertEqual(2, self.section.count("What the storm does to it"))
 
     def test_every_constant_is_rendered_with_its_provenance(self):
         """Rendered, not merely embedded. A reader sees the tag on the page."""
@@ -121,11 +178,6 @@ class TestToyModel(unittest.TestCase):
         self.assertGreaterEqual(
             self.section.count('<span class="tag assumed">'), assumed)
 
-    def test_the_page_carries_the_toy_constants(self):
-        self.assertIn('<script type="application/json" id="toy">', self.html)
-        self.assertIn('"PER_CAP_KW"', self.html)
-        self.assertIn('"tag": "assumed"', self.html)
-
     def test_the_shape_is_a_sol_of_multipliers_with_mean_one(self):
         """A shape whose mean drifts silently rescales the whole settlement."""
         self.assertEqual(24, len(toy.SHAPE))
@@ -133,30 +185,31 @@ class TestToyModel(unittest.TestCase):
         self.assertAlmostEqual(0.75, min(toy.SHAPE))
         self.assertAlmostEqual(1.35, max(toy.SHAPE))
 
-    def test_the_toy_section_cites_no_clause_identifier(self):
+    def test_the_page_cites_no_clause_identifier(self):
         """The declarations in data/ are ours. Quoting a clause number back at
 
         a reader would present this repository's own worldbuilding as a
         partner's requirement. The values are read and used. The identifiers
-        stay out of the prose.
+        stay out of the prose. The whole rendered section is scanned now, not
+        one part of it, because the section is the whole page.
         """
         forbidden = re.compile(
             r"OUT-\d|IN-\d|DEL-\d|SOL-ARES|MRL-ARES|THI-|HLX-|"
             r"clause\s+\d|\bMeridian\b", re.IGNORECASE)
         self.assertEqual([], forbidden.findall(self.section))
 
-    def test_the_storage_figure_sits_under_the_toy_section(self):
-        """The figure answers the question the model raises, so it follows it."""
-        toy_at = self.html.index('<section class="toy">')
-        fig_at = self.html.index("What an unowned load costs")
-        boundary_at = self.html.index("<h2>The boundary</h2>")
-        self.assertLess(toy_at, fig_at)
-        self.assertLess(fig_at, boundary_at)
+    def test_the_storage_figure_is_supporting_material_inside_the_widget(self):
+        """It is the mass under the store the two columns disagree about.
 
-    def test_the_toy_section_is_first(self):
-        """It is placed above everything the page rendered before it."""
-        self.assertLess(self.html.index('<section class="toy">'),
-                        self.html.index('<div class="counts">'))
+        Inside the section, below the verdict, and above the constants table,
+        so it reads as part of the model rather than as a topic of its own.
+        """
+        self.assertIn("What the store above weighs", self.section)
+        self.assertLess(self.section.index('id="verdict"'),
+                        self.section.index("What the store above weighs"))
+        self.assertLess(self.section.index("What the store above weighs"),
+                        self.section.index('table class="consts"'))
+        self.assertIn('src="data:image/png;base64,', self.section)
 
 
 if __name__ == "__main__":
